@@ -24,6 +24,103 @@ void dino_decode(void);
 void punisher_decode(void);
 void slammast_decode(void);
 
+const char *const sf2_sample_names[] =
+{
+	"*sf2",
+	"ryuslow-01",
+	"ryuslow-02",
+	"ryufast-01",
+	"ryufast-02",
+	"blankaslow-01",
+	"blankaslow-02",
+	"blankafast-01",
+	"blankafast-02",
+	"chunlislow-01",
+	"chunlislow-02",
+	"chunlifast-01",
+	"chunlifast-02",
+	"ehondaslow-01",
+	"ehondaslow-02",
+	"ehondafast-01",
+	"ehondafast-02",
+	"guileslow-01",
+	"guileslow-02",
+	"guilefast-01",
+	"guilefast-02",
+	"dhalsimslow-01",
+	"dhalsimslow-02",
+	"dhalsimfast-01",
+	"dhalsimfast-02",
+	"balrogslow-01",
+	"balrogslow-02",
+	"balrogfast-01",
+	"balrogfast-02",
+	"sagatslow-01",
+	"sagatslow-02",
+	"sagatfast-01",
+	"sagatfast-02",
+	"mbisonslow-01",
+	"mbisonslow-02",
+	"mbisonfast-01",
+	"mbisonfast-02",
+	"versus-01",
+	"versus-02",
+	"endfight-01",
+	"endfight-02",
+	"continue-01",
+	"continue-02",
+	"highscore-01",
+	"highscore-02",
+	"intro-01",
+	"intro-02",
+	"playerjoin-01",
+	"playerjoin-02",
+	"playerselect-01",
+	"playerselect-02",
+	"gameover-01",
+	"gameover-02",
+	"kenslow-01",
+	"kenslow-02",
+	"kenfast-01",
+	"kenfast-02",
+	"zangiefslow-01",
+	"zangiefslow-02",
+	"zangieffast-01",
+	"zangieffast-02",
+	"vegaslow-01",
+	"vegaslow-02",
+	"vegafast-01",
+	"vegafast-02",
+	"bonusstage-01",
+	"bonusstage-02",
+	"mbisonending-01",
+	"mbisonending-02",
+	"kenendinga-01",
+	"kenendinga-02",
+	"kenendingb-01",
+	"kenendingb-02",
+	"ehondaending-01",
+	"ehondaending-02",
+	"blankaending-01",
+	"blankaending-02",
+	"guileending-01",
+	"guileending-02",
+	"zangiefending-01",
+	"zangiefending-02",
+	"specialending-01",
+	"specialending-02",
+	"ryuending-01",
+	"ryuending-02",
+	"dhalsimending-01",
+	"dhalsimending-02",
+	"chunliendinga-01",
+	"chunliendinga-02",
+	"chunliendingb-01",
+	"chunliendingb-02",
+	"gameover-01",
+	"gameover-02",
+	0
+};
 
 const char *const ffight_sample_names[] =
 {
@@ -88,6 +185,12 @@ static struct Samplesinterface ff_samples =
 	ffight_sample_names
 };
 
+static struct Samplesinterface sf2_samples =
+{
+	2,	// 2 channels
+	100, // volume
+	sf2_sample_names
+};
 static READ16_HANDLER( cps1_input_r )
 {
 	int control=readinputport(offset);
@@ -323,7 +426,7 @@ static WRITE16_HANDLER( cps1_sound_command_w )
 				if(data == 0xf0 || data == 0xf2 || data == 0xf7) {
 					int a = 0;
 					
-					for(a = 0; a <= 50; a++) {
+					for(a = 0; a <= 93; a++) {
 						sample_stop(a);
 					}
 				}
@@ -347,6 +450,356 @@ static WRITE16_HANDLER( cps1_sound_command_w )
 				soundlatch_w(0,data & 0xff);
 			}
 		}
+	}
+	else if(	ff_playing_sf2 == true) 
+   {
+      switch (data) 
+      {
+         case 0x1:
+         {
+            // ryu music slow
+            sample_start(0, 0, 1);
+            sample_start(1, 1, 1);
+            break;
+         }
+         case 0x2:
+         {
+            // e honda music slow
+            sample_start(0, 12, 1);
+            sample_start(1, 13, 1);
+            break;
+         }
+         case 0x3:
+         {
+            // blanka music slow
+            sample_start(0, 4, 1);
+            sample_start(1, 5, 1);
+            break;
+         }
+         case 0x4:
+         {
+            sample_start(0, 52, 1);
+            sample_start(1, 53, 1);
+            break;
+         }
+         case 0x5:
+         {
+            sample_start(0, 16, 1);
+            sample_start(1, 17, 1);
+            break;
+         }
+         case 0x6:
+         {
+            // chun li music slow
+            sample_start(0, 8, 1);
+            sample_start(1, 9, 1);
+            break;
+         }
+         case 0x7:
+         {
+            // zangief music slow
+            sample_start(0, 56, 1);
+            sample_start(1, 57, 1);
+            break;
+         }
+         case 0x8:
+         {
+            // dhalsim music slow
+            sample_start(0, 20, 1);
+            sample_start(1, 21, 1);
+            break;
+         }
+		case 0x9:
+		{
+			// balrog music slow
+			sample_start(0, 24, 1);
+			sample_start(1, 25, 1);
+			break;
+		}
+		case 0xa:
+		{
+			// vega music slow
+			sample_start(0, 60, 1);
+			sample_start(1, 61, 1);
+			break;
+		}
+		case 0xb:
+		{
+			sample_start(0, 28, 1);
+			sample_start(1, 29, 1);
+			break;
+		}
+		case 0xc:
+		{
+			sample_start(0, 32, 1);
+			sample_start(1, 33, 1);
+			break;
+		}
+		case 0xd:
+		{
+			sample_start(0, 64, 1);
+			sample_start(1, 65, 1);
+			break;
+		}
+		case 0xe:
+		{
+			// character select stage
+			sample_start(0, 48, 1);
+			sample_start(1, 49, 1);
+			break;
+		}
+		case 0xf:
+		{
+			// versus screen ditty
+			sample_start(0, 36, 0);
+			sample_start(1, 37, 0);
+			break;
+		}
+		case 0x10:
+		{
+			// end of fight dialog/resolution screen
+			sample_start(0, 38, 0);
+			sample_start(1, 39, 0);
+			break;
+		}
+		case 0x11:
+		{
+			// continue music
+			sample_start(0, 40, 0);
+			sample_start(1, 41, 0);
+			break;
+		}
+		case 0x13:
+		{
+			// failed to continue?
+			sample_start(0, 90, 0);
+			sample_start(1, 91, 0);
+			break;
+		}
+		case 0x14:
+		{
+			// high score screen
+			sample_start(0, 42, 0);
+			sample_start(1, 43, 0);
+			break;
+		}
+		case 0x15:
+		{
+			sample_start(0, 46, 0);
+			sample_start(1, 47, 0);
+			break;
+		}
+		case 0x16:
+		{
+			// intro music
+			sample_start(0, 44, 1);
+			sample_start(1, 45, 1);
+			break;
+		}
+		case 0x18:
+		{
+			// ryu ending music
+			sample_start(0, 82, 0);
+			sample_start(1, 83, 0);
+			break;
+		}
+		case 0x19:
+		{
+			// e.honda ending music
+			sample_start(0, 72, 1);
+			sample_start(1, 73, 1);
+			break;
+		}
+		case 0x1a:
+		{
+//			stop_all(); add this
+
+			// blanka ending music
+			sample_start(0, 74, 1);
+			sample_start(1, 75, 1);
+			break;
+		}
+		case 0x1b:
+		{
+			sample_start(0, 76, 1);
+			sample_start(1, 77, 1);
+			break;
+		}
+		case 0x1c:
+		{
+			// ken ending music
+			sample_start(0, 68, 1);
+			sample_start(1, 69, 1);
+			break;
+		}
+		case 0x1d:
+		{
+			// chun li ending music?
+			sample_start(0, 86, 1);
+			sample_start(1, 87, 1);
+			break;
+		}
+		case 0x1e:
+		{
+			// zangief ending music
+			sample_start(0, 78, 1);
+			sample_start(0, 79, 1);
+			break;
+		}
+		case 0x1f:
+		{
+			// dhalsim ending music
+			sample_start(0, 84, 1);
+			sample_start(0, 85, 1);
+			break;
+		}
+		case 0x34:
+		{
+			// wedding music -- ken ending
+			sample_start(0, 70, 1);
+			sample_start(0, 71, 1);
+			break;
+		}
+		case 0x35:
+		{
+			// chun li ending #2
+			sample_start(0, 88, 1);
+			sample_start(0, 89, 1);
+			break;
+		}
+		case 0x79:
+		{
+			// ryu music fast
+			sample_start(0, 2, 1);
+			sample_start(0, 3, 1);
+			break;
+		}
+		case 0x7a:
+		{
+			// e. honda music fast
+			sample_start(0, 14, 1);
+			sample_start(0, 15, 1);
+			break;
+		}
+		case 0x7b:
+		{
+			// blanka music fast
+			sample_start(0, 6, 1);
+			sample_start(0, 7, 1);
+			break;
+		}
+		case 0x7c:
+		{
+			// guile music fast
+			sample_start(0, 18, 1);
+			sample_start(0, 19, 1);
+			break;
+		}
+		case 0x7d:
+		{
+			// ken music fast
+			sample_start(0, 54, 1);
+			sample_start(0, 55, 1);
+			break;
+		}
+		case 0x7e:
+		{
+			// fast chun li music
+			sample_start(0, 10, 1);
+			sample_start(0, 11, 1);
+			break;
+		}
+		case 0x7f:
+		{
+			// zangief music fast
+			sample_start(0, 58, 1);
+			sample_start(0, 59, 1);
+			break;
+		}
+		case 0x80:
+		{
+			// dhalsim music fast
+			sample_start(0, 22, 1);
+			sample_start(0, 23, 1);
+			break;
+		}
+		case 0x81:
+		{
+			// fast balrog music
+			sample_start(0, 26, 1);
+			sample_start(0, 27, 1);
+			break;
+		}
+		case 0x82:
+		{
+			// fast vega music
+			sample_start(0, 62, 1);
+			sample_start(0, 63, 1);
+			break;
+		}
+		case 0x83:
+		{
+			// fast sagat music
+			sample_start(0, 30, 1);
+			sample_start(0, 31, 1);
+			break;
+		}
+		case 0x84:
+		{
+			// fast m. bison music
+			sample_start(0, 34, 1);
+			sample_start(0, 35, 1);
+			break;
+		}
+		case 0x8c:
+		{
+			// m. bison ending
+			sample_start(0, 66, 1);
+			sample_start(0, 67, 1);
+			break;
+		}
+		case 0x8d:
+		{
+			// there's no stop music command after the ending music plays for some of them so we have to make sure that we're still not stuck in fading mode
+			//stop_all();
+			
+			// special ending
+			sample_start(0, 80, 1);
+			sample_start(0, 81, 1);
+			break;
+			default:
+				if(ACCESSING_LSB)
+					soundlatch_w(0,data & 0xff);
+
+				// Lets stop the Final Fight sample music.
+				if(data == 0xf0 || data == 0xf2 || data == 0xf7) {
+					int a = 0;
+					
+					for(a = 0; a <= 93; a++) {
+						sample_stop(a);
+					}
+				}
+
+				break;
+		}
+
+		// Determine how we should mix these samples together.
+		if(sample_playing(0) == 0 && sample_playing(1) == 1) { // Right channel only. Lets make it play in both speakers.
+			sample_set_stereo_volume(1, 100, 100);
+		}
+		else if(sample_playing(0) == 1 && sample_playing(1) == 0) { // Left channel only. Lets make it play in both speakers.
+			sample_set_stereo_volume(0, 100, 100);
+		}
+		else if(sample_playing(0) == 1 && sample_playing(1) == 1) { // Both left and right channels. Lets make them play in there respective speakers.
+			sample_set_stereo_volume(0, 100, 0);
+			sample_set_stereo_volume(1, 0, 100);
+		}
+		else if(sample_playing(0) == 0 && sample_playing(1) == 0) { // No sample playing, revert to the default sound.
+			if(ACCESSING_LSB) {
+				soundlatch_w(0,data & 0xff);
+			}
+		}
+   }
 	}
 	else {
 		if(ACCESSING_LSB)
@@ -3977,6 +4430,17 @@ static MACHINE_DRIVER_START( ffight_hack )
 	//MDRV_SOUND_ADD(SAMPLES, ff_samplesR)
 MACHINE_DRIVER_END
 
+static MACHINE_DRIVER_START( sf2_hack )
+	ff_playing_sf2 = true;
+	
+	/* basic machine hardware */
+	MDRV_IMPORT_FROM(cps1)
+
+	// Lets add our Final Fight music sample packs.
+	MDRV_SOUND_ATTRIBUTES(SOUND_SUPPORTS_STEREO)
+	MDRV_SOUND_ADD(SAMPLES, sf2_samples)
+	//MDRV_SOUND_ADD(SAMPLES, ff_samplesR)
+MACHINE_DRIVER_END
 
 static MACHINE_DRIVER_START( forgottn )
 
@@ -7727,7 +8191,7 @@ GAME( 1990, cawingu,  cawing,   cps1,     cawing,   cps1,     ROT0,   "Capcom", 
 GAME( 1990, cawingj,  cawing,   cps1,     cawing,   cps1,     ROT0,   "Capcom", "U.S. Navy (Japan 901012)" )
 GAME( 1990, nemo,     0,        cps1,     nemo,     cps1,     ROT0,   "Capcom", "Nemo (World 901130)" )						// "ETC"
 GAME( 1990, nemoj,    nemo,     cps1,     nemo,     cps1,     ROT0,   "Capcom", "Nemo (Japan 901120)" )
-GAME( 1991, sf2,      0,        sf2,      sf2,      cps1,     ROT0,   "Capcom", "Street Fighter II - The World Warrior (World 910522)" )	// "ETC"
+GAME( 1991, sf2,      0,        sf2_hack,      sf2,      cps1,     ROT0,   "Capcom", "Street Fighter II - The World Warrior (World 910522)" )	// "ETC"
 GAME( 1991, sf2eb,    sf2,      sf2,      sf2,      cps1,     ROT0,   "Capcom", "Street Fighter II - The World Warrior (World 910214)" )	// "ETC"
 GAME( 1991, sf2ua,    sf2,      sf2,      sf2,      cps1,     ROT0,   "Capcom", "Street Fighter II - The World Warrior (US 910206)" )
 GAME( 1991, sf2ub,    sf2,      sf2,      sf2,      cps1,     ROT0,   "Capcom", "Street Fighter II - The World Warrior (US 910214)" )
