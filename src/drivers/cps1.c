@@ -17,6 +17,7 @@
 #include "machine/eeprom.h"
 
 #include "cps1.h"       /* External CPS1 definitions */
+bool	playing_sf2= false;
 
 /* in machine/kabuki.c */
 void wof_decode(void);
@@ -177,6 +178,16 @@ const char *const ffight_sample_names[] =
 	"track26-02",
 	0
 };
+
+void stopall(void)
+{
+	int a = 0;
+	
+	for(a = 0; a <= 93; a++) 
+   {
+      sample_stop(a);
+   }
+}
 
 static struct Samplesinterface ff_samples =
 {
@@ -451,12 +462,13 @@ static WRITE16_HANDLER( cps1_sound_command_w )
 			}
 		}
 	}
-	else if(	ff_playing_sf2 == true) 
+	else if(	playing_sf2 == true) 
    {
       switch (data) 
       {
          case 0x1:
          {
+            stopall();
             // ryu music slow
             sample_start(0, 0, 1);
             sample_start(1, 1, 1);
@@ -464,6 +476,7 @@ static WRITE16_HANDLER( cps1_sound_command_w )
          }
          case 0x2:
          {
+            stopall();
             // e honda music slow
             sample_start(0, 12, 1);
             sample_start(1, 13, 1);
@@ -471,6 +484,7 @@ static WRITE16_HANDLER( cps1_sound_command_w )
          }
          case 0x3:
          {
+            stopall();
             // blanka music slow
             sample_start(0, 4, 1);
             sample_start(1, 5, 1);
@@ -478,18 +492,21 @@ static WRITE16_HANDLER( cps1_sound_command_w )
          }
          case 0x4:
          {
+            stopall();
             sample_start(0, 52, 1);
             sample_start(1, 53, 1);
             break;
          }
          case 0x5:
          {
+            stopall();
             sample_start(0, 16, 1);
             sample_start(1, 17, 1);
             break;
          }
          case 0x6:
          {
+            stopall();
             // chun li music slow
             sample_start(0, 8, 1);
             sample_start(1, 9, 1);
@@ -497,6 +514,7 @@ static WRITE16_HANDLER( cps1_sound_command_w )
          }
          case 0x7:
          {
+            stopall();
             // zangief music slow
             sample_start(0, 56, 1);
             sample_start(1, 57, 1);
@@ -504,6 +522,7 @@ static WRITE16_HANDLER( cps1_sound_command_w )
          }
          case 0x8:
          {
+            stopall();
             // dhalsim music slow
             sample_start(0, 20, 1);
             sample_start(1, 21, 1);
@@ -511,6 +530,7 @@ static WRITE16_HANDLER( cps1_sound_command_w )
          }
 		case 0x9:
 		{
+            stopall();
 			// balrog music slow
 			sample_start(0, 24, 1);
 			sample_start(1, 25, 1);
@@ -518,6 +538,7 @@ static WRITE16_HANDLER( cps1_sound_command_w )
 		}
 		case 0xa:
 		{
+            stopall();
 			// vega music slow
 			sample_start(0, 60, 1);
 			sample_start(1, 61, 1);
@@ -525,18 +546,21 @@ static WRITE16_HANDLER( cps1_sound_command_w )
 		}
 		case 0xb:
 		{
+            stopall();
 			sample_start(0, 28, 1);
 			sample_start(1, 29, 1);
 			break;
 		}
 		case 0xc:
 		{
+            stopall();
 			sample_start(0, 32, 1);
 			sample_start(1, 33, 1);
 			break;
 		}
 		case 0xd:
 		{
+            stopall();
 			sample_start(0, 64, 1);
 			sample_start(1, 65, 1);
 			break;
@@ -544,6 +568,7 @@ static WRITE16_HANDLER( cps1_sound_command_w )
 		case 0xe:
 		{
 			// character select stage
+            stopall();
 			sample_start(0, 48, 1);
 			sample_start(1, 49, 1);
 			break;
@@ -551,6 +576,7 @@ static WRITE16_HANDLER( cps1_sound_command_w )
 		case 0xf:
 		{
 			// versus screen ditty
+            stopall();
 			sample_start(0, 36, 0);
 			sample_start(1, 37, 0);
 			break;
@@ -558,12 +584,14 @@ static WRITE16_HANDLER( cps1_sound_command_w )
 		case 0x10:
 		{
 			// end of fight dialog/resolution screen
+            stopall();
 			sample_start(0, 38, 0);
 			sample_start(1, 39, 0);
 			break;
 		}
 		case 0x11:
 		{
+            stopall();
 			// continue music
 			sample_start(0, 40, 0);
 			sample_start(1, 41, 0);
@@ -571,6 +599,7 @@ static WRITE16_HANDLER( cps1_sound_command_w )
 		}
 		case 0x13:
 		{
+                     stopall();
 			// failed to continue?
 			sample_start(0, 90, 0);
 			sample_start(1, 91, 0);
@@ -578,6 +607,7 @@ static WRITE16_HANDLER( cps1_sound_command_w )
 		}
 		case 0x14:
 		{
+                     stopall();
 			// high score screen
 			sample_start(0, 42, 0);
 			sample_start(1, 43, 0);
@@ -585,12 +615,14 @@ static WRITE16_HANDLER( cps1_sound_command_w )
 		}
 		case 0x15:
 		{
+                     stopall();
 			sample_start(0, 46, 0);
 			sample_start(1, 47, 0);
 			break;
 		}
 		case 0x16:
 		{
+                     stopall();
 			// intro music
 			sample_start(0, 44, 1);
 			sample_start(1, 45, 1);
@@ -598,6 +630,7 @@ static WRITE16_HANDLER( cps1_sound_command_w )
 		}
 		case 0x18:
 		{
+                     stopall();
 			// ryu ending music
 			sample_start(0, 82, 0);
 			sample_start(1, 83, 0);
@@ -605,6 +638,7 @@ static WRITE16_HANDLER( cps1_sound_command_w )
 		}
 		case 0x19:
 		{
+                     stopall();
 			// e.honda ending music
 			sample_start(0, 72, 1);
 			sample_start(1, 73, 1);
@@ -612,6 +646,7 @@ static WRITE16_HANDLER( cps1_sound_command_w )
 		}
 		case 0x1a:
 		{
+                     stopall();
 //			stop_all(); add this
 
 			// blanka ending music
@@ -621,12 +656,14 @@ static WRITE16_HANDLER( cps1_sound_command_w )
 		}
 		case 0x1b:
 		{
+                     stopall();
 			sample_start(0, 76, 1);
 			sample_start(1, 77, 1);
 			break;
 		}
 		case 0x1c:
 		{
+                     stopall();
 			// ken ending music
 			sample_start(0, 68, 1);
 			sample_start(1, 69, 1);
@@ -634,6 +671,7 @@ static WRITE16_HANDLER( cps1_sound_command_w )
 		}
 		case 0x1d:
 		{
+                     stopall();
 			// chun li ending music?
 			sample_start(0, 86, 1);
 			sample_start(1, 87, 1);
@@ -641,137 +679,155 @@ static WRITE16_HANDLER( cps1_sound_command_w )
 		}
 		case 0x1e:
 		{
+                     stopall();
 			// zangief ending music
 			sample_start(0, 78, 1);
-			sample_start(0, 79, 1);
+			sample_start(1, 79, 1);
 			break;
 		}
 		case 0x1f:
 		{
+                     stopall();
 			// dhalsim ending music
 			sample_start(0, 84, 1);
-			sample_start(0, 85, 1);
+			sample_start(1, 85, 1);
 			break;
 		}
 		case 0x34:
 		{
+                     stopall();
 			// wedding music -- ken ending
 			sample_start(0, 70, 1);
-			sample_start(0, 71, 1);
+			sample_start(1, 71, 1);
 			break;
 		}
 		case 0x35:
 		{
+                     stopall();
 			// chun li ending #2
 			sample_start(0, 88, 1);
-			sample_start(0, 89, 1);
+			sample_start(1, 89, 1);
 			break;
 		}
 		case 0x79:
 		{
+                     stopall();
 			// ryu music fast
 			sample_start(0, 2, 1);
-			sample_start(0, 3, 1);
+			sample_start(1, 3, 1);
 			break;
 		}
 		case 0x7a:
 		{
+                     stopall();
 			// e. honda music fast
 			sample_start(0, 14, 1);
-			sample_start(0, 15, 1);
+			sample_start(1, 15, 1);
 			break;
 		}
 		case 0x7b:
 		{
+                     stopall();
 			// blanka music fast
 			sample_start(0, 6, 1);
-			sample_start(0, 7, 1);
+			sample_start(1, 7, 1);
 			break;
 		}
 		case 0x7c:
 		{
+                     stopall();
 			// guile music fast
 			sample_start(0, 18, 1);
-			sample_start(0, 19, 1);
+			sample_start(1, 19, 1);
 			break;
 		}
 		case 0x7d:
 		{
+                     stopall();
 			// ken music fast
 			sample_start(0, 54, 1);
-			sample_start(0, 55, 1);
+			sample_start(1, 55, 1);
 			break;
 		}
 		case 0x7e:
 		{
+                     stopall();
 			// fast chun li music
 			sample_start(0, 10, 1);
-			sample_start(0, 11, 1);
+			sample_start(1, 11, 1);
 			break;
 		}
 		case 0x7f:
 		{
+                     stopall();
 			// zangief music fast
 			sample_start(0, 58, 1);
-			sample_start(0, 59, 1);
+			sample_start(1, 59, 1);
 			break;
 		}
 		case 0x80:
 		{
+                     stopall();
 			// dhalsim music fast
 			sample_start(0, 22, 1);
-			sample_start(0, 23, 1);
+			sample_start(1, 23, 1);
 			break;
 		}
 		case 0x81:
 		{
+                     stopall();
 			// fast balrog music
 			sample_start(0, 26, 1);
-			sample_start(0, 27, 1);
+			sample_start(1, 27, 1);
 			break;
 		}
 		case 0x82:
 		{
+                     stopall();
 			// fast vega music
 			sample_start(0, 62, 1);
-			sample_start(0, 63, 1);
+			sample_start(1, 63, 1);
 			break;
 		}
 		case 0x83:
 		{
+                     stopall();
 			// fast sagat music
 			sample_start(0, 30, 1);
-			sample_start(0, 31, 1);
+			sample_start(1, 31, 1);
 			break;
 		}
 		case 0x84:
 		{
+                     stopall();
 			// fast m. bison music
 			sample_start(0, 34, 1);
-			sample_start(0, 35, 1);
+			sample_start(1, 35, 1);
 			break;
 		}
 		case 0x8c:
 		{
+                     stopall();
 			// m. bison ending
 			sample_start(0, 66, 1);
-			sample_start(0, 67, 1);
+			sample_start(1, 67, 1);
 			break;
 		}
 		case 0x8d:
 		{
+                     stopall();
 			// there's no stop music command after the ending music plays for some of them so we have to make sure that we're still not stuck in fading mode
 			//stop_all();
 			
 			// special ending
 			sample_start(0, 80, 1);
-			sample_start(0, 81, 1);
+			sample_start(1, 81, 1);
 			break;
 			default:
 				if(ACCESSING_LSB)
 					soundlatch_w(0,data & 0xff);
 
-				// Lets stop the Final Fight sample music.
+/*				// not sure if this is relevant to sf2?
 				if(data == 0xf0 || data == 0xf2 || data == 0xf7) {
 					int a = 0;
 					
@@ -779,7 +835,7 @@ static WRITE16_HANDLER( cps1_sound_command_w )
 						sample_stop(a);
 					}
 				}
-
+*/
 				break;
 		}
 
@@ -4431,12 +4487,12 @@ static MACHINE_DRIVER_START( ffight_hack )
 MACHINE_DRIVER_END
 
 static MACHINE_DRIVER_START( sf2_hack )
-	ff_playing_sf2 = true;
+	playing_sf2 = true;
 	
 	/* basic machine hardware */
 	MDRV_IMPORT_FROM(cps1)
 
-	// Lets add our Final Fight music sample packs.
+		MDRV_CPU_REPLACE("main", M68000, 12000000)
 	MDRV_SOUND_ATTRIBUTES(SOUND_SUPPORTS_STEREO)
 	MDRV_SOUND_ADD(SAMPLES, sf2_samples)
 	//MDRV_SOUND_ADD(SAMPLES, ff_samplesR)
