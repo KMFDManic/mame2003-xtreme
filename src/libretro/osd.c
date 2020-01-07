@@ -19,6 +19,8 @@
 #include "mame.h"
 #include "driver.h"
 
+extern int16_t XsoundBuffer[2048];
+
 extern char* systemDir;
 extern char* saveDir;
 extern char* romDir;
@@ -36,6 +38,61 @@ extern retro_log_printf_t log_cb;
 #define S_ISDIR(x) (x & CELL_FS_S_IFDIR)
 #endif
 
+#if 0
+struct GameOptions
+{
+	mame_file *	record;			/* handle to file to record input to */
+	mame_file *	playback;		/* handle to file to playback input from */
+	mame_file *	language_file;	/* handle to file for localization */
+
+	int		mame_debug;		/* 1 to enable debugging */
+	int		cheat;			/* 1 to enable cheating */
+	int 	gui_host;		/* 1 to tweak some UI-related things for better GUI integration */
+	int 	skip_disclaimer;	/* 1 to skip the disclaimer screen at startup */
+	int 	skip_gameinfo;		/* 1 to skip the game info screen at startup */
+
+	int		samplerate;		/* sound sample playback rate, in Hz */
+	int		use_samples;	/* 1 to enable external .wav samples */
+	int		use_filter;		/* 1 to enable FIR filter on final mixer output */
+
+	float	brightness;		/* brightness of the display */
+	float	pause_bright;		/* additional brightness when in pause */
+	float	gamma;			/* gamma correction of the display */
+	int		color_depth;	/* 15, 16, or 32, any other value means auto */
+	int		vector_width;	/* requested width for vector games; 0 means default (640) */
+	int		vector_height;	/* requested height for vector games; 0 means default (480) */
+	int		ui_orientation;	/* orientation of the UI relative to the video */
+
+	int		beam;			/* vector beam width */
+	float	vector_flicker;	/* vector beam flicker effect control */
+	float	vector_intensity;/* vector beam intensity */
+	int		translucency;	/* 1 to enable translucency on vectors */
+	int 	antialias;		/* 1 to enable antialiasing on vectors */
+
+	int		use_artwork;	/* bitfield indicating which artwork pieces to use */
+	int		artwork_res;	/* 1 for 1x game scaling, 2 for 2x */
+	int		artwork_crop;	/* 1 to crop artwork to the game screen */
+
+	char	savegame;		/* character representing a savegame to load */
+	int     crc_only;       /* specify if only CRC should be used as checksum */
+	char *	bios;			/* specify system bios (if used), 0 is default */
+
+	int		debug_width;	/* requested width of debugger bitmap */
+	int		debug_height;	/* requested height of debugger bitmap */
+	int		debug_depth;	/* requested depth of debugger bitmap */
+
+#ifdef MESS
+	UINT32 ram;
+	struct ImageFile image_files[MAX_IMAGES];
+	int		image_count;
+	int(*mess_printf_output)(const char *fmt, va_list arg);
+	int disable_normal_ui;
+
+	int		min_width;		/* minimum width for the display */
+	int		min_height;		/* minimum height for the display */
+#endif
+};
+#endif
 
 int osd_create_directory(const char *dir)
 {
@@ -85,6 +142,70 @@ void osd_exit(void)
 {
 
 }
+
+
+/******************************************************************************
+
+Sound
+
+******************************************************************************/
+
+static bool stereo;
+static float delta_samples;
+
+int osd_start_audio_stream(int aStereo)
+{
+	stereo = (aStereo != 0);
+	delta_samples = 0.0f;
+	return (Machine->sample_rate / Machine->drv->frames_per_second);
+}
+
+int osd_update_audio_stream(INT16 *buffer)
+{
+	int i;
+	int samplerate_buffer_size = (Machine->sample_rate / Machine->drv->frames_per_second);
+
+	if (stereo)
+		memcpy(XsoundBuffer, buffer, samplerate_buffer_size * 4);
+	else
+	{
+		for (i = 0; i < samplerate_buffer_size; i++)
+		{
+			XsoundBuffer[i * 2 + 0] = buffer[i];
+			XsoundBuffer[i * 2 + 1] = buffer[i];
+		}
+	}
+
+	// Take care of fractional part
+	delta_samples += (Machine->sample_rate / Machine->drv->frames_per_second) - samplerate_buffer_size;
+	if (delta_samples >= 1.0f)
+	{
+		int integer_delta = (int)delta_samples;
+		samplerate_buffer_size += integer_delta;
+		delta_samples -= integer_delta;
+	}
+
+	return samplerate_buffer_size;
+}
+
+void osd_stop_audio_stream(void)
+{
+}
+
+void osd_set_mastervolume(int attenuation)
+{
+}
+
+int osd_get_mastervolume(void)
+{
+	return 0;
+}
+
+void osd_sound_enable(int enable)
+{
+	memset(XsoundBuffer, 0, sizeof(XsoundBuffer));
+}
+
 
 
 /******************************************************************************
