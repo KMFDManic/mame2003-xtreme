@@ -397,7 +397,7 @@ int osd_skip_this_frame(void)
 
 	static unsigned auto_frameskip_counter = 0;
 
-	bool skip_frame;
+	bool skip_frame = 0;
 
 	if (pause_action)  return 0;  // dont skip pause action hack (rendering mame info screens or you wont see them and not know to press a key)
 
@@ -424,7 +424,7 @@ int osd_skip_this_frame(void)
 
 			if (skip_frame)
 			{
-				if(auto_frameskip_counter < 30)
+				if(auto_frameskip_counter <= 40) // limit to 20 fps max feel free to change this is you feel need to be lower
 				{
 					auto_frameskip_counter++;;
 				}
@@ -438,7 +438,7 @@ int osd_skip_this_frame(void)
 	}
 	else //manual frameskip includes disabled check
 	{
-		skip_frame = frameskip_table[frameskip][frameskip_counter % 12];
+		skip_frame = frameskip_table[frameskip][frameskip_counter];
 	}
 	return skip_frame;
 }
@@ -511,7 +511,7 @@ void osd_update_video_and_audio(struct mame_display *display)
    }
 
    gotFrame = 1;
-   frameskip_counter++;
+   frameskip_counter = (frameskip_counter + 1) % 12;
    RETRO_PERFORMANCE_STOP(perf_cb, update_video_and_audio);
 }
 

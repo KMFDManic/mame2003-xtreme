@@ -248,48 +248,14 @@ static void update_variables(void)
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) || var.value)
    {
 				prev_frameskip_type = frameskip;
-
-   				if (strcmp(var.value, "1") == 0)
-					frameskip = 1;
-
-				else if (strcmp(var.value, "2") == 0)
-					frameskip = 2;
-
-				else if (strcmp(var.value, "3") == 0)
-					frameskip = 3;
-
-				else if (strcmp(var.value, "4") == 0)
-					frameskip = 4;
-
-				else if (strcmp(var.value, "5") == 0)
-					frameskip = 5;
-
-				else if (strcmp(var.value, "6") == 0)
-					frameskip = 6;
-
-				else if (strcmp(var.value, "7") == 0)
-					frameskip = 7;
-
-				else if (strcmp(var.value, "8") == 0)
-					frameskip = 8;
-
-				else if (strcmp(var.value, "9") == 0)
-					frameskip = 9;
-					
-				else if (strcmp(var.value, "10") == 0)
-					frameskip = 10;
-
-				else if (strcmp(var.value, "11") == 0)
-					frameskip = 11;
-
-				else if (strcmp(var.value, "auto") == 0)
+				if (strcmp(var.value, "auto") == 0)
 					frameskip = 12;
 				else if (strcmp(var.value, "auto_aggressive") == 0)
 					frameskip = 13;
 				else if(strcmp(var.value, "auto_max") == 0)
 					frameskip = 14;
 				else
-					frameskip = 0;
+					frameskip = atoi(var.value);
 
 			 if (frameskip != prev_frameskip_type)	retro_set_audio_buff_status_cb();
    }
