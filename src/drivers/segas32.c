@@ -2580,7 +2580,7 @@ static MACHINE_DRIVER_START( multi32_base )
 	/* video hardware */
 	MDRV_VIDEO_ATTRIBUTES(VIDEO_TYPE_RASTER | VIDEO_NEEDS_6BITS_PER_GUN | VIDEO_RGB_DIRECT )
 	MDRV_SCREEN_SIZE(52*8*2, 28*8)
-	MDRV_VISIBLE_AREA(0*8, 52*8-1, 0*8, 28*8-1)
+	MDRV_VISIBLE_AREA(0*8, 52*8*2-1, 0*8, 28*8-1)
 
 	MDRV_GFXDECODE(gfxdecodeinfo)
 	MDRV_PALETTE_LENGTH(32768)
@@ -3683,4 +3683,4 @@ GAMEX(1992, orunners, 0,        multi32,  orunners, 0,        ROT0, "Sega", "Out
 GAMEX(1994, harddunk, 0,        multi32,  harddunk, 0,        ROT0, "Sega", "Hard Dunk (World)", GAME_IMPERFECT_GRAPHICS )
 GAMEX(1994, harddunj, harddunk, multi32,  harddunk, 0,        ROT0, "Sega", "Hard Dunk (Japan)", GAME_IMPERFECT_GRAPHICS )
 GAMEX(1992, scross,   0,        scross,   scross,   0,        ROT0, "Sega", "Stadium Cross (World)", GAME_IMPERFECT_GRAPHICS )
-GAMEX(1992, titlef,   0,        multi32,  titlef,   titlef,   ROT0, "Sega", "Title Fight (World)", GAME_IMPERFECT_GRAPHICS )
+GAMEX(1992, titlef,   0,        scross,   titlef,   titlef,   ROT0, "Sega", "Title Fight (World)", GAME_IMPERFECT_GRAPHICS )
