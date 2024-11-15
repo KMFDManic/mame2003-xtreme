@@ -448,7 +448,7 @@ void system32_set_vblank(int state)
  *
  *************************************/
 
-INLINE UINT16 xBBBBBGGGGGRRRRR_to_xBGRBBBBGGGGRRRR(UINT16 value)
+static INLINE UINT16 xBBBBBGGGGGRRRRR_to_xBGRBBBBGGGGRRRR(UINT16 value)
 {
 	int r = (value >> 0) & 0x1f;
 	int g = (value >> 5) & 0x1f;
@@ -459,7 +459,7 @@ INLINE UINT16 xBBBBBGGGGGRRRRR_to_xBGRBBBBGGGGRRRR(UINT16 value)
 }
 
 
-INLINE UINT16 xBGRBBBBGGGGRRRR_to_xBBBBBGGGGGRRRRR(UINT16 value)
+static INLINE UINT16 xBGRBBBBGGGGRRRR_to_xBBBBBGGGGGRRRRR(UINT16 value)
 {
 	int r = ((value >> 12) & 0x01) | ((value << 1) & 0x1e);
 	int g = ((value >> 13) & 0x01) | ((value >> 3) & 0x1e);
@@ -468,7 +468,7 @@ INLINE UINT16 xBGRBBBBGGGGRRRR_to_xBBBBBGGGGGRRRRR(UINT16 value)
 }
 
 
-INLINE void update_color(int offset, UINT16 data)
+static INLINE void update_color(int offset, UINT16 data)
 {
 	/* note that since we use this RAM directly, we don't technically need */
 	/* to call palette_set_color() at all; however, it does give us that */
@@ -479,7 +479,7 @@ INLINE void update_color(int offset, UINT16 data)
 }
 
 
-INLINE UINT16 common_paletteram_r(int which, offs_t offset)
+static INLINE UINT16 common_paletteram_r(int which, offs_t offset)
 {
 	int convert;
 
@@ -999,7 +999,7 @@ static void compute_tilemap_flips(int bgnum, int *flipx, int *flipy)
  *
  *************************************/
 
-INLINE void get_tilemaps(int bgnum, struct tilemap **tilemaps)
+static INLINE void get_tilemaps(int bgnum, struct tilemap **tilemaps)
 {
 	int tilebank, page;
 
@@ -2084,7 +2084,7 @@ static void sprite_render_list(void)
  *
  *************************************/
 
-INLINE UINT8 compute_color_offsets(int which, int layerbit, int layerflag)
+static INLINE UINT8 compute_color_offsets(int which, int layerbit, int layerflag)
 {
 	int mode = ((mixer_control[which][0x3e/2] & 0x8000) >> 14) | (layerbit & 1);
 
@@ -2104,7 +2104,7 @@ INLINE UINT8 compute_color_offsets(int which, int layerbit, int layerflag)
 	}
 }
 
-INLINE UINT16 compute_sprite_blend(UINT8 encoding)
+static INLINE UINT16 compute_sprite_blend(UINT8 encoding)
 {
 	int value = encoding & 0xf;
 
@@ -2125,7 +2125,7 @@ INLINE UINT16 compute_sprite_blend(UINT8 encoding)
 	}
 }
 
-INLINE UINT16 *get_layer_scanline(int layer, int scanline)
+static INLINE UINT16 *get_layer_scanline(int layer, int scanline)
 {
 	if (layer_data[layer].transparent[scanline])
 		return (layer == MIXER_LAYER_SPRITES) ? solid_ffff : solid_0000;
@@ -2738,13 +2738,10 @@ VIDEO_UPDATE( multi32 )
 	extern struct osd_create_params video_config;
 	struct rectangle clipleft, clipright;
 	UINT8 enablemask;
+	int res;
 	int restore = system32_videoram[0x1ff02/2], remix = -1;
 
-/*
-   MAME2003-PLUS uses a single screen to draw to where as current mame
-   uses dedicated left and right screens. We force an aspect ratio change
-   to maintain the correct 4:3 ratio across single or dual monitors.
-*/
+	/* configure monitors */
 	int monitor_setting = readinputport(0xf);
 	int monitor_display_start = (monitor_setting == 3) ? 0 : monitor_setting - 1;
 	int monitor_display_width = (monitor_setting == 3) ? 2 : monitor_setting;
@@ -2752,26 +2749,14 @@ VIDEO_UPDATE( multi32 )
 	    video_config.aspect_y = 3;
 
 	/* update the visible area */
-	if (system32_videoram[0x1ff00/2] & 0x8000)
-	{
-		set_visible_area(52*monitor_display_start*8, 52*8*monitor_display_width-1, 0, 28*8-1);
-		clipleft.min_x = 0;
-		clipleft.max_x = 52*8-1;
-		clipright.min_x = 52*8;
-		clipright.max_x = 52*2*8-1;
-	}
-	else
-	{
-		set_visible_area(40*monitor_display_start*8, 40*8*monitor_display_width-1, 0, 28*8-1);
-		clipleft.min_x = 0;
-		clipleft.max_x = 40*8-1;
-		clipright.min_x = 40*8;
-		clipright.max_x = 40*2*8-1;
-	}
-	clipleft.min_y = clipright.min_y = cliprect->min_y;
-	clipleft.max_y = clipright.max_y = cliprect->max_y;
+	res = (system32_videoram[0x1ff00/2] & 0x8000) ? 52*8 : 40*8;
+	    set_visible_area(res*monitor_display_start, res*monitor_display_width-1, 0, 28*8-1);
+	    clipleft.min_x = 0;                 clipright.min_x = res;
+	    clipleft.max_x = res-1;             clipright.max_x = res*2-1;
+	    clipleft.min_y = cliprect->min_y;   clipright.min_y = cliprect->min_y;
+	    clipleft.max_y = cliprect->max_y;   clipright.max_y = cliprect->max_y;
 
-	/* if the display is off, punt */
+	/* if the displays are off, punt */
 	if (!system32_displayenable[0] && !system32_displayenable[1])
 	{
 		fillbitmap(bitmap, get_black_pen(), cliprect);
@@ -2789,6 +2774,7 @@ VIDEO_UPDATE( multi32 )
 					remix = titlef_mixer[i][2];
 				break;
 			}
+
 		{ /* patch ending credits */
 			UINT16 *src1 = get_layer_scanline(MIXER_LAYER_NBG0, 0);
 			UINT16 *src2 = get_layer_scanline(MIXER_LAYER_NBG1, 0);
