@@ -1076,16 +1076,10 @@ static void update_tilemap_zoom(struct layer_info *layer, const struct rectangle
 	srcy = (system32_videoram[0x1ff16/2 + 4 * bgnum] & 0x1ff) << 20;
 	srcy += (system32_videoram[0x1ff14/2 + 4 * bgnum] & 0xfe00) << 4;
 
-	/* then account for the destination center coordinates */
-	if (harddunk_kludge) /* attract mode when the players are presented */
-		srcx_start -= SEXT(system32_videoram[0x1ff30/2 + 5 * bgnum] & 0x1ff, 10) * srcxstep;
-	else
-		srcx_start -= SEXT(system32_videoram[0x1ff30/2 + 5 * bgnum], 10) * srcxstep;
-	srcy -= SEXT(system32_videoram[0x1ff32/2 + 5 * bgnum], 9) * srcystep;
-
-	/* finally, account for destination top,left coordinates */
-	srcx_start += cliprect->min_x * srcxstep;
-	srcy += cliprect->min_y * srcystep;
+/* then account for the destination center coordinates */
+if (harddunk_kludge) /* attract mode when the players are presented */
+	srcx_start -= SEXT(system32_videoram[0x1ff30/2 + 5 * bgnum], 10) * srcxstep;
+srcy -= SEXT(system32_videoram[0x1ff32/2 + 2 * bgnum], 10) * srcystep;
 
 	/* if we're flipped, simply adjust the start/step parameters */
 	if (flipy)
