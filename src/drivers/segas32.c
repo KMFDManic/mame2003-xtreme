@@ -3647,7 +3647,7 @@ static DRIVER_INIT( scross )
 
 static DRIVER_INIT( harddunk )
 {
-	harddunk_kludge = true;
+	harddunk_kludge = false; /* disabled to speedup Xtreme */
 }
 
 /* this one is pretty much ok since it doesn't use backgrounds tilemaps */
