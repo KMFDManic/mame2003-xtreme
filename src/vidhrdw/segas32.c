@@ -15,9 +15,8 @@
 	  The theory is that opaque pens should go above background layer and
 	  behind everything else like System 24.
 
-	- radr uses $1A0 as the X center for zooming; however, this
-	  contradicts the theory that bit 9 is a sign bit. For now, the code
-	  assumes that the X center has 10 bits of resolution.
+	- Verify that X/Y center has 10 bits of resolution when zooming and
+	  9 when not.
 
 	- In svf (the field) and radr (on the field), they use tilemap-specific
 	  flip in conjunction with rowscroll AND rowselect. According to Charles,
@@ -30,10 +29,6 @@
 	  Game actually uses the "rowscroll/rowselect" tables for a line window
 	  effect to draw the boxing ring over NBG0.
 	  Same deal for ga2 when in stage 2 cave a wall torch is lit.
-
-	- harddunk draws solid white in attract mode when the players are presented.
-	  NBG0 is set with $200 on center X/Y, same as above or perhaps missing
-	  tilemap wraparound?
 
 	- Wrong priority cases (parenthesis for the level setup):
 	  dbzvrvs: draws text layer ($e) behind sprite-based gauges ($f).
@@ -278,7 +273,6 @@ UINT16 system32_tilebank_external;
 
 bool opaquey_hack  = false; /* dink */
 bool titlef_kludge = false;
-bool harddunk_kludge = false;
 
 
 
@@ -449,7 +443,7 @@ void system32_set_vblank(int state)
  *
  *************************************/
 
-INLINE UINT16 xBBBBBGGGGGRRRRR_to_xBGRBBBBGGGGRRRR(UINT16 value)
+static INLINE UINT16 xBBBBBGGGGGRRRRR_to_xBGRBBBBGGGGRRRR(UINT16 value)
 {
 	int r = (value >> 0) & 0x1f;
 	int g = (value >> 5) & 0x1f;
@@ -460,7 +454,7 @@ INLINE UINT16 xBBBBBGGGGGRRRRR_to_xBGRBBBBGGGGRRRR(UINT16 value)
 }
 
 
-INLINE UINT16 xBGRBBBBGGGGRRRR_to_xBBBBBGGGGGRRRRR(UINT16 value)
+static INLINE UINT16 xBGRBBBBGGGGRRRR_to_xBBBBBGGGGGRRRRR(UINT16 value)
 {
 	int r = ((value >> 12) & 0x01) | ((value << 1) & 0x1e);
 	int g = ((value >> 13) & 0x01) | ((value >> 3) & 0x1e);
@@ -469,7 +463,7 @@ INLINE UINT16 xBGRBBBBGGGGRRRR_to_xBBBBBGGGGGRRRRR(UINT16 value)
 }
 
 
-INLINE void update_color(int offset, UINT16 data)
+static INLINE void update_color(int offset, UINT16 data)
 {
 	/* note that since we use this RAM directly, we don't technically need */
 	/* to call palette_set_color() at all; however, it does give us that */
@@ -480,7 +474,7 @@ INLINE void update_color(int offset, UINT16 data)
 }
 
 
-INLINE UINT16 common_paletteram_r(int which, offs_t offset)
+static INLINE UINT16 common_paletteram_r(int which, offs_t offset)
 {
 	int convert;
 
@@ -1000,7 +994,7 @@ static void compute_tilemap_flips(int bgnum, int *flipx, int *flipy)
  *
  *************************************/
 
-INLINE void get_tilemaps(int bgnum, struct tilemap **tilemaps)
+static INLINE void get_tilemaps(int bgnum, struct tilemap **tilemaps)
 {
 	int tilebank, page;
 
@@ -1077,11 +1071,8 @@ static void update_tilemap_zoom(struct layer_info *layer, const struct rectangle
 	srcy += (system32_videoram[0x1ff14/2 + 4 * bgnum] & 0xfe00) << 4;
 
 	/* then account for the destination center coordinates */
-	if (harddunk_kludge) /* attract mode when the players are presented */
-		srcx_start -= SEXT(system32_videoram[0x1ff30/2 + 2 * bgnum] & 0x1ff, 10) * srcxstep;
-	else
-		srcx_start -= SEXT(system32_videoram[0x1ff30/2 + 2 * bgnum], 10) * srcxstep;
-	srcy -= SEXT(system32_videoram[0x1ff32/2 + 2 * bgnum], 9) * srcystep;
+	srcx_start -= SEXT(system32_videoram[0x1ff30/2 + 2 * bgnum], (dstxstep != 0x200)?10:9) * srcxstep;
+	srcy -= SEXT(system32_videoram[0x1ff32/2 + 2 * bgnum], (dstystep != 0x200)?10:9) * srcystep;
 
 	/* finally, account for destination top,left coordinates */
 	srcx_start += cliprect->min_x * srcxstep;
@@ -2082,7 +2073,7 @@ static void sprite_render_list(void)
  *
  *************************************/
 
-INLINE UINT8 compute_color_offsets(int which, int layerbit, int layerflag)
+static INLINE UINT8 compute_color_offsets(int which, int layerbit, int layerflag)
 {
 	int mode = ((mixer_control[which][0x3e/2] & 0x8000) >> 14) | (layerbit & 1);
 
@@ -2102,7 +2093,7 @@ INLINE UINT8 compute_color_offsets(int which, int layerbit, int layerflag)
 	}
 }
 
-INLINE UINT16 compute_sprite_blend(UINT8 encoding)
+static INLINE UINT16 compute_sprite_blend(UINT8 encoding)
 {
 	int value = encoding & 0xf;
 
@@ -2123,7 +2114,7 @@ INLINE UINT16 compute_sprite_blend(UINT8 encoding)
 	}
 }
 
-INLINE UINT16 *get_layer_scanline(int layer, int scanline)
+static INLINE UINT16 *get_layer_scanline(int layer, int scanline)
 {
 	if (layer_data[layer].transparent[scanline])
 		return (layer == MIXER_LAYER_SPRITES) ? solid_ffff : solid_0000;
