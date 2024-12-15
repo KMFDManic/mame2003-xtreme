@@ -364,7 +364,7 @@ Stephh's notes (based on some tests) :
 
 #define MASTER_CLOCK		33829867.5309
 #define RFC_CLOCK		50000000
-#define MULTI32_CLOCK		40000000
+#define MULTI32_CLOCK		41548675.309
 
 #define TIMER_0_CLOCK		((MASTER_CLOCK/2)/2048)	/* confirmed */
 #define TIMER_1_CLOCK		((RFC_CLOCK/16)/256)	/* confirmed */
