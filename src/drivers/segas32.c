@@ -362,9 +362,9 @@ Stephh's notes (based on some tests) :
  *
  *************************************/
 
-#define MASTER_CLOCK		32215900
-#define RFC_CLOCK			50000000
-#define MULTI32_CLOCK		40000000
+#define MASTER_CLOCK		33829867.5309
+#define RFC_CLOCK		50000000
+#define MULTI32_CLOCK		41548675.309
 
 #define TIMER_0_CLOCK		((MASTER_CLOCK/2)/2048)	/* confirmed */
 #define TIMER_1_CLOCK		((RFC_CLOCK/16)/256)	/* confirmed */
@@ -2481,7 +2481,7 @@ struct RF5C68interface sys32_rf5c68_interface =
 struct YM2612interface sys32_ym3438_interface =
 {
 	2,		/* 2 chips */
-	MASTER_CLOCK/4,	/* verified on real PCB */
+	MASTER_CLOCK/4.25,
 	{ 40,40 },
 	{ 0 },	{ 0 },	{ 0 },	{ 0 },
 	{ ym3438_irq_handler }
@@ -2490,7 +2490,7 @@ struct YM2612interface sys32_ym3438_interface =
 struct YM2612interface multi32_ym3438_interface =
 {
 	1,
-	MASTER_CLOCK/4,
+	MASTER_CLOCK/4.25,
 	{ 60,60 },
 	{ 0 },	{ 0 },	{ 0 },	{ 0 },
 	{ ym3438_irq_handler }
@@ -2499,7 +2499,7 @@ struct YM2612interface multi32_ym3438_interface =
 static struct MultiPCM_interface multi32_multipcm_interface =
 {
 	1,		/* 1 chip*/
-	{ MASTER_CLOCK/4 },	/* clock*/
+	{ MASTER_CLOCK/4.25 },	/* clock*/
 	{ REGION_SOUND1 },	/* sample region*/
 	{ YM3012_VOL(60, MIXER_PAN_CENTER, 60, MIXER_PAN_CENTER) }
 };
@@ -2539,14 +2539,14 @@ static MACHINE_DRIVER_START( system32 )
 
 	/* basic machine hardware */
 #if defined(GEKKO)
-	MDRV_CPU_ADD(V60, MASTER_CLOCK/2/16) /* hack speed */
+	MDRV_CPU_ADD(V60, MASTER_CLOCK/3) /* hack speed */
 #else
-	MDRV_CPU_ADD(V60, MASTER_CLOCK/2)
+	MDRV_CPU_ADD(V60, MASTER_CLOCK/3)
 #endif
 	MDRV_CPU_MEMORY(system32_readmem,system32_writemem)
 	MDRV_CPU_VBLANK_INT(start_of_vblank_int,1)
 
-	MDRV_CPU_ADD_TAG("sound", Z80, MASTER_CLOCK/4)
+	MDRV_CPU_ADD_TAG("sound", Z80, MASTER_CLOCK/4.25)
 	MDRV_CPU_FLAGS(CPU_AUDIO_CPU)
 	MDRV_CPU_MEMORY(system32_sound_map_r, system32_sound_map_w)
 	MDRV_CPU_PORTS(system32_sound_portmap_r, system32_sound_portmap_w)
@@ -2586,11 +2586,11 @@ MACHINE_DRIVER_END
 static MACHINE_DRIVER_START( multi32 )
 
 	/* basic machine hardware */
-	MDRV_CPU_ADD(V60, MULTI32_CLOCK/2)
+	MDRV_CPU_ADD(V60, MULTI32_CLOCK/3)
 	MDRV_CPU_MEMORY(multi32_readmem,multi32_writemem)
 	MDRV_CPU_VBLANK_INT(start_of_vblank_int,1)
 
-	MDRV_CPU_ADD(Z80, MASTER_CLOCK/4)
+	MDRV_CPU_ADD(Z80, MASTER_CLOCK/4.25)
 	MDRV_CPU_MEMORY(multi32_sound_map_r, multi32_sound_map_w)
 	MDRV_CPU_PORTS(multi32_sound_portmap_r, multi32_sound_portmap_w)
 
