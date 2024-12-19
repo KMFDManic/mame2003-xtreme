@@ -444,7 +444,7 @@ void system32_set_vblank(int state)
  *
  *************************************/
 
-static INLINE UINT16 xBBBBBGGGGGRRRRR_to_xBGRBBBBGGGGRRRR(UINT16 value)
+INLINE UINT16 xBBBBBGGGGGRRRRR_to_xBGRBBBBGGGGRRRR(UINT16 value)
 {
 	int r = (value >> 0) & 0x1f;
 	int g = (value >> 5) & 0x1f;
@@ -455,7 +455,7 @@ static INLINE UINT16 xBBBBBGGGGGRRRRR_to_xBGRBBBBGGGGRRRR(UINT16 value)
 }
 
 
-static INLINE UINT16 xBGRBBBBGGGGRRRR_to_xBBBBBGGGGGRRRRR(UINT16 value)
+INLINE UINT16 xBGRBBBBGGGGRRRR_to_xBBBBBGGGGGRRRRR(UINT16 value)
 {
 	int r = ((value >> 12) & 0x01) | ((value << 1) & 0x1e);
 	int g = ((value >> 13) & 0x01) | ((value >> 3) & 0x1e);
@@ -464,7 +464,7 @@ static INLINE UINT16 xBGRBBBBGGGGRRRR_to_xBBBBBGGGGGRRRRR(UINT16 value)
 }
 
 
-static INLINE void update_color(int offset, UINT16 data)
+INLINE void update_color(int offset, UINT16 data)
 {
 	/* note that since we use this RAM directly, we don't technically need */
 	/* to call palette_set_color() at all; however, it does give us that */
@@ -475,7 +475,7 @@ static INLINE void update_color(int offset, UINT16 data)
 }
 
 
-static INLINE UINT16 common_paletteram_r(int which, offs_t offset)
+INLINE UINT16 common_paletteram_r(int which, offs_t offset)
 {
 	int convert;
 
@@ -995,7 +995,7 @@ static void compute_tilemap_flips(int bgnum, int *flipx, int *flipy)
  *
  *************************************/
 
-static INLINE void get_tilemaps(int bgnum, struct tilemap **tilemaps)
+INLINE void get_tilemaps(int bgnum, struct tilemap **tilemaps)
 {
 	int tilebank, page;
 
@@ -2074,7 +2074,7 @@ static void sprite_render_list(void)
  *
  *************************************/
 
-static INLINE UINT8 compute_color_offsets(int which, int layerbit, int layerflag)
+INLINE UINT8 compute_color_offsets(int which, int layerbit, int layerflag)
 {
 	int mode = ((mixer_control[which][0x3e/2] & 0x8000) >> 14) | (layerbit & 1);
 
@@ -2094,7 +2094,7 @@ static INLINE UINT8 compute_color_offsets(int which, int layerbit, int layerflag
 	}
 }
 
-static INLINE UINT16 compute_sprite_blend(UINT8 encoding)
+INLINE UINT16 compute_sprite_blend(UINT8 encoding)
 {
 	int value = encoding & 0xf;
 
@@ -2115,7 +2115,7 @@ static INLINE UINT16 compute_sprite_blend(UINT8 encoding)
 	}
 }
 
-static INLINE UINT16 *get_layer_scanline(int layer, int scanline)
+INLINE UINT16 *get_layer_scanline(int layer, int scanline)
 {
 	if (layer_data[layer].transparent[scanline])
 		return (layer == MIXER_LAYER_SPRITES) ? solid_ffff : solid_0000;
