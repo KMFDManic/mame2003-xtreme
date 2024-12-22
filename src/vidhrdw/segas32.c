@@ -444,7 +444,7 @@ void system32_set_vblank(int state)
  *
  *************************************/
 
-INLINE UINT16 xBBBBBGGGGGRRRRR_to_xBGRBBBBGGGGRRRR(UINT16 value)
+static INLINE UINT16 xBBBBBGGGGGRRRRR_to_xBGRBBBBGGGGRRRR(UINT16 value)
 {
 	int r = (value >> 0) & 0x1f;
 	int g = (value >> 5) & 0x1f;
@@ -455,7 +455,7 @@ INLINE UINT16 xBBBBBGGGGGRRRRR_to_xBGRBBBBGGGGRRRR(UINT16 value)
 }
 
 
-INLINE UINT16 xBGRBBBBGGGGRRRR_to_xBBBBBGGGGGRRRRR(UINT16 value)
+static INLINE UINT16 xBGRBBBBGGGGRRRR_to_xBBBBBGGGGGRRRRR(UINT16 value)
 {
 	int r = ((value >> 12) & 0x01) | ((value << 1) & 0x1e);
 	int g = ((value >> 13) & 0x01) | ((value >> 3) & 0x1e);
@@ -464,7 +464,7 @@ INLINE UINT16 xBGRBBBBGGGGRRRR_to_xBBBBBGGGGGRRRRR(UINT16 value)
 }
 
 
-INLINE void update_color(int offset, UINT16 data)
+static INLINE void update_color(int offset, UINT16 data)
 {
 	/* note that since we use this RAM directly, we don't technically need */
 	/* to call palette_set_color() at all; however, it does give us that */
@@ -475,7 +475,7 @@ INLINE void update_color(int offset, UINT16 data)
 }
 
 
-INLINE UINT16 common_paletteram_r(int which, offs_t offset)
+static INLINE UINT16 common_paletteram_r(int which, offs_t offset)
 {
 	int convert;
 
@@ -995,7 +995,7 @@ static void compute_tilemap_flips(int bgnum, int *flipx, int *flipy)
  *
  *************************************/
 
-INLINE void get_tilemaps(int bgnum, struct tilemap **tilemaps)
+static INLINE void get_tilemaps(int bgnum, struct tilemap **tilemaps)
 {
 	int tilebank, page;
 
@@ -1014,6 +1014,28 @@ INLINE void get_tilemaps(int bgnum, struct tilemap **tilemaps)
 	tilemaps[2] = find_cache_entry(page, tilebank);
 	page = (system32_videoram[0x1ff40/2 + 2 * bgnum + 1] >> 8) & 0x7f;
 	tilemaps[3] = find_cache_entry(page, tilebank);
+}
+
+
+static int patch_enable(int in, int bgnum)
+{
+	if (!titlef_kludge) return in;
+
+	switch (system32_videoram[0x1ff02/2])
+	{
+		case 0x7be0:
+		case 0x52a0:
+		case 0x2960:
+			return 0;
+
+		case 0x5be0:
+			return (bgnum%2 == 0) ? in : 0;
+
+		case 0x3be0:
+			return (bgnum%2 == 1) ? in : 0;
+
+		default: return in;
+	}
 }
 
 
@@ -1043,7 +1065,7 @@ static void update_tilemap_zoom(struct layer_info *layer, const struct rectangle
 	compute_tilemap_flips(bgnum, &flipx, &flipy);
 
 	/* determine the clipping */
-	clipenable = (system32_videoram[0x1ff02/2] >> (11 + bgnum)) & 1;
+	clipenable = patch_enable((system32_videoram[0x1ff02/2] >> (11 + bgnum)) & 1, bgnum);
 	clipout = (system32_videoram[0x1ff02/2] >> (6 + bgnum)) & 1;
 	clips = (system32_videoram[0x1ff06/2] >> (4 * bgnum)) & 0x0f;
 	clipdraw_start = compute_clipping_extents(clipenable, clipout, clips, cliprect, &clip_extents);
@@ -1202,7 +1224,7 @@ static void update_tilemap_rowscroll(struct layer_info *layer, const struct rect
 	compute_tilemap_flips(bgnum, &flipx, &flipy);
 
 	/* determine the clipping */
-	clipenable = (system32_videoram[0x1ff02/2] >> (11 + bgnum)) & 1;
+	clipenable = patch_enable((system32_videoram[0x1ff02/2] >> (11 + bgnum)) & 1, bgnum);
 	clipout = (system32_videoram[0x1ff02/2] >> (6 + bgnum)) & 1;
 	clips = (system32_videoram[0x1ff06/2] >> (4 * bgnum)) & 0x0f;
 	clipdraw_start = compute_clipping_extents(clipenable, clipout, clips, cliprect, &clip_extents);
@@ -1632,6 +1654,16 @@ static UINT8 update_tilemaps(const struct rectangle *cliprect)
 	int enable3 = !(system32_videoram[0x1ff02/2] & 0x0008) && !(system32_videoram[0x1ff8e/2] & 0x0010) && !(system32_videoram[0x1ff00/2] & 0x2000);
 	int enablet = !(system32_videoram[0x1ff02/2] & 0x0010) && !(system32_videoram[0x1ff8e/2] & 0x0001);
 	int enableb = !(system32_videoram[0x1ff02/2] & 0x0020) && !(system32_videoram[0x1ff8e/2] & 0x0020);
+
+	if (titlef_kludge) /* patch ending credits */
+	{
+		UINT16 *src1 = (UINT16 *)layer_data[MIXER_LAYER_NBG0].bitmap->line[0];
+		UINT16 *src2 = (UINT16 *)layer_data[MIXER_LAYER_NBG1].bitmap->line[0];
+		if (src1[0]==0x1902 && src1[8]==0x1901 && src1[16]==0x1902 && src1[24]==0x1901)
+			enable2 = 0;
+		if (src2[0]==0x1902 && src2[8]==0x1901 && src2[16]==0x1902 && src2[24]==0x1901)
+			enable3 = 0;
+	}
 
 	/* update any tilemaps */
 	if (enable0)
@@ -2074,7 +2106,7 @@ static void sprite_render_list(void)
  *
  *************************************/
 
-INLINE UINT8 compute_color_offsets(int which, int layerbit, int layerflag)
+static INLINE UINT8 compute_color_offsets(int which, int layerbit, int layerflag)
 {
 	int mode = ((mixer_control[which][0x3e/2] & 0x8000) >> 14) | (layerbit & 1);
 
@@ -2094,7 +2126,7 @@ INLINE UINT8 compute_color_offsets(int which, int layerbit, int layerflag)
 	}
 }
 
-INLINE UINT16 compute_sprite_blend(UINT8 encoding)
+static INLINE UINT16 compute_sprite_blend(UINT8 encoding)
 {
 	int value = encoding & 0xf;
 
@@ -2115,7 +2147,7 @@ INLINE UINT16 compute_sprite_blend(UINT8 encoding)
 	}
 }
 
-INLINE UINT16 *get_layer_scanline(int layer, int scanline)
+static INLINE UINT16 *get_layer_scanline(int layer, int scanline)
 {
 	if (layer_data[layer].transparent[scanline])
 		return (layer == MIXER_LAYER_SPRITES) ? solid_ffff : solid_0000;
@@ -2560,24 +2592,6 @@ VIDEO_UPDATE( system32 )
 	mix_all_layers(0, 0, bitmap, cliprect, enablemask);
 }
 
-static int get_mixer(int screen, int in)
-{
-	switch (in)
-	{
-		case 0x7be0:
-		case 0x52a0:
-		case 0x2960:
-			return 0;
-
-		case 0x5be0:
-			return (screen == 1) ? in : 0;
-
-		case 0x3be0:
-			return (screen == 2) ? in : 0;
-
-		default: return in;
-	}
-}
 
 VIDEO_UPDATE( multi32 )
 {
@@ -2585,7 +2599,6 @@ VIDEO_UPDATE( multi32 )
 	struct rectangle clipleft, clipright;
 	UINT8 enablemask;
 	int res;
-	int restore = system32_videoram[0x1ff02/2];
 
 	/* configure monitors */
 	int monitor_setting = readinputport(0xf);
@@ -2609,21 +2622,6 @@ VIDEO_UPDATE( multi32 )
 		return;
 	}
 
-	if (titlef_kludge) /* force background to render */
-	{
-		system32_videoram[0x1ff02/2] = get_mixer(1, restore);
-
-		{	/* patch ending credits */
-			UINT16 *src1 = get_layer_scanline(MIXER_LAYER_NBG0, 0);
-			UINT16 *src2 = get_layer_scanline(MIXER_LAYER_NBG1, 0);
-			if (src1[0]==0x1902 && src1[8]==0x1901 && src1[16]==0x1902 && src1[24]==0x1901)
-				system32_videoram[0x1ff8e/2] = 0x8;
-
-			if (src2[0]==0x1902 && src2[8]==0x1901 && src2[16]==0x1902 && src2[24]==0x1901)
-				system32_videoram[0x1ff8e/2] = (system32_videoram[0x1ff8e/2]==0x8) ? 0x18 : 0x10;
-		}
-	}
-
 	/* update the tilemaps */
 	enablemask = update_tilemaps(&clipleft);
 
@@ -2632,16 +2630,6 @@ VIDEO_UPDATE( multi32 )
 		mix_all_layers(0, 0, bitmap, &clipleft, enablemask);
 	else
 		fillbitmap(bitmap, get_black_pen(), &clipleft);
-
-	if (titlef_kludge)
-	{
-		if (system32_videoram[0x1ff02/2] != get_mixer(2, restore))
-		{
-			system32_videoram[0x1ff02/2] = get_mixer(2, restore);
-			enablemask = update_tilemaps(&clipleft);
-		}
-		system32_videoram[0x1ff02/2] = restore;
-	}
 
 	if (system32_displayenable[1] && monitor_setting != 1) /* speed up - disable offscreen monitor */
 		mix_all_layers(1, clipright.min_x, bitmap, &clipleft, enablemask);
