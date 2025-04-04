@@ -98,7 +98,7 @@ void retro_set_environment(retro_environment_t cb)
 {
    static const struct retro_variable vars[] = {
       { "mame2003-xtreme-amped-turboboost", "TurboBoost; X6|disabled|X1|X2|X3|X4|X5|X6|X7|X8|X9|XX|auto|auto_aggressive|auto_max" },
-      { "mame2003-xtreme-amped-oc", "Reverse OverClock; 99|100|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|123|124|125|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40|41|42|43|44|45|46|47|48|49|50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65|66|67|68|69|70|71|72|73|74|75|76|77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98" },
+      { "mame2003-xtreme-amped-oc", "Reverse OverClock; 100|99|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|123|124|125|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40|41|42|43|44|45|46|47|48|49|50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65|66|67|68|69|70|71|72|73|74|75|76|77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98" },
       { "mame2003-xtreme-amped-dcs-speedhack",
 #if defined(__CELLOS_LV2__) || defined(GEKKO) || defined(_XBOX)
          "MK2/MK3 DCS Speedhack; enabled|disabled"
@@ -331,7 +331,7 @@ static void update_variables(void)
    var.key = "mame2003-xtreme-amped-oc";
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) || var.value)
    {
-      options.oc = ((double) atoi(var.value) / 100);
+      options.oc = ((double) atoi(var.value)  / 100);
 
    }
 
@@ -809,20 +809,15 @@ bool retro_unserialize(const void * data, size_t size)
 	return false;
 }
 
-static float              delta_samples;
-int                       samples_per_frame = 0;
-int                       orig_samples_per_frame =0;
-short*                    samples_buffer;
-short*                    conversion_buffer;
-int                       usestereo = 1;
+static float   delta_samples;
+int            samples_per_frame = 0;
+int            orig_samples_per_frame = 0;
+short*         samples_buffer;
+short*         conversion_buffer;
+int            usestereo = 1;
 
 int osd_start_audio_stream(int stereo)
 {
-    if ( Machine->drv->frames_per_second * 1000 < options.samplerate)
-      Machine->sample_rate=22050;
-
-    else
-      Machine->sample_rate = options.samplerate;
 
   delta_samples = 0.0f;
   usestereo = stereo ? 1 : 0;
@@ -843,19 +838,19 @@ int osd_start_audio_stream(int stereo)
 int osd_update_audio_stream(INT16 *buffer)
 {
 	int i,j;
-	if ( Machine->sample_rate !=0 && buffer )
+	if ( Machine->sample_rate !=0 && buffer)
 	{
-   		memcpy(samples_buffer, buffer, samples_per_frame * (usestereo ? 4 : 2));
+		memcpy(samples_buffer, buffer, samples_per_frame * (usestereo ? 4 : 2));
 		if (usestereo)
 			audio_batch_cb(samples_buffer, samples_per_frame);
 		else
 		{
 			for (i = 0, j = 0; i < samples_per_frame; i++)
-        		{
+			{
 				conversion_buffer[j++] = samples_buffer[i];
 				conversion_buffer[j++] = samples_buffer[i];
-		        }
-         		audio_batch_cb(conversion_buffer,samples_per_frame);
+			}
+			audio_batch_cb(conversion_buffer,samples_per_frame);
 		}
 
 
@@ -871,17 +866,17 @@ int osd_update_audio_stream(INT16 *buffer)
 
 			int integer_delta = (int)delta_samples;
 			if (integer_delta <= 16 )
-                        {
+			{
 				log_cb(RETRO_LOG_DEBUG,"sound: Delta added value %d added to frame\n",integer_delta);
 				samples_per_frame += integer_delta;
 			}
-			else if(integer_delta >= 16) log_cb(RETRO_LOG_INFO, "sound: Delta not added to samples_per_frame too large integer_delta:%d\n", integer_delta);
-			else log_cb(RETRO_LOG_DEBUG,"sound(delta) no contitions met\n");
+			else if(integer_delta >= 16) log_cb(RETRO_LOG_INFO, "sound: Delta not added to samples_per_frame too large integer_delta: %d\n", integer_delta);
+			else log_cb(RETRO_LOG_DEBUG,"sound(delta) no conditions met\n");
 			delta_samples -= integer_delta;
 
 		}
 	}
-        return samples_per_frame;
+	return samples_per_frame;
 }
 
 
