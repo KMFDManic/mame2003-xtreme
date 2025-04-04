@@ -114,6 +114,7 @@ int YM2612_sh_start(const struct MachineSound *msound)
 		{
 			vol[j] = mixed_vol&0xffff;
 			name[j] = buf[j];
+			mixed_vol >>= 16;
 			sprintf(buf[j],"%s #%d Ch%d",sound_name(msound), i, j+1 );
 		}
 		stream[i] = stream_init_multi(YM2612_NUMBUF,
