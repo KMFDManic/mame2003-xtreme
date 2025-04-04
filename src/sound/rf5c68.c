@@ -6,12 +6,6 @@
 #include "rf5c68.h"
 #include <math.h>
 
-static struct RF5C68interface *intf;
-
-enum
-{
-	RF_L_PAN = 0, RF_R_PAN = 1, RF_LR_PAN = 2
-};
 
 #define  NUM_CHANNELS    (8)
 
@@ -29,7 +23,7 @@ struct pcm_channel
 
 struct rf5c68pcm
 {
-	int 		stream;
+	INT16 		stream;
 	struct pcm_channel	chan[NUM_CHANNELS];
 	UINT8				cbank;
 	UINT8				wbank;
@@ -43,11 +37,10 @@ struct rf5c68pcm *chip;
 /*    RF5C68 stream update                      */
 /************************************************/
 
-INLINE int ILimit(int v, int max, int min) { return v > max ? max : (v < min ? min : v); }
-
 static void rf5c68_update( int num, INT16 **buffer, int length )
 {
-	INT16 *left = buffer[0];
+
+	INT16 *left =  buffer[0];
 	INT16 *right = buffer[1];
 	int i, j;
 
@@ -92,19 +85,39 @@ static void rf5c68_update( int num, INT16 **buffer, int length )
 				if (sample & 0x80)
 				{
 					sample &= 0x7f;
-					left[j] +=  ILimit( ((sample * lv) >> 5) /2, 16383,-16384);
-					right[j] += ILimit( ((sample * rv) >> 5) /2, 16383,-16384);
+					left[j] += (sample * lv) >> 6;
+					right[j] += (sample * rv) >> 6;
 				}
 				else
 				{
-					left[j] -=  ILimit( ((sample * lv) >> 5) /2, 16383,-16384);
-					right[j] -= ILimit( ((sample * rv) >> 5) /2, 16383,-16384);
+					left[j] -= (sample * lv) >> 6;
+					right[j] -= (sample * rv) >> 6;
 				}
 			}
 		}
 	}
 
+	/* now clamp and shift the result (output is only 10 bits) */
+	for (j = 0; j < length; j++)
+	{
+		UINT8 output_shift=10;
+		INT32 output_nandmask = (1 << output_shift) - 1;
+		INT32 temp;
 
+		temp = left[j];
+		temp *= 2;
+
+		if (temp > 32767 || temp > 32767 ) temp = 32767;
+		else if (temp < -32768) temp = -32768;
+		buffer[0][j] = temp & ~output_nandmask;
+
+		temp = right[j];
+		temp *= 2;
+
+		if (temp > 32767) temp = 32767;
+		else if (temp < -32768) temp = -32768;
+		buffer[1][j] = temp & ~output_nandmask;
+	}
 }
 
 
@@ -126,26 +139,26 @@ int RF5C68_sh_start( const struct MachineSound *msound )
 	int i;
 
 	if (Machine->sample_rate == 0) return 0;
-	
+
 	chip = auto_malloc(sizeof(*chip));
-	
-	memset(chip, 0, sizeof(*chip));	
+
+	memset(chip, 0, sizeof(*chip));
     /* f1en fix bad sound if set initialized to 0xff fixed in mame0215*/
 	for (i = 0; i < 0x10000; i++)
 		chip->data[i]=0xff;
 
-	intf = inintf;	
-	
+	//intf = inintf;
+
 	name[0] = buf[0];
 	name[1] = buf[1];
 	sprintf( buf[0], "%s Left", sound_name(msound) );
 	sprintf( buf[1], "%s Right", sound_name(msound) );
-	vol[0] = (MIXER_PAN_LEFT<<8)  | (intf->volume&0xff);
-	vol[1] = (MIXER_PAN_RIGHT<<8) | (intf->volume&0xff);
+	vol[0] = inintf->volume&0xff;
+	vol[1] = inintf->volume&0xff;
 
-	chip->stream = stream_init_multi( RF_LR_PAN, name, vol,  intf->clock / 384 , 0, rf5c68_update );
+	chip->stream = stream_init_multi( 2, name, vol,  inintf->clock / 384 , 0, rf5c68_update );
 	if(chip->stream == -1) return 1;
-	
+
 	return 0;
 }
 
