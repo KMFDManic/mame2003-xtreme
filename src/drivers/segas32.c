@@ -2481,8 +2481,9 @@ struct RF5C68interface sys32_rf5c68_interface =
 struct YM2612interface sys32_ym3438_interface =
 {
 	2,		/* 2 chips */
-	MASTER_CLOCK/4.25,
-	{ 40,40 },
+	MASTER_CLOCK/4,	/* verified on real PCB */
+	{ YM3012_VOL(40,MIXER_PAN_LEFT,40,MIXER_PAN_RIGHT),
+	  YM3012_VOL(40,MIXER_PAN_LEFT,40,MIXER_PAN_RIGHT) },
 	{ 0 },	{ 0 },	{ 0 },	{ 0 },
 	{ ym3438_irq_handler }
 };
@@ -2490,8 +2491,9 @@ struct YM2612interface sys32_ym3438_interface =
 struct YM2612interface multi32_ym3438_interface =
 {
 	1,
-	MASTER_CLOCK/4.25,
-	{ 60,60 },
+	MASTER_CLOCK/4,
+	{ YM3012_VOL(40,MIXER_PAN_LEFT,40,MIXER_PAN_RIGHT),
+	  YM3012_VOL(40,MIXER_PAN_LEFT,40,MIXER_PAN_RIGHT) },
 	{ 0 },	{ 0 },	{ 0 },	{ 0 },
 	{ ym3438_irq_handler }
 };
@@ -2499,7 +2501,7 @@ struct YM2612interface multi32_ym3438_interface =
 static struct MultiPCM_interface multi32_multipcm_interface =
 {
 	1,		/* 1 chip*/
-	{ MASTER_CLOCK/4.25 },	/* clock*/
+	{ MASTER_CLOCK/4 },	/* clock*/
 	{ REGION_SOUND1 },	/* sample region*/
 	{ YM3012_VOL(60, MIXER_PAN_CENTER, 60, MIXER_PAN_CENTER) }
 };
