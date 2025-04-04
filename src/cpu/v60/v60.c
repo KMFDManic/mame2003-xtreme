@@ -7,6 +7,7 @@
 #include "osd_cpu.h"
 #include "mamedbg.h"
 #include "state.h"
+#include <math.h>
 
 #include <assert.h>
 #include <stdio.h>
@@ -182,7 +183,7 @@ const char *v60_reg_names[69] = {
 	"R28", "AP", "FP", "SP",
 	"PC", "PSW","Unk","Unk",
 	"ISP", "L0SP", "L1SP", "L2SP",
-	"L3SP", "SBR","TR","SYCW", 
+	"L3SP", "SBR","TR","SYCW",
 	"TKCW", "PIR", "Reserved","Reserved",
 	"Reserved","Reserved","Reserved","PSW2",
 	"ATBR0", "ATLR0", "ATBR1", "ATLR1",
@@ -416,7 +417,7 @@ static void v60_do_irq(int vector)
 	UINT32 tempPSW;
 	UPDATEPSW();
 	tempPSW=PSW;
-	v60WritePSW(PSW|((1<<28)));	
+	v60WritePSW(PSW|((1<<28)));
 	/* Push PC and PSW onto the stack*/
 	SP-=4;
 	MemWrite32(SP, tempPSW);
