@@ -40,53 +40,7 @@ Boulderdash use the same graphics chips but are different pcbs.
 #include "cpu/m6502/m6502.h"
 #include "cpu/h6280/h6280.h"
 #include "dec0.h"
-
-bool	robocop_playing = false;
-bool	robocop_start = false;
-bool	robocop_diddy = false;
-bool	robocop_title_diddy = false;
-bool	robocop_title = false;
-bool	robocop_lastwave = false;
-int		robocop_start_counter = 0;
-
-const char *const robocop_sample_set_names[] =
-{
-	"*robocop",
-	
-	"intro-01",
-	"intro-02",
-	"title-01",
-	"title-02",
-	"opening-01",
-	"opening-02",
-	"main-01",
-	"main-02",
-	"crfield-01",
-	"crfield-02",	
-	"lstbattle-01",
-	"lstbattle02",
-	"boss-01",
-	"boss-02",
-	"bigboss01",
-	"bigboss-02",	
-	"bonus-01",
-	"bonus-02", 
-	"clear-01",
-	"clear-02",
-	"over-01",
-	"over-02",
-	"entry-01",
-	"entry-02",	
-	0
-};
-
-static struct Samplesinterface robocop_samples_set =
-{
-	2,	// 2 channels
-	100, // volume
-	robocop_sample_set_names
-};
-
+#include "ost_samples.h"
 
 data16_t *dec0_ram;
 data8_t *robocop_shared_ram;
@@ -106,196 +60,19 @@ static WRITE16_HANDLER( dec0_control_w )
 			break;
 
 		case 4: /* 6502 sound cpu */
-			if(robocop_playing == true) {
-		        int a = 0;
-		        int o_max_samples = 16;
-		        int sa_left = 0;
-		        int sa_right = 1;
-		        bool sa_loop = 1; // --> 1 == loop, 0 == do not loop.
-                bool sa_play_sample = false;
-		        bool sa_play_original = false;
-		        bool robocop_do_nothing = false;
-		        bool robocop_stop_samples = false;
-		        bool robocop_play_default = false;
-		
-		       if(robocop_start == true) {
-			       sa_play_sample = true;
-			       sa_left = 0;
-			       sa_right = 1;
-			       robocop_start = false;
-			       robocop_diddy = true;
-			       robocop_lastwave = false;
-		        }
-			
-		         switch (data) {	
-				   // Leval start
-			       case 0x30:
-			           robocop_diddy = false;
-				       robocop_title_diddy = false;
-				       robocop_lastwave = false;
-				       sa_play_sample = true;
-				       sa_left = 0;
-				       sa_right = 1;			
-				       break;				
-			       // Title
-			       case 0x31:
-			           robocop_diddy = false;
-				       robocop_title_diddy = false;
-				       robocop_lastwave = false;
-				       sa_play_sample = true;
-				       sa_left = 2;
-				       sa_right = 3;			
-				       break;				
-			       // opening
-			       case 0x32:
-				       robocop_diddy = false;
-				       robocop_title_diddy = false;
-				       robocop_lastwave = false;
-				       sa_play_sample = true;
-				       sa_left = 4;
-				       sa_right = 5;			
-				       break;
-			       //  Main theme
-			       case 0x33:
-                       robocop_diddy = false;
-				       robocop_title_diddy = false;
-				       robocop_lastwave = false;
-				       sa_play_sample = true;
-				       sa_left = 6;
-				       sa_right = 7;	
-                       break;				
-			       // Crime Field BGM 2
-			       case 0x35:
-		               robocop_diddy = false;
-				       robocop_title_diddy = false;
-				       robocop_lastwave = false;
-				       sa_play_sample = true;
-				       sa_left = 8;
-				       sa_right = 9;				
-				       break;
-			        // Last battle BGM 3
-			       case 0x37:
-                       robocop_diddy = false;
-				       robocop_title_diddy = false;
-				       robocop_lastwave = false;
-				       sa_play_sample = true;
-				       sa_left = 10;
-				       sa_right = 11;			
-				       break;
-			       // Boss 1
-			       case 0x38:
-                       robocop_diddy = false;
-				       robocop_title_diddy = false;
-				       robocop_lastwave = false;
-				       sa_play_sample = true;
-				       sa_left = 12;
-				       sa_right = 13;							
-				       break;
-                   //  Last theme. Boss2
-			       case 0x39:
-                       robocop_diddy = false;
-				       robocop_title_diddy = false;
-				       robocop_lastwave = false;
-				       sa_play_sample = true;
-				       sa_left = 14;
-				       sa_right = 15;			
-				       break;			
-			       // Bonus shoot
-			       case 0x3A:
-		               robocop_diddy = false;
-				       robocop_title_diddy = false;
-				       robocop_lastwave = false;
-				       sa_play_sample = true;
-				       sa_left = 16;
-				       sa_right = 17;			
-				       break;	
-                   // Stage Clear
-			       case 0x3B:
-		               robocop_diddy = false;
-				       robocop_title_diddy = false;
-				       robocop_lastwave = false;
-				       sa_play_sample = true;
-				       sa_left = 18;
-				       sa_right = 19;			
-				       break;						   
-			       // Game Over
-			       case 0x3C:	
-			           robocop_diddy = false;
-				       robocop_title_diddy = false;
-				       robocop_lastwave = false;
-				       sa_play_sample = true;
-				       sa_left = 20;
-				       sa_right = 21;			
-				       break;
-			       // Name entry
-			      case 0x3D:
-                  if(robocop_lastwave == false) {
-					  robocop_diddy = false;
-					  robocop_title_diddy = false;
-					  robocop_lastwave = true;
-					  sa_play_sample = true;
-					  sa_left = 22;
-					  sa_right = 23;				
-			      }
-				  else
-					  robocop_do_nothing = true;
-				  break;    
-                  default:
-				  soundlatch_w(0,data & 0xff);
-				  cpu_set_irq_line(1,IRQ_LINE_NMI,PULSE_LINE);
-			 break;
-		}
-
-		if(sa_play_sample == true) {
-			a = 0;
-
-			for(a = 0; a <= o_max_samples; a++) {
-				sample_stop(a);
+			if (ACCESSING_LSB)
+			{
+				if( ost_support_enabled(OST_SUPPORT_ROBOCOP) ) {
+					if(generate_ost_sound( data )) {
+						soundlatch_w(0,data & 0xff);
+						cpu_set_irq_line(1,IRQ_LINE_NMI,PULSE_LINE);
+					}
+				}
+				else {
+					soundlatch_w(0,data & 0xff);
+					cpu_set_irq_line(1,IRQ_LINE_NMI,PULSE_LINE);
+				}
 			}
-
-			sample_start(0, sa_left, sa_loop);
-			sample_start(1, sa_right, sa_loop);
-			
-			// Determine how we should mix these samples together.
-			if(sample_playing(0) == 0 && sample_playing(1) == 1) { // Right channel only. Lets make it play in both speakers.
-				sample_set_stereo_volume(1, 100, 100);
-			}
-			else if(sample_playing(0) == 1 && sample_playing(1) == 0) { // Left channel only. Lets make it play in both speakers.
-				sample_set_stereo_volume(0, 100, 100);
-			}
-			else if(sample_playing(0) == 1 && sample_playing(1) == 1) { // Both left and right channels. Lets make them play in there respective speakers.
-				sample_set_stereo_volume(0, 100, 0);
-				sample_set_stereo_volume(1, 0, 100);
-			}
-			else if(sample_playing(0) == 0 && sample_playing(1) == 0 && robocop_do_nothing == false) { // No sample playing, revert to the default sound.
-				sa_play_original = false;
-				soundlatch_w(0,data & 0xff);
-				cpu_set_irq_line(1,IRQ_LINE_NMI,PULSE_LINE);
-			}
-
-			if(sa_play_original == true)
-				soundlatch_w(0,data & 0xff);
-			    cpu_set_irq_line(1,IRQ_LINE_NMI,PULSE_LINE);
-			}
-            else if(robocop_do_nothing == true) {
-			// --> Do nothing.
-		}
-		else if(robocop_stop_samples == true) {
-			a = 0;
-
-			for(a = 0; a <= o_max_samples; a++) {
-				sample_stop(a);
-			}
-		    
-            // Now play the default sound.
-			soundlatch_w(0,data & 0xff);
-			cpu_set_irq_line(1,IRQ_LINE_NMI,PULSE_LINE);
-		}
-		else if(robocop_play_default == true) {
-			soundlatch_w(0,data & 0xff);
-			cpu_set_irq_line(1,IRQ_LINE_NMI,PULSE_LINE);
-
-		}	
 			break;
 
 		case 6: /* Intel 8751 microcontroller - Bad Dudes, Heavy Barrel, Birdy Try only */
@@ -320,7 +97,6 @@ static WRITE16_HANDLER( dec0_control_w )
 		default:
 			log_cb(RETRO_LOG_DEBUG, LOGPRE "CPU #0 PC %06x: warning - write %02x to unmapped memory address %06x\n",activecpu_get_pc(),data,0x30c010+(offset<<1));
 			break;
-		;}
 	}
 }
 
@@ -553,7 +329,6 @@ static MEMORY_WRITE_START( dec0_s_writemem )
 	{ 0x0000, 0x05ff, MWA_RAM },
 	{ 0x0800, 0x0801, YM2203_w },
 	{ 0x1000, 0x1001, YM3812_w },
-	{ 0x3000, 0x3000, soundlatch_w },
 	{ 0x3800, 0x3800, OKIM6295_data_0_w },
 	{ 0x8000, 0xffff, MWA_ROM },
 MEMORY_END
@@ -681,10 +456,10 @@ INPUT_PORTS_START( hbarrel )
 	PORT_DIPSETTING(    0x00, DEF_STR( On ) )
 
 	PORT_START	/* player 1 12-way rotary control - converted in controls_r() */
-	PORT_ANALOGX( 0xff, 0x00, IPT_DIAL | IPF_REVERSE, 25, 10, 0, 0, KEYCODE_Z, KEYCODE_X, IP_JOY_NONE, IP_JOY_NONE )
+	PORT_ANALOGX( 0xff, 0x0a, IPT_DIAL | IPF_REVERSE, 25, 10, 0, 0, KEYCODE_Z, KEYCODE_X, IP_JOY_NONE, IP_JOY_NONE )
 
 	PORT_START	/* player 2 12-way rotary control - converted in controls_r() */
-	PORT_ANALOGX( 0xff, 0x00, IPT_DIAL | IPF_REVERSE | IPF_PLAYER2, 25, 10, 0, 0, KEYCODE_N, KEYCODE_M, IP_JOY_NONE, IP_JOY_NONE )
+	PORT_ANALOGX( 0xff, 0x0a, IPT_DIAL | IPF_REVERSE | IPF_PLAYER2, 25, 10, 0, 0, KEYCODE_N, KEYCODE_M, IP_JOY_NONE, IP_JOY_NONE )
 INPUT_PORTS_END
 
 INPUT_PORTS_START( baddudes )
@@ -957,10 +732,10 @@ INPUT_PORTS_START( midres )
 	PORT_DIPSETTING(    0x00, DEF_STR( On ) )
 
 	PORT_START	/* player 1 12-way rotary control - converted in controls_r() */
-	PORT_ANALOGX( 0xff, 0x00, IPT_DIAL | IPF_REVERSE, 25, 10, 0, 0, KEYCODE_Z, KEYCODE_X, 0, 0 )
+	PORT_ANALOGX( 0xff, 0x0a, IPT_DIAL | IPF_REVERSE, 25, 10, 0, 0, KEYCODE_Z, KEYCODE_X, 0, 0 )
 
 	PORT_START	/* player 2 12-way rotary control - converted in controls_r() */
-	PORT_ANALOGX( 0xff, 0x00, IPT_DIAL | IPF_REVERSE | IPF_PLAYER2, 25, 10, 0, 0, KEYCODE_N, KEYCODE_M, 0, 0 )
+	PORT_ANALOGX( 0xff, 0x0a, IPT_DIAL | IPF_REVERSE | IPF_PLAYER2, 25, 10, 0, 0, KEYCODE_N, KEYCODE_M, 0, 0 )
 INPUT_PORTS_END
 
 INPUT_PORTS_START( midresbj )
@@ -1009,10 +784,10 @@ INPUT_PORTS_START( midresbj )
 	PORT_DIPSETTING(    0x00, DEF_STR( On ) )
 
 	PORT_START	/* player 1 12-way rotary control - converted in controls_r() */
-	PORT_ANALOGX( 0xff, 0x00, IPT_DIAL | IPF_REVERSE, 25, 10, 0, 0, KEYCODE_Z, KEYCODE_X, IP_JOY_NONE, IP_JOY_NONE )
+	PORT_ANALOGX( 0xff, 0x0a, IPT_DIAL | IPF_REVERSE, 25, 10, 0, 0, KEYCODE_Z, KEYCODE_X, IP_JOY_NONE, IP_JOY_NONE )
 
 	PORT_START	/* player 2 12-way rotary control - converted in controls_r() */
-	PORT_ANALOGX( 0xff, 0x00, IPT_DIAL | IPF_REVERSE | IPF_PLAYER2, 25, 10, 0, 0, KEYCODE_N, KEYCODE_M, IP_JOY_NONE, IP_JOY_NONE )
+	PORT_ANALOGX( 0xff, 0x0a, IPT_DIAL | IPF_REVERSE | IPF_PLAYER2, 25, 10, 0, 0, KEYCODE_N, KEYCODE_M, IP_JOY_NONE, IP_JOY_NONE )
 INPUT_PORTS_END
 
 INPUT_PORTS_START( bouldash )
@@ -1284,9 +1059,8 @@ static MACHINE_DRIVER_START( robocop )
 	MDRV_SOUND_ADD(YM2203, ym2203_interface)
 	MDRV_SOUND_ADD(YM3812, ym3812_interface)
 	MDRV_SOUND_ADD(OKIM6295, okim6295_interface)
-	MDRV_SOUND_ADD(SAMPLES, robocop_samples_set)
-	robocop_playing = true;
-	robocop_start = 0;
+
+	MDRV_INSTALL_OST_SUPPORT(OST_SUPPORT_ROBOCOP)
 MACHINE_DRIVER_END
 
 static MACHINE_DRIVER_START( robocopb )
@@ -2346,7 +2120,7 @@ ROM_START( midresbj )
 	ROM_REGION( 0x10000, REGION_CPU2, 0 )    /* 6502 sound */
 	ROM_LOAD( "15",         0x0000, 0x10000, CRC(99d47166) SHA1(a9a1adfe47be8dd3e4d6f8c783447e09be1747b2) )
 
-	
+
 	ROM_REGION( 0x20000,  REGION_GFX1, ROMREGION_DISPOSE ) /* chars */
 	ROM_LOAD( "23",             0x08000, 0x08000, CRC(d75aba06) SHA1(cb3b969db3dd8e0c5c3729482f7461cde3a961f3) )
 	ROM_CONTINUE(                   0x00000, 0x08000 )  /* the two halves are swapped */

@@ -219,42 +219,7 @@ Credits (in alphabetical order)
 #include "vidhrdw/generic.h"
 #include "cpu/z80/z80.h"
 #include "snk.h"
-
-bool	ikari_playing = false;
-bool	ikari_start = false;
-bool	ikari_diddy = false;
-bool	ikari_title_diddy = false;
-bool	ikari_title = false;
-bool    ikari_lastwave = false;
-int		ikari_start_counter = 0;
-
-const char *const ikari_sample_set_names[] =
-{
-    "*ikari",
-	"title-01",
-	"title-02",
-//	"credit-01",
-//	"credit-02",	
-	"landing-01",
-	"landing-02",
-	"theme-01",
-	"theme-02",		
-	"gate-01",
-	"gate-02",
-	"victory-01",
-	"victory-02",
-	"glory-01",
-	"glory-02",
-	0
-};
-
-static struct Samplesinterface ikari_samples_set =
-{
-	2,	// 2 channels
-	100, // volume
-	ikari_sample_set_names
-};
-
+#include "ost_samples.h"
 
 /*********************************************************************/
 /* Variables and Interrupt Handlers Common to All SNK Triple Z80 Games*/
@@ -421,18 +386,43 @@ static int snk_rot12( int which ){
 	int value = readinputport(which+1);
 	int joydir = value>>4;
 	static int old_joydir[2];
+	static int old_dial_select[2];
 	static int dial_select[2];
 
-	int delta = (joydir - old_joydir[which])&0xf;
-	old_joydir[which] = joydir;
-
-	if( delta<=7 && delta>=1 ){
-		if( dial_select[which]==12 ) dial_select[which] = 0;
-		else dial_select[which]++;
+	/* added to compensate for Guerilla War bug fix noted above.
+	** When dial_select is used to point to invalid 0xf0 (when set to 6),
+	** in the frame after dial select was set to 6,
+	** move to the next valid setting in the rotation
+	** the character was supposed to rotate to, 5 or 7
+	** which is used to point to 0x50 or 0x60 in dial_12.
+	*/
+	if ( dial_select[which] == 6 ){
+		if ( old_dial_select[which] < dial_select[which] ){
+			old_dial_select[which] = dial_select[which];
+			dial_select[which]++;
+		}
+		else {
+			old_dial_select[which] = dial_select[which];
+			dial_select[which]--;
+		}
 	}
-	else if( delta > 8 ){
-		if( dial_select[which]==0 ) dial_select[which] = 12;
-		else dial_select[which]--;
+	else {
+		int delta = (joydir - old_joydir[which])&0xf;
+		old_joydir[which] = joydir;
+		if( delta<=7 && delta>=1 ){
+			if( dial_select[which]==12 ) dial_select[which] = 0;
+			else {
+				old_dial_select[which] = dial_select[which];
+				dial_select[which]++;
+			}
+		}
+		else if( delta > 8 ){
+			if( dial_select[which]==0 ) dial_select[which] = 12;
+			else {
+				old_dial_select[which] = dial_select[which];
+				dial_select[which]--;
+			}
+		}
 	}
 
 	return (value&0xf) | dial_12[dial_select[which]];
@@ -481,11 +471,8 @@ static int snk_input_port_r( int which ){
 /*********************************************************************/
 
 static WRITE_HANDLER( snk_sound_register_w ){
-			
-	soundlatch_w( offset, data );		
 	snk_sound_register &= (data>>4);
- }
-
+}
 
 static READ_HANDLER( snk_sound_register_r ){
 	return snk_sound_register;/* | 0x2;  // hack; lets chopper1 play music /*/
@@ -493,8 +480,8 @@ static READ_HANDLER( snk_sound_register_r ){
 
 void snk_sound_callback0_w( int state ){ /* ? */
 	if( state ) snk_sound_register |= 0x01;
-}	
-	
+}
+
 void snk_sound_callback1_w( int state ){ /* ? */
 	if( state ) snk_sound_register |= 0x02;
 }
@@ -529,158 +516,20 @@ static struct YM3812interface ym3812_interface = {
 };
 
 static WRITE_HANDLER( snk_soundlatch_w ){
-	
 	snk_sound_register |= 0x08 | 0x04;
-	
-	if(ikari_playing == true) {
-		int a = 0;
-		int o_max_samples = 7;
-		int sa_left = 0;
-		int sa_right = 1;
-		bool sa_loop = 1; // --> 1 == loop, 0 == do not loop.
-		bool sa_play_sample = false;
-		bool sa_play_original = false;
-		bool ikari_do_nothing = false;
-		bool ikari_stop_samples = false;
-		bool ikari_play_default = false;
-		
-		if(ikari_start == true) {
-			sa_play_sample = true;
-			sa_left = 0;
-			sa_right = 1;
-			ikari_start = false;
-			ikari_diddy = true;
-			ikari_lastwave = false;
-		}
-			
-		switch (data) {	            
-			// Title DEmo
-			case 0x70:
-			    ikari_diddy = false;
-				ikari_title_diddy = false;
-				ikari_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 0;
-				sa_right = 1;			
-				break;			
-			// Credit
-//			case 0x90:
-//				ikari_diddy = false;
-//				ikari_title_diddy = false;
-//				ikari_lastwave = false;
-//				sa_play_sample = true;
-//				sa_left = 2;
-//				sa_right = 3;			
-//				break;	
-            // Force landing
-            case 0xA5:
-			    ikari_diddy = false;
-				ikari_title_diddy = false;
-				ikari_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 4;
-				sa_right = 5;			
-				break;	
-			// Theme of Ikari
-			case 0x41:
-		        ikari_diddy = false;
-				ikari_title_diddy = false;
-				ikari_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 6;
-				sa_right = 7;				
-				break;
-			// Gate
-			case 0x48:
-                ikari_diddy = false;
-				ikari_title_diddy = false;
-				ikari_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 8;
-				sa_right = 9;			
-				break;
-			// Victory
-			case 0x68:
-                ikari_diddy = false;
-				ikari_title_diddy = false;
-				ikari_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 8;
-				sa_right = 9;			
-				break;
-			// Game Over and Glory
-			case 0x60:
-            if(ikari_lastwave == false) {			
-					ikari_diddy = false;
-					ikari_title_diddy = false;
-					ikari_lastwave = false;
-					sa_play_sample = true;
-					sa_left = 10;
-					sa_right = 11;		
-			   }
-				else
-					ikari_do_nothing = true;
-				break;    
-                default:
-				soundlatch_w( offset, data );
-			break;
-		}
 
-		if(sa_play_sample == true) {
-			a = 0;
-
-			for(a = 0; a <= o_max_samples; a++) {
-				sample_stop(a);
-			}
-
-			sample_start(0, sa_left, sa_loop);
-			sample_start(1, sa_right, sa_loop);
-			
-			// Determine how we should mix these samples together.
-			if(sample_playing(0) == 0 && sample_playing(1) == 1) { // Right channel only. Lets make it play in both speakers.
-				sample_set_stereo_volume(1, 100, 100);
-			}
-			else if(sample_playing(0) == 1 && sample_playing(1) == 0) { // Left channel only. Lets make it play in both speakers.
-				sample_set_stereo_volume(0, 100, 100);
-			}
-			else if(sample_playing(0) == 1 && sample_playing(1) == 1) { // Both left and right channels. Lets make them play in there respective speakers.
-				sample_set_stereo_volume(0, 100, 0);
-				sample_set_stereo_volume(1, 0, 100);
-			}
-			else if(sample_playing(0) == 0 && sample_playing(1) == 0 && ikari_do_nothing == false) { // No sample playing, revert to the default sound.
-				sa_play_original = false;
-				soundlatch_w( offset, data );
-			}
-
-			if(sa_play_original == true)
-				soundlatch_w( offset, data );
-		}
-		else if(ikari_do_nothing == true) {
-			// --> Do nothing.
-		}
-		else if(ikari_stop_samples == true) {
-			a = 0;
-
-			for(a = 0; a <= o_max_samples; a++) {
-				sample_stop(a);
-			}
-		    
-            // Now play the default sound.
-			soundlatch_w( offset , data );
-		}
-		else if(ikari_play_default == true) {
-			soundlatch_w( offset, data );
-		}
+	if( ost_support_enabled(OST_SUPPORT_IKARI) ) {
+		if(generate_ost_sound( data )) soundlatch_w( offset, data );
 	}
+	else
+		soundlatch_w( offset, data );
 }
 
-
 static READ_HANDLER( snk_soundlatch_clear_r ){ /* TNK3 */
-	
 	soundlatch_w( 0, 0 );
 	snk_sound_register = 0;
 	return 0x00;
- } 
+}
 
 /*********************************************************************/
 
@@ -1291,10 +1140,8 @@ static MACHINE_DRIVER_START( ikari )
 
 	/* sound hardware */
 	MDRV_SOUND_ADD(YM3526, ym3526_ym3526_interface)
-	MDRV_SOUND_ADD(SAMPLES, ikari_samples_set)
-	ikari_playing = true;
-	ikari_start = 0;
-	
+
+	MDRV_INSTALL_OST_SUPPORT(OST_SUPPORT_IKARI)
 MACHINE_DRIVER_END
 
 
