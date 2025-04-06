@@ -2219,7 +2219,7 @@ struct YM2413interface sys16_ym2413_interface= {
 
 struct RF5C68interface sys18_rf5c68_interface = {
   10000000,
-  100
+  YM3012_VOL(40,MIXER_PAN_CENTER,40,MIXER_PAN_CENTER)
 };
 
 struct YM2612interface sys18_ym3438_interface =
