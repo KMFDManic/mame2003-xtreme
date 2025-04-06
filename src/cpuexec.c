@@ -304,6 +304,10 @@ static void cpu_pre_run(void)
 	/* reset sound chips */
 	sound_reset();
 
+	/* prepare ost if installed */
+	//if (options.content_flags[CONTENT_ALT_SOUND])
+		ost_init();
+
 	/* first pass over CPUs */
 	for (cpunum = 0; cpunum < cpu_gettotalcpu(); cpunum++)
 	{
