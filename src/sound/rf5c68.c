@@ -33,29 +33,30 @@ struct rf5c68pcm
 
 struct rf5c68pcm *chip;
 
+/************************************************/
+/*    RF5C68 stream update                      */
+/************************************************/
+
 INT32 Limit( INT32 val, INT32 max,INT32 min)
 {
-	val &= ~ 0x3f; //10bits output (use 0xffff if 16 bit output is required)
 	if ( val > max )      val = max;
 	else if ( val < min ) val = min;
 	return val ;
 }
 
-/************************************************/
-/*    RF5C68 stream update                      */
-/************************************************/
-
-
 static void rf5c68_update( int num, INT16 **buffer, int length )
 {
-	INT16 *left =  buffer[0];
-	INT16 *right = buffer[1];
+
+	INT32 tempbuffer[2][length > 0 ? length : 1]; //silence msvc
+	INT32 *left =  tempbuffer[0];
+	INT32 *right = tempbuffer[1];
+	INT16 *r_left =  buffer[0];
+	INT16 *r_right = buffer[1];
 	int i, j;
 
 	/* start with clean buffers */
 	memset(left, 0, length * sizeof(*left));
 	memset(right, 0, length * sizeof(*right));
-
 	/* bail if not enabled */
 	if (!chip->enable)
 		return;
@@ -75,8 +76,7 @@ static void rf5c68_update( int num, INT16 **buffer, int length )
 			for (j = 0; j < length; j++)
 			{
 				int sample;
-				int32_t templ;
-				int32_t tempr;
+
 				/* fetch the sample and handle looping */
 				sample = chip->data[(chan->addr >> 11) & 0xffff];
 				if (sample == 0xff)
@@ -94,23 +94,27 @@ static void rf5c68_update( int num, INT16 **buffer, int length )
 				if (sample & 0x80)
 				{
 					sample &= 0x7f;
-					templ = Limit( (sample * lv) >> 5, 32767, -32768);
-					tempr = Limit( (sample * rv) >> 5, 32767, -32768);
-					left[j]  += templ;
-					right[j] += tempr;
+					left[j] += (sample * lv) >> 5;
+					right[j] += (sample * rv) >> 5;
 				}
 				else
 				{
-					templ = Limit( (sample * lv) >> 5, 32767, -32768);
-					tempr = Limit( (sample * rv) >> 5, 32767, -32768);
-					left[j]  -= templ;
-					right[j] -= tempr;
+					left[j] -= (sample * lv) >> 5;
+					right[j] -= (sample * rv) >> 5;
 				}
-
 			}
 		}
 	}
+
+	/* now clamp and shift the result (output is only 10 bits) */
+	for (j = 0; j < length; j++)
+	{
+		r_left[j] =  Limit( (left[j]  & ~ 0x3f),  32767, -32768);
+		r_right[j] = Limit( (right[j] & ~ 0x3f),  32767, -32768);
+	}
 }
+
+
 
 
 /************************************************/
@@ -129,7 +133,6 @@ int RF5C68_sh_start( const struct MachineSound *msound )
 	const char *name[2];
 	int  vol[2];
 	int i;
-	int  mixed_vol = inintf->volume;
 
 	if (Machine->sample_rate == 0) return 0;
 
@@ -146,8 +149,9 @@ int RF5C68_sh_start( const struct MachineSound *msound )
 	name[1] = buf[1];
 	sprintf( buf[0], "%s Left", sound_name(msound) );
 	sprintf( buf[1], "%s Right", sound_name(msound) );
-	vol[0] = mixed_vol&0xffff;
-	vol[1] = mixed_vol >>= 16;
+	vol[0] = inintf->volume&0xff;
+	vol[1] = inintf->volume&0xff;
+
 	chip->stream = stream_init_multi( 2, name, vol,  inintf->clock / 384 , 0, rf5c68_update );
 	if(chip->stream == -1) return 1;
 
