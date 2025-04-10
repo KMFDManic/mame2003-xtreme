@@ -76,7 +76,7 @@ static void rf5c68_update( int num, INT16 **buffer, int length )
 			 int lv =  (chan->panl  ) * (chan->envr ) >>1;
 			 int rv =  (chan->panr  ) * (chan->envr ) >>1;
 
-			printf("pan %d %d  + env %d %d\n", chan->panl,  chan->panr, chan->envl, chan->envr);
+			//printf("pan %d %d  + env %d %d\n", chan->panl,  chan->panr, chan->envl, chan->envr);
 			/* loop over the sample buffer */
 			for (j = 0; j < length; j++)
 			{
