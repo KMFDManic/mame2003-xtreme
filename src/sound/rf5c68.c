@@ -12,11 +12,8 @@
 struct pcm_channel
 {
 	UINT8		enable;
-	UINT8		envl;
-	UINT8		envr;
-	UINT8		panl;
-	UINT8		panr;
-
+	UINT8		env;
+	UINT8		pan;
 	UINT8		start;
 	UINT32		addr;
 	UINT16		step;
@@ -72,11 +69,10 @@ static void rf5c68_update( int num, INT16 **buffer, int length )
 		/* if this channel is active, accumulate samples */
 		if (chan->enable)
 		{
-		/* need envl need looked into sometimes hits a zero so assiming envr is the evelope */
-			 int lv =  (chan->panl  ) * (chan->envr ) >>1;
-			 int rv =  (chan->panr  ) * (chan->envr ) >>1;
+			int lv = (chan->pan & 0x0f) * chan->env  >> 5;  
+			int rv = (chan->pan >> 4)   * chan->env  >> 5;   
+			
 
-			//printf("pan %d %d  + env %d %d\n", chan->panl,  chan->panr, chan->envl, chan->envr);
 			/* loop over the sample buffer */
 			for (j = 0; j < length; j++)
 			{
@@ -99,20 +95,18 @@ static void rf5c68_update( int num, INT16 **buffer, int length )
 				if (sample & 0x80)
 				{
 					sample &= 0x7f;
-					left[j]  += sample * (lv );
-					right[j] += sample * (rv );
+					left[j] +=  (sample * lv) ;   
+					right[j] += (sample * rv);
 				}
 				else
 				{
-				left[j]  -= sample * (lv) ;
-				right[j] -= sample * (rv);
-
+					left[j] -=  (sample * lv);   
+					right[j] -= (sample  * rv)
+					
+					;
 				}
-
 			}
-
 		}
-
 	}
 
 	/* now clamp and shift the result (output is only 10 bits) */
@@ -189,13 +183,11 @@ WRITE_HANDLER( RF5C68_reg_w )
 	switch (offset)
 	{
 		case 0x00:	/* envelope */
-			chan->envl = (data  &0xf);
-			chan->envr = (data>>4) &0xf;
+			chan->env = data;
 			break;
 
 		case 0x01:	/* pan */
-			chan->panl = (data  &0xf);
-			chan->panr = (data>>4) &0xf;
+			chan->pan = data;
 			break;
 
 		case 0x02:	/* FDL */
