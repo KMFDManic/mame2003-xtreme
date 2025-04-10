@@ -1,5 +1,33 @@
-# mame2003-xtreme
-MAME as it was in 2003, with a 2K23+ touch up! Suitable for lower-spec devices that would struggle to run current versions of MAME (later versions of MAME are increasingly accurate, thus can perform worse).
+# MAME2003-Xtreme
+KMFDManic Fork of MAME Coding that does not at all adhere to accuracy, and instead favors Performance/Speed above all else, at the expense of stability!  Meant for low-spec platforms!
+
+## Xtreme Custom OST Support
+Easily the best feature of 2003 Xtreme!  Big Blue Frontend initially started the trend with Final Fight in Current MAME.  Gpstar81 C++ backported the necessary coding into Xtreme.  It then branched out to support several others.  Mahoneyt944, Grant2258, Arcadez2003 have been phenomenally helpful in making the support exponentially better, over time!  Mahoney has separated and consolidated support for external samples outside of the primary arcade drivers, lending credence to less clutter and "crossfires".  Grant has implemented a myriad of bug/accuracy fixes and improvements.  
+
+I, KMFDManic have worked in the Xtreme Magic to maintain integrity with overall performance/speed/memory usage, considering Custom OSTs are potential memory hogs!  Mathematically, RAM usage can be trickery, with memory load maxing out at 80MB under normal circumstances (core+retroarch+zipped samples).  I have added fixes to help offset this for lower spec platforms.  Kurrono has also helped carry the torch, with his extensive music hook hacking skills.  You would have surely come across many of his previous successes in the Mesen and MSU-1 Communities!  Every project he has worked on it now a mainstay in my permanent gaming playlist:)
+
+**The currently supported Custom OSTs in 2003 Xtreme include:**
+- Bad Dudes
+- Bionic Commando
+- Cave Ninja AKA Joe & Mac
+- Double Dragon
+- Final Fight
+- Ghosts 'n Goblins
+- Haunted Castle
+- Ikari Warriors
+- Moonwalker
+- Mortal Kombat II
+- NBA Jam
+- OutRun
+- RoboCop
+- Shinobi
+- Street Fighter I
+- Street Fighter II
+- Ultraman
+
+**It is a bit technical, the creation of such Custom OSTs**
+
+Those interested in helping flesh out the Sample Sets for Support with MAME 2003 Xtreme/Plus, are welcome to reply in the Custom OST Testing Grounds Issue on my 2003 Xtreme MAME Repo.  There are MANY more Custom OSTs to be added.  But, they also need TLC, as far as having magnificent, non-broken record flair...for replayability...to have hopes of remotely matching the awesomeness of the originals!  Several Samples are already completed.  Others are coded in, but need Samples finished.  No matter the case, we will get there:)
 
 ## ROMset compatibility with MAME 2003 Xtreme
 **The MAME 2003 Xtreme core accepts MAME 0.78 ROMsets.** Each version of an arcade emulator must be used with ROMs that have the same exact version number. For example, MAME 0.37b5 ROMsets are required by the MAME 2000 emulator, but MAME 0.37b5 sets will not work correctly with the MAME 2003 or MAME 2010 emulator cores. Those cores require MAME 0.78 and MAME 0.139 ROM sets, respectively.
