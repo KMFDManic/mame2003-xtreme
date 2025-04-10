@@ -12,8 +12,11 @@
 struct pcm_channel
 {
 	UINT8		enable;
-	UINT8		env;
-	UINT8		pan;
+	UINT8		envl;
+	UINT8		envr;
+	UINT8		panl;
+	UINT8		panr;
+
 	UINT8		start;
 	UINT32		addr;
 	UINT16		step;
@@ -69,9 +72,11 @@ static void rf5c68_update( int num, INT16 **buffer, int length )
 		/* if this channel is active, accumulate samples */
 		if (chan->enable)
 		{
-			int lv = (chan->pan & 0x0f) * chan->env;
-			int rv = ((chan->pan >> 4) & 0x0f) * chan->env;
+		/* need envl need looked into sometimes hits a zero so assiming envr is the evelope */
+			 int lv =  (chan->panl  ) * (chan->envr ) >>1;
+			 int rv =  (chan->panr  ) * (chan->envr ) >>1;
 
+			printf("pan %d %d  + env %d %d\n", chan->panl,  chan->panr, chan->envl, chan->envr);
 			/* loop over the sample buffer */
 			for (j = 0; j < length; j++)
 			{
@@ -94,16 +99,20 @@ static void rf5c68_update( int num, INT16 **buffer, int length )
 				if (sample & 0x80)
 				{
 					sample &= 0x7f;
-					left[j] += (sample * lv) >> 5;
-					right[j] += (sample * rv) >> 5;
+					left[j]  += sample * (lv );
+					right[j] += sample * (rv );
 				}
 				else
 				{
-					left[j] -= (sample * lv) >> 5;
-					right[j] -= (sample * rv) >> 5;
+				left[j]  -= sample * (lv) ;
+				right[j] -= sample * (rv);
+
 				}
+
 			}
+
 		}
+
 	}
 
 	/* now clamp and shift the result (output is only 10 bits) */
@@ -133,6 +142,7 @@ int RF5C68_sh_start( const struct MachineSound *msound )
 	const char *name[2];
 	int  vol[2];
 	int i;
+	int mix;
 
 	if (Machine->sample_rate == 0) return 0;
 
@@ -149,8 +159,11 @@ int RF5C68_sh_start( const struct MachineSound *msound )
 	name[1] = buf[1];
 	sprintf( buf[0], "%s Left", sound_name(msound) );
 	sprintf( buf[1], "%s Right", sound_name(msound) );
-	vol[0] = inintf->volume&0xff;
-	vol[1] = inintf->volume&0xff;
+	mix = inintf->volume;
+	vol[0] =mix;
+	vol[1] =mix>>16;
+
+
 
 	chip->stream = stream_init_multi( 2, name, vol,  inintf->clock / 384 , 0, rf5c68_update );
 	if(chip->stream == -1) return 1;
@@ -176,11 +189,13 @@ WRITE_HANDLER( RF5C68_reg_w )
 	switch (offset)
 	{
 		case 0x00:	/* envelope */
-			chan->env = data;
+			chan->envl = (data  &0xf);
+			chan->envr = (data>>4) &0xf;
 			break;
 
 		case 0x01:	/* pan */
-			chan->pan = data;
+			chan->panl = (data  &0xf);
+			chan->panr = (data>>4) &0xf;
 			break;
 
 		case 0x02:	/* FDL */
