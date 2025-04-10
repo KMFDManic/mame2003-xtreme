@@ -1114,7 +1114,7 @@ int mixer_need_samples_this_frame(int channel,int freq)
 	mixer_play_sample
 ***************************************************************************/
 
-void mixer_play_sample(int ch, INT8 *data, int len, int freq, int loop)
+void mixer_play_sample(int ch, INT8 *data, int len, int freq, int loop, int samplenum)
 {
 	struct mixer_channel_data *channel = &mixer_channel[ch];
 
@@ -1133,7 +1133,7 @@ void mixer_play_sample(int ch, INT8 *data, int len, int freq, int loop)
 	channel->data_start = data;
 	channel->data_current = data;
 	channel->data_end = (UINT8 *)data + len;
-	channel->is_playing = 1;
+	channel->is_playing = samplenum;
 	channel->is_looping = loop;
 	channel->is_16bit = 0;
 }
@@ -1143,7 +1143,7 @@ void mixer_play_sample(int ch, INT8 *data, int len, int freq, int loop)
 	mixer_play_sample_16
 ***************************************************************************/
 
-void mixer_play_sample_16(int ch, INT16 *data, int len, int freq, int loop)
+void mixer_play_sample_16(int ch, INT16 *data, int len, int freq, int loop, int samplenum)
 {
 	struct mixer_channel_data *channel = &mixer_channel[ch];
 
@@ -1162,7 +1162,7 @@ void mixer_play_sample_16(int ch, INT16 *data, int len, int freq, int loop)
 	channel->data_start = data;
 	channel->data_current = data;
 	channel->data_end = (UINT8 *)data + len;
-	channel->is_playing = 1;
+	channel->is_playing = samplenum;
 	channel->is_looping = loop;
 	channel->is_16bit = 1;
 }

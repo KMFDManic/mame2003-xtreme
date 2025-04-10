@@ -86,8 +86,8 @@ const char *mixer_get_name(int channel);
 */
 void mixer_set_volume(int channel,int volume);
 
-void mixer_play_sample(int channel,INT8 *data,int len,int freq,int loop);
-void mixer_play_sample_16(int channel,INT16 *data,int len,int freq,int loop);
+void mixer_play_sample(int channel,INT8 *data,int len,int freq,int loop, int samplenum);
+void mixer_play_sample_16(int channel,INT16 *data,int len,int freq,int loop, int samplenum);
 void mixer_stop_sample(int channel);
 int mixer_is_sample_playing(int channel);
 void mixer_set_sample_frequency(int channel,int freq);

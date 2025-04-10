@@ -23,7 +23,7 @@ void sample_start(int channel,int samplenum,int loop)
 		return;
 	}
 
-	if (Machine->samples->sample[samplenum] != NULL) 
+	if (Machine->samples->sample[samplenum] != NULL)
 	{
 		if (Machine->samples->sample[samplenum]->b_decoded == 0)
 		{
@@ -47,7 +47,8 @@ void sample_start(int channel,int samplenum,int loop)
 			Machine->samples->sample[samplenum]->data,
 			Machine->samples->sample[samplenum]->length,
 			Machine->samples->sample[samplenum]->smpfreq,
-			loop);
+			loop,
+			samplenum);
 		}
 		else
 		{
@@ -56,7 +57,8 @@ void sample_start(int channel,int samplenum,int loop)
 			(short *) Machine->samples->sample[samplenum]->data,
 			Machine->samples->sample[samplenum]->length,
 			Machine->samples->sample[samplenum]->smpfreq,
-			loop);
+			loop,
+			samplenum);
 		}
 
 	}
@@ -110,7 +112,7 @@ void sample_stop(int channel)
 		c_sample = leftSampleNum;
 	else if (channel == 1)
 		c_sample = rightSampleNum;
-		
+
 	if (Machine->sample_rate == 0) return;
 	if (channel >= numchannels)
 	{
