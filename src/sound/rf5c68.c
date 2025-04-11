@@ -69,8 +69,9 @@ static void rf5c68_update( int num, INT16 **buffer, int length )
 		/* if this channel is active, accumulate samples */
 		if (chan->enable)
 		{
-			int lv = (chan->pan & 0x0f) * chan->env;
-			int rv = ((chan->pan >> 4) & 0x0f) * chan->env;
+			int lv = (chan->pan & 0x0f) * chan->env  >> 5;  
+			int rv = (chan->pan >> 4)   * chan->env  >> 5;   
+			
 
 			/* loop over the sample buffer */
 			for (j = 0; j < length; j++)
@@ -94,13 +95,15 @@ static void rf5c68_update( int num, INT16 **buffer, int length )
 				if (sample & 0x80)
 				{
 					sample &= 0x7f;
-					left[j] += (sample * lv) >> 5;
-					right[j] += (sample * rv) >> 5;
+					left[j] +=  (sample * lv) ;   
+					right[j] += (sample * rv);
 				}
 				else
 				{
-					left[j] -= (sample * lv) >> 5;
-					right[j] -= (sample * rv) >> 5;
+					left[j] -=  (sample * lv);   
+					right[j] -= (sample  * rv)
+					
+					;
 				}
 			}
 		}
@@ -133,6 +136,7 @@ int RF5C68_sh_start( const struct MachineSound *msound )
 	const char *name[2];
 	int  vol[2];
 	int i;
+	int mix;
 
 	if (Machine->sample_rate == 0) return 0;
 
@@ -149,8 +153,11 @@ int RF5C68_sh_start( const struct MachineSound *msound )
 	name[1] = buf[1];
 	sprintf( buf[0], "%s Left", sound_name(msound) );
 	sprintf( buf[1], "%s Right", sound_name(msound) );
-	vol[0] = inintf->volume&0xff;
-	vol[1] = inintf->volume&0xff;
+	mix = inintf->volume;
+	vol[0] =mix;
+	vol[1] =mix>>16;
+
+
 
 	chip->stream = stream_init_multi( 2, name, vol,  inintf->clock / 384 , 0, rf5c68_update );
 	if(chip->stream == -1) return 1;
