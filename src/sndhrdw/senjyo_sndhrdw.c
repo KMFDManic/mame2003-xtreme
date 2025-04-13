@@ -74,7 +74,7 @@ int senjyo_sh_start(const struct MachineSound *msound)
 
 	/* CTC2 single tone generator */
 	mixer_set_volume(channel,0);
-	mixer_play_sample(channel,_single,SINGLE_LENGTH,single_rate,1);
+	mixer_play_sample(channel,_single,SINGLE_LENGTH,single_rate,1,1);
 
 	return 0;
 }

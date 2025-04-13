@@ -52,7 +52,7 @@ static void cclimber_play_sample(int start,int freq,int volume)
 		len++;
 	}
 
-	mixer_play_sample(channel,samplebuf,2 * len,freq,0);
+	mixer_play_sample(channel,samplebuf,2 * len,freq,0,1);
 }
 
 

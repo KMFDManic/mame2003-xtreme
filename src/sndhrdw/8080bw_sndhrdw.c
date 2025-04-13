@@ -1045,9 +1045,9 @@ static WRITE_HANDLER( helifire_sh_port5_w )
 {
 	// 0 - P2.8  -     ->D1 (or D2 ?)
 	// 1 - P2.9  -     ->D2 (or D1 ?)
-	// 2 - P2.10 - 
-	// 3 - P2.11 - 
-	// 4 - P2.2  - 
+	// 2 - P2.10 -
+	// 3 - P2.11 -
+	// 4 - P2.2  -
 	// 5 - P2.12 -     ->PB4
 
 	data ^= 0xff; /* negated on page 2 just before going to P2 */
@@ -1350,7 +1350,7 @@ static int schaser_sh_start(const struct MachineSound *msound)
 	mixer_set_name(channel_dot,"Dot Sound");
 
 	mixer_set_volume(channel_dot,0);
-	mixer_play_sample_16(channel_dot,backgroundwave,sizeof(backgroundwave),1000,1);
+	mixer_play_sample_16(channel_dot,backgroundwave,sizeof(backgroundwave),1000,1,1);
 
 	return 0;
 }

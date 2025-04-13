@@ -45,5 +45,5 @@ void bosco_sample_play(int offset, int length)
 	if (Machine->sample_rate == 0)
 		return;
 
-	mixer_play_sample(channel,speech + offset,length,4000,0);
+	mixer_play_sample(channel,speech + offset,length,4000,0,1);
 }

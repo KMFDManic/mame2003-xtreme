@@ -53,7 +53,7 @@ int		bionicc_start_counter = 0;
 
 const char *const bionicc_sample_set_names[] =
 {
-	"*bionicc",	
+	"*bionicc",
 	"forest-01",
 	"forest-02",
 	"fortress-01",
@@ -61,17 +61,17 @@ const char *const bionicc_sample_set_names[] =
 	"tower-01",
 	"tower-02",
 	"tsecret-01",
-	"tsecret-02",	
+	"tsecret-02",
 	"ending-01",
 	"ending-02",
 	"ranking-01",
 	"ranking-02",
 	"clear-01",
-	"clear-02",	
+	"clear-02",
     "sewer-01",
-	"sewer-02",	
+	"sewer-02",
 	"over-01",
-	"over-02",		
+	"over-02",
 	0
 };
 
@@ -145,7 +145,7 @@ WRITE16_HANDLER( hacked_soundcommand_w )
 		bool bionicc_do_nothing = false;
 		bool bionicc_stop_samples = false;
 		bool bionicc_play_default = false;
-		
+
 		if(bionicc_start == true) {
 			sa_play_sample = true;
 			sa_left = 0;
@@ -154,8 +154,8 @@ WRITE16_HANDLER( hacked_soundcommand_w )
 			bionicc_diddy = true;
 			bionicc_lastwave = false;
 		}
-			
-		switch (data) {	            
+
+		switch (data) {
 			// Round 1. Front Line
 			case 0x01:
 			    bionicc_diddy = false;
@@ -163,8 +163,8 @@ WRITE16_HANDLER( hacked_soundcommand_w )
 				bionicc_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 0;
-				sa_right = 1;			
-				break;			
+				sa_right = 1;
+				break;
 			// Round 2. Big Fortress
 			case 0x02:
 			    bionicc_diddy = false;
@@ -172,7 +172,7 @@ WRITE16_HANDLER( hacked_soundcommand_w )
 				bionicc_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 2;
-				sa_right = 3;			
+				sa_right = 3;
 				break;
 			//  Round 4. Tower of Demon
 			case 0x0A:
@@ -181,16 +181,16 @@ WRITE16_HANDLER( hacked_soundcommand_w )
 				bionicc_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 4;
-				sa_right = 5;	
-                break;				
-			// Round 5. Top Secret 
+				sa_right = 5;
+                break;
+			// Round 5. Top Secret
 			case 0x0B:
 		        bionicc_diddy = false;
 				bionicc_title_diddy = false;
 				bionicc_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 6;
-				sa_right = 7;				
+				sa_right = 7;
 				break;
 			//  Ending
 			case 0x0E:
@@ -199,7 +199,7 @@ WRITE16_HANDLER( hacked_soundcommand_w )
 				bionicc_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 8;
-				sa_right = 9;			
+				sa_right = 9;
 				break;
 			// Ranking
 			case 0x03:
@@ -208,7 +208,7 @@ WRITE16_HANDLER( hacked_soundcommand_w )
 				bionicc_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 10;
-				sa_right = 11;							
+				sa_right = 11;
 				break;
 			// Round Clear
 			case 0x09:
@@ -217,8 +217,8 @@ WRITE16_HANDLER( hacked_soundcommand_w )
 				bionicc_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 12;
-				sa_right = 13;			
-				break;			
+				sa_right = 13;
+				break;
 			// Round 3 Infiltration Sewers
 			case 0x04:
 		        bionicc_diddy = false;
@@ -226,21 +226,21 @@ WRITE16_HANDLER( hacked_soundcommand_w )
 				bionicc_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 14;
-				sa_right = 15;			
+				sa_right = 15;
 				break;
-			case 0x07:	
-			// Game Over			
+			case 0x07:
+			// Game Over
                if(bionicc_lastwave == false) {
 					bionicc_diddy = false;
 				    bionicc_title_diddy = false;
 				    bionicc_lastwave = false;
 					sa_play_sample = true;
 					sa_left = 22;
-					sa_right = 23;		
+					sa_right = 23;
 			   }
 				else
 					bionicc_do_nothing = true;
-				break;    
+				break;
                 default:
 				COMBINE_DATA(&soundcommand);
 				soundlatch_w(0,soundcommand & 0xff);
@@ -256,19 +256,19 @@ WRITE16_HANDLER( hacked_soundcommand_w )
 
 			sample_start(0, sa_left, sa_loop);
 			sample_start(1, sa_right, sa_loop);
-			
+
 			// Determine how we should mix these samples together.
-			if(sample_playing(0) == 0 && sample_playing(1) == 1) { // Right channel only. Lets make it play in both speakers.
+			if(!sample_playing(0)  && sample_playing(1)) { // Right channel only. Lets make it play in both speakers.
 				sample_set_stereo_volume(1, 100, 100);
 			}
-			else if(sample_playing(0) == 1 && sample_playing(1) == 0) { // Left channel only. Lets make it play in both speakers.
+			else if(sample_playing(0)  && !sample_playing(1))  { // Left channel only. Lets make it play in both speakers.
 				sample_set_stereo_volume(0, 100, 100);
 			}
-			else if(sample_playing(0) == 1 && sample_playing(1) == 1) { // Both left and right channels. Lets make them play in there respective speakers.
+			else if(sample_playing(0) && sample_playing(1)) { // Both left and right channels. Lets make them play in there respective speakers.
 				sample_set_stereo_volume(0, 100, 0);
 				sample_set_stereo_volume(1, 0, 100);
 			}
-			else if(sample_playing(0) == 0 && sample_playing(1) == 0 && bionicc_do_nothing == false) { // No sample playing, revert to the default sound.
+			else if(!sample_playing(0)  && !sample_playing(1)  && bionicc_do_nothing == false) { // No sample playing, revert to the default sound.
 				sa_play_original = false;
 				COMBINE_DATA(&soundcommand);
 				soundlatch_w(0,soundcommand & 0xff);
@@ -287,16 +287,16 @@ WRITE16_HANDLER( hacked_soundcommand_w )
 			for(a = 0; a <= o_max_samples; a++) {
 				sample_stop(a);
 			}
-		    
+
             // Now play the default sound.
 			COMBINE_DATA(&soundcommand);
 			soundlatch_w(0,soundcommand & 0xff);
 		}
 		else if(bionicc_play_default == true) {
 			COMBINE_DATA(&soundcommand);
-			soundlatch_w(0,soundcommand & 0xff);	
+			soundlatch_w(0,soundcommand & 0xff);
 		}
-	}				
+	}
 }
 
 static READ16_HANDLER( hacked_soundcommand_r )
@@ -321,7 +321,7 @@ static READ16_HANDLER( hacked_soundcommand_r )
 
 INTERRUPT_GEN( bionicc_interrupt )
 {
-	if (cpu_getiloops() == 0) 
+	if (cpu_getiloops() == 0)
 		cpu_set_irq_line(0, 2, HOLD_LINE);
 	else
 		cpu_set_irq_line(0, 4, HOLD_LINE);

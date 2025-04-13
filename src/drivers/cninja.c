@@ -51,7 +51,7 @@ int		cninja_start_counter = 0;
 
 const char *const cninja_sample_set_names[] =
 {
-	"*cninja",	
+	"*cninja",
 	"kidnap-01",
 	"kidnap-02",
 	"stg1-3-01",
@@ -59,23 +59,23 @@ const char *const cninja_sample_set_names[] =
 	"stg2-5-01",
 	"stg2-5-02",
 	"stg4-01",
-	"stg4-02",	
+	"stg4-02",
 	"xtra-01",
-	"xtra-02",	
+	"xtra-02",
 	"rescue-01",
 	"rescue-02",
 	"boss-01",
-	"boss-02",				
+	"boss-02",
 	"endinga-01",
-	"endinga-02",   
+	"endinga-02",
     "endingb-01",
 	"endingb-02",
 	"clear-01",
-	"clear-02",	
+	"clear-02",
 	"endingc-01",
 	"endingc-02",
 	"continue-01",
-	"continue-02",	
+	"continue-02",
 	0
 };
 
@@ -94,7 +94,7 @@ static data16_t *cninja_ram;
 
 static WRITE16_HANDLER( cninja_sound_w )
 {
-		
+
 	if(cninja_playing == true) {
 		int a = 0;
 		int o_max_samples = 41;
@@ -106,7 +106,7 @@ static WRITE16_HANDLER( cninja_sound_w )
 		bool cninja_do_nothing = false;
 		bool cninja_stop_samples = false;
 		bool cninja_play_default = false;
-		
+
 		if(cninja_start == true) {
 			sa_play_sample = true;
 			sa_left = 0;
@@ -115,8 +115,8 @@ static WRITE16_HANDLER( cninja_sound_w )
 			cninja_diddy = true;
 			cninja_lastwave = false;
 		}
-			
-		switch (data) {	            
+
+		switch (data) {
 			// Girls kidanpped
 			case 0x04:
 			    cninja_diddy = false;
@@ -124,8 +124,8 @@ static WRITE16_HANDLER( cninja_sound_w )
 				cninja_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 0;
-				sa_right = 1;			
-				break;			
+				sa_right = 1;
+				break;
 			// Stage 1 and 3
 			case 0x05:
 			   cninja_diddy = false;
@@ -133,7 +133,7 @@ static WRITE16_HANDLER( cninja_sound_w )
 				cninja_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 2;
-				sa_right = 3;			
+				sa_right = 3;
 				break;
 			//  Stage 2 and 5
 			case 0x06:
@@ -142,16 +142,16 @@ static WRITE16_HANDLER( cninja_sound_w )
 				cninja_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 4;
-				sa_right = 5;	
-                break;				
-			//  Stage 4 
+				sa_right = 5;
+                break;
+			//  Stage 4
 			case 0x07:
 		        cninja_diddy = false;
 				cninja_title_diddy = false;
 				cninja_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 6;
-				sa_right = 7;				
+				sa_right = 7;
 				break;
 			//  Xtra
 			case 0x09:
@@ -160,7 +160,7 @@ static WRITE16_HANDLER( cninja_sound_w )
 				cninja_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 8;
-				sa_right = 9;				
+				sa_right = 9;
 				break;
 			// Rescue
 			case 0x0A:
@@ -169,7 +169,7 @@ static WRITE16_HANDLER( cninja_sound_w )
 				cninja_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 10;
-				sa_right = 11;							
+				sa_right = 11;
 				break;
 			// Dinosaur Boss
 			case 0x0C:
@@ -178,8 +178,8 @@ static WRITE16_HANDLER( cninja_sound_w )
 				cninja_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 12;
-				sa_right = 13;			
-				break;			
+				sa_right = 13;
+				break;
 			// Great Ending
 			case 0x0D:
 		        cninja_diddy = false;
@@ -187,36 +187,36 @@ static WRITE16_HANDLER( cninja_sound_w )
 				cninja_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 14;
-				sa_right = 15;			
-				break;				
-			// Good Ending	
+				sa_right = 15;
+				break;
+			// Good Ending
             case 0x0E:
 			    cninja_diddy = false;
 				cninja_title_diddy = false;
 				cninja_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 16;
-				sa_right = 17;			
-				break;	
-            // Course Select	
-            case 0x0F:				           
+				sa_right = 17;
+				break;
+            // Course Select
+            case 0x0F:
 			    cninja_diddy = false;
 				cninja_title_diddy = false;
 				cninja_lastwave = false;;
 				sa_play_sample = true;
 				sa_left = 18;
-				sa_right = 19;			
-				break;		
-			// Bad Ending			
+				sa_right = 19;
+				break;
+			// Bad Ending
 			case 0x10:
                 cninja_diddy = false;
 				cninja_title_diddy = false;
 				cninja_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 20;
-				sa_right = 21;			
-				break;	
-		    // Continue	
+				sa_right = 21;
+				break;
+		    // Continue
             case 0x19:
                if(cninja_lastwave == false) {
 					cninja_diddy = false;
@@ -224,11 +224,11 @@ static WRITE16_HANDLER( cninja_sound_w )
 				    cninja_lastwave = false;
 					sa_play_sample = true;
 					sa_left = 22;
-					sa_right = 23;		
+					sa_right = 23;
 			   }
 				else
 					cninja_do_nothing = true;
-				break;    
+				break;
                 default:
 				soundlatch_w(0,data&0xff);
 	            cpu_set_irq_line(1,0,HOLD_LINE);
@@ -244,19 +244,19 @@ static WRITE16_HANDLER( cninja_sound_w )
 
 			sample_start(0, sa_left, sa_loop);
 			sample_start(1, sa_right, sa_loop);
-			
+
 			// Determine how we should mix these samples together.
-			if(sample_playing(0) == 0 && sample_playing(1) == 1) { // Right channel only. Lets make it play in both speakers.
+			if(!sample_playing(0)  && sample_playing(1)) { // Right channel only. Lets make it play in both speakers.
 				sample_set_stereo_volume(1, 100, 100);
 			}
-			else if(sample_playing(0) == 1 && sample_playing(1) == 0) { // Left channel only. Lets make it play in both speakers.
+			else if(sample_playing(0)  && !sample_playing(1)) { // Left channel only. Lets make it play in both speakers.
 				sample_set_stereo_volume(0, 100, 100);
 			}
-			else if(sample_playing(0) == 1 && sample_playing(1) == 1) { // Both left and right channels. Lets make them play in there respective speakers.
+			else if(sample_playing(0) && sample_playing(1) ) { // Both left and right channels. Lets make them play in there respective speakers.
 				sample_set_stereo_volume(0, 100, 0);
 				sample_set_stereo_volume(1, 0, 100);
 			}
-			else if(sample_playing(0) == 0 && sample_playing(1) == 0 && cninja_do_nothing == false) { // No sample playing, revert to the default sound.
+			else if(!sample_playing(0) == 0 && !sample_playing(1) == 0 && cninja_do_nothing == false) { // No sample playing, revert to the default sound.
 				sa_play_original = false;
 				soundlatch_w(0,data&0xff);
 	            cpu_set_irq_line(1,0,HOLD_LINE);
@@ -275,17 +275,17 @@ static WRITE16_HANDLER( cninja_sound_w )
 			for(a = 0; a <= o_max_samples; a++) {
 				sample_stop(a);
 			}
-		    
+
             // Now play the default sound.
 			soundlatch_w(0,data&0xff);
 	        cpu_set_irq_line(1,0,HOLD_LINE);
-		   
+
 		}
 		else if(cninja_play_default == true) {
 			soundlatch_w(0,data&0xff);
-	        cpu_set_irq_line(1,0,HOLD_LINE);	
+	        cpu_set_irq_line(1,0,HOLD_LINE);
 		}
-	}				
+	}
 }
 
 static WRITE16_HANDLER( stoneage_sound_w )

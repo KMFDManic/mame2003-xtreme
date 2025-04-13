@@ -14,22 +14,22 @@ int pbillian_sh_start(const struct MachineSound *msound)
 	return 0;
 }
 
-#define pb_play_s(start,end) mixer_play_sample(channel,samplebuf + (start<<8),	(end-start)<<8,5000,0) // 5khz ?
+#define pb_play_s(start,end) mixer_play_sample(channel,samplebuf + (start<<8),	(end-start)<<8,5000,0,1) // 5khz ?
 
 WRITE_HANDLER(data_41a_w)
 {
-	/* 
+	/*
 	 i/o port $41a wrties are sample related
 	 playback is done probably using mcu (missing dump)
-	 It's just a guess for now. 
+	 It's just a guess for now.
 	 Value from port $41a can be offset in some  table,
 	 offset in sample rom , some mixed value of sample offset/length
 	 or freq
-	
-	 Code works  (somehow) only for prebillian 
-	 
+
+	 Code works  (somehow) only for prebillian
+
 	*/
-	
+
 	switch (data)
 	{
 		case 0x00:	pb_play_s(0x00,0x06);break;
@@ -45,4 +45,4 @@ WRITE_HANDLER(data_41a_w)
 		case 0x62:	pb_play_s(0x62,0x6d);break;
 		default: logerror("[41a] W %x at %x\n",data,activecpu_get_previouspc());
 	}
-}	
+}

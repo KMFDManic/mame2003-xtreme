@@ -44,15 +44,15 @@ const char *const ultraman_sample_names[] =
 	"telesdon-01",
 	"telesdon-02",
 	"jamyra-01",
-	"jamyra-02",	
+	"jamyra-02",
 	"bullon-01",
-	"bullon-02",	
+	"bullon-02",
 	"redking-01",
 	"redking-02",
 	"baltan-01",
 	"baltan-02",
     "gomora-01",
-	"gomora-02",	
+	"gomora-02",
 	"mefilas-01",
 	"mefilas-02",
 	"gelonimon-01",
@@ -157,7 +157,7 @@ static WRITE16_HANDLER( ultraman_K051960_w )
 
 
 static WRITE16_HANDLER( sound_cmd_w )
-{   
+{
      if(ultraman_playing == true) {
 		int a = 0;
 		int o_max_samples = 12;
@@ -169,7 +169,7 @@ static WRITE16_HANDLER( sound_cmd_w )
 		bool ultraman_do_nothing = false;
 		bool ultraman_stop_samples = false;
 		bool ultraman_play_default = false;
-		
+
 		if(ultraman_start == true) {
 			sa_play_sample = true;
 			sa_left = 0;
@@ -178,17 +178,17 @@ static WRITE16_HANDLER( sound_cmd_w )
 			ultraman_diddy = true;
 			ultraman_lastwave = false;
 		}
-			
+
 		switch (data) {
-            // Opening 
+            // Opening
 			case 0x01:
 			    ultraman_diddy = false;
 				ultraman_title_diddy = false;
 				ultraman_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 0;
-				sa_right = 1;			
-				break;			
+				sa_right = 1;
+				break;
 			// Stage Clear
 			case 0x02:
 				ultraman_diddy = false;
@@ -196,7 +196,7 @@ static WRITE16_HANDLER( sound_cmd_w )
 				ultraman_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 2;
-				sa_right = 3;			
+				sa_right = 3;
 				break;
 			// Jamyra grave
 			case 0x03:
@@ -205,8 +205,8 @@ static WRITE16_HANDLER( sound_cmd_w )
 				ultraman_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 4;
-				sa_right = 5;	
-                break;				
+				sa_right = 5;
+                break;
 			// Name Entry
 			case 0x04:
 		        ultraman_diddy = false;
@@ -214,7 +214,7 @@ static WRITE16_HANDLER( sound_cmd_w )
 				ultraman_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 6;
-				sa_right = 7;				
+				sa_right = 7;
 				break;
 			// Intro
 			case 0x09:
@@ -223,7 +223,7 @@ static WRITE16_HANDLER( sound_cmd_w )
 				ultraman_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 8;
-				sa_right = 9;							
+				sa_right = 9;
 				break;
 			// Ending
 			case 0x0A:
@@ -232,7 +232,7 @@ static WRITE16_HANDLER( sound_cmd_w )
 				ultraman_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 10;
-				sa_right = 11;							
+				sa_right = 11;
 				break;
 			// Prepare for Battle
 			case 0x0B:
@@ -241,8 +241,8 @@ static WRITE16_HANDLER( sound_cmd_w )
 				ultraman_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 12;
-				sa_right = 13;			
-				break;			
+				sa_right = 13;
+				break;
 			// Victory
 			case 0x0C:
 		        ultraman_diddy = false;
@@ -250,7 +250,7 @@ static WRITE16_HANDLER( sound_cmd_w )
 				ultraman_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 14;
-				sa_right = 15;			
+				sa_right = 15;
 				break;
 			// Stage 1 Bemular
 			case 0x0D:
@@ -259,8 +259,8 @@ static WRITE16_HANDLER( sound_cmd_w )
 				ultraman_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 16;
-				sa_right = 17;			
-				break;				
+				sa_right = 17;
+				break;
 			// Stage 5 Telesdon
 			case 0x0E:
 				ultraman_diddy = false;
@@ -268,7 +268,7 @@ static WRITE16_HANDLER( sound_cmd_w )
 				ultraman_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 18;
-				sa_right = 19;			
+				sa_right = 19;
 				break;
 			// Stage 4 Jamyra
 			case 0x0F:
@@ -277,8 +277,8 @@ static WRITE16_HANDLER( sound_cmd_w )
 				ultraman_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 30;
-				sa_right = 21;			
-				break;			
+				sa_right = 21;
+				break;
 			// Sayge 6 Bullon
 			case 0x10:
                 ultraman_diddy = false;
@@ -286,8 +286,8 @@ static WRITE16_HANDLER( sound_cmd_w )
 				ultraman_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 22;
-				sa_right = 23;	
-                break;				
+				sa_right = 23;
+                break;
 			// Stage 10 Redking
 			case 0x11:
 		        ultraman_diddy = false;
@@ -295,7 +295,7 @@ static WRITE16_HANDLER( sound_cmd_w )
 				ultraman_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 24;
-				sa_right = 25;				
+				sa_right = 25;
 				break;
 			// Stage 3 and 9 Baltan
 			case 0x12:
@@ -304,7 +304,7 @@ static WRITE16_HANDLER( sound_cmd_w )
 				ultraman_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 26;
-				sa_right = 27;			
+				sa_right = 27;
 				break;
 			// Stage 8 Gomora
 			case 0x13:
@@ -313,7 +313,7 @@ static WRITE16_HANDLER( sound_cmd_w )
 				ultraman_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 28;
-				sa_right = 29;							
+				sa_right = 29;
 				break;
 			// Stage 11 Alien Mefilas
 			case 0x14:
@@ -322,8 +322,8 @@ static WRITE16_HANDLER( sound_cmd_w )
 				ultraman_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 30;
-				sa_right = 31;			
-				break;			
+				sa_right = 31;
+				break;
 			// Stage 12 Gelonimon
 			case 0x15:
 		        ultraman_diddy = false;
@@ -331,7 +331,7 @@ static WRITE16_HANDLER( sound_cmd_w )
 				ultraman_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 32;
-				sa_right = 33;			
+				sa_right = 33;
 				break;
 			// Final Stage Z-Ton
 			case 0x16:
@@ -340,7 +340,7 @@ static WRITE16_HANDLER( sound_cmd_w )
 				ultraman_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 34;
-				sa_right = 35;			
+				sa_right = 35;
 				break;
 			//  Stage 7 Antlar
 			case 0x17:
@@ -349,21 +349,21 @@ static WRITE16_HANDLER( sound_cmd_w )
 				ultraman_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 36;
-				sa_right = 37;			
+				sa_right = 37;
 				break;
 			// 2nd Boss Nelonga
-			case 0x18:		
+			case 0x18:
                if(ultraman_lastwave == false) {
 					ultraman_diddy = false;
 					ultraman_title_diddy = false;
 					ultraman_lastwave = true;
 					sa_play_sample = true;
 					sa_left = 38;
-					sa_right = 39;		
+					sa_right = 39;
 			   }
 				else
 					ultraman_do_nothing = true;
-				break;    
+				break;
                 default:
 				soundlatch_w(0,data & 0xff);
 				cpu_set_irq_line(1,IRQ_LINE_NMI,PULSE_LINE);
@@ -379,19 +379,19 @@ static WRITE16_HANDLER( sound_cmd_w )
 
 			sample_start(0, sa_left, sa_loop);
 			sample_start(1, sa_right, sa_loop);
-			
+
 			// Determine how we should mix these samples together.
-			if(sample_playing(0) == 0 && sample_playing(1) == 1) { // Right channel only. Lets make it play in both speakers.
+			if(!sample_playing(0) && sample_playing(1)) { // Right channel only. Lets make it play in both speakers.
 				sample_set_stereo_volume(1, 100, 100);
 			}
-			else if(sample_playing(0) == 1 && sample_playing(1) == 0) { // Left channel only. Lets make it play in both speakers.
+			else if(sample_playing(0) && !sample_playing(1)) { // Left channel only. Lets make it play in both speakers.
 				sample_set_stereo_volume(0, 100, 100);
 			}
-			else if(sample_playing(0) == 1 && sample_playing(1) == 1) { // Both left and right channels. Lets make them play in there respective speakers.
+			else if(sample_playing(0) && sample_playing(1)) { // Both left and right channels. Lets make them play in there respective speakers.
 				sample_set_stereo_volume(0, 100, 0);
 				sample_set_stereo_volume(1, 0, 100);
 			}
-			else if(sample_playing(0) == 0 && sample_playing(1) == 0 && ultraman_do_nothing == false) { // No sample playing, revert to the default sound.
+			else if(!sample_playing(0) && !sample_playing(1) && ultraman_do_nothing == false) { // No sample playing, revert to the default sound.
 				sa_play_original = false;
 				soundlatch_w(0,data & 0xff);
 				cpu_set_irq_line(1,IRQ_LINE_NMI,PULSE_LINE);
@@ -410,7 +410,7 @@ static WRITE16_HANDLER( sound_cmd_w )
 			for(a = 0; a <= o_max_samples; a++) {
 				sample_stop(a);
 			}
-		    
+
             // Now play the default sound.
 			soundlatch_w(0,data & 0xff);
 		    cpu_set_irq_line(1,IRQ_LINE_NMI,PULSE_LINE);
@@ -419,9 +419,9 @@ static WRITE16_HANDLER( sound_cmd_w )
 			soundlatch_w(0,data & 0xff);
 		    cpu_set_irq_line(1,IRQ_LINE_NMI,PULSE_LINE);
 		}
-	}				
+	}
 }
- 
+
 
 static MEMORY_READ16_START( ultraman_readmem )
 	{ 0x000000, 0x03ffff, MRA16_ROM },				/* ROM */
@@ -444,7 +444,7 @@ static MEMORY_WRITE16_START( ultraman_writemem )
 	{ 0x080000, 0x08ffff, MWA16_RAM },					/* RAM */
 	{ 0x180000, 0x183fff, paletteram16_xRRRRRGGGGGBBBBB_word_w, &paletteram16 },/* Palette */
 	{ 0x1c0018, 0x1c0019, ultraman_gfxctrl_w },	/* counters + gfx ctrl */
-    { 0x1c0028, 0x1c0029, sound_cmd_w },	
+    { 0x1c0028, 0x1c0029, sound_cmd_w },
 	{ 0x1c0030, 0x1c0031, watchdog_reset16_w },
 	{ 0x204000, 0x204fff, ultraman_K051316_0_w },		/* K051316 #0 RAM */
 	{ 0x205000, 0x205fff, ultraman_K051316_1_w },		/* K051316 #1 RAM */
@@ -615,9 +615,9 @@ static MACHINE_DRIVER_START( ultraman )
 	MDRV_VIDEO_UPDATE(ultraman)
 
 	/* sound hardware */
-	MDRV_SOUND_ATTRIBUTES(SOUND_SUPPORTS_STEREO) 
+	MDRV_SOUND_ATTRIBUTES(SOUND_SUPPORTS_STEREO)
 	MDRV_SOUND_ADD(YM2151, ym2151_interface)
-	MDRV_SOUND_ADD(OKIM6295, okim6295_interface) 
+	MDRV_SOUND_ADD(OKIM6295, okim6295_interface)
 	MDRV_SOUND_ADD(SAMPLES, ultraman_samples )
 	ultraman_playing = true;
 	ultraman_start = 0;

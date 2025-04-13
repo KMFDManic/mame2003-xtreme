@@ -126,7 +126,7 @@ static WRITE_HANDLER( sound_command_w )
 	   bool gng_do_nothing = false;
 	   bool gng_stop_samples = false;
 	   bool gng_play_default = false;
-		
+
 		if(gng_start == true) {
 			sa_play_sample = true;
 			sa_left = 0;
@@ -135,8 +135,8 @@ static WRITE_HANDLER( sound_command_w )
 			gng_diddy = true;
 			gng_lastwave = false;
 		}
-			
-		switch (data) {	            
+
+		switch (data) {
 			/* before stage intro part 2*/
 			case 0x10:
 			    gng_diddy = false;
@@ -144,8 +144,8 @@ static WRITE_HANDLER( sound_command_w )
 				gng_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 0;
-				sa_right = 1;			
-				break;			
+				sa_right = 1;
+				break;
 			/* 1st lap Clear*/
 			case 0x1C:
 				gng_diddy = false;
@@ -153,7 +153,7 @@ static WRITE_HANDLER( sound_command_w )
 				gng_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 2;
-				sa_right = 3;			
+				sa_right = 3;
 				break;
 			/* 1st Place name Reg*/
 			case 0x26:
@@ -162,15 +162,15 @@ static WRITE_HANDLER( sound_command_w )
 				gng_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 4;
-				sa_right = 5;	
-                break;				
+				sa_right = 5;
+                break;
 			/* Below 2nd Entry End*/
 			case 0x27:
 		        gng_diddy = false;
 				gng_title_diddy = false;
 				gng_lastwave = false;
 				sa_left = 6;
-				sa_right = 7;				
+				sa_right = 7;
 				break;
 			/* Below 2nd Place name Reg */
 			case 0x28:
@@ -179,7 +179,7 @@ static WRITE_HANDLER( sound_command_w )
 				gng_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 8;
-				sa_right = 9;			
+				sa_right = 9;
 				break;
 			/* stage #5 and #6 TH Demon Castle*/
 			case 0x29:
@@ -187,7 +187,7 @@ static WRITE_HANDLER( sound_command_w )
 				gng_title_diddy = false;
 				gng_lastwave = false;
 				sa_left = 10;
-				sa_right = 11;							
+				sa_right = 11;
 				break;
 			/* Boss #7*/
 			case 0x2A:
@@ -196,8 +196,8 @@ static WRITE_HANDLER( sound_command_w )
 				gng_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 12;
-				sa_right = 13;			
-				break;			
+				sa_right = 13;
+				break;
 			/* stage #1 and #2: */
 			case 0x2B:
 		        gng_diddy = false;
@@ -205,7 +205,7 @@ static WRITE_HANDLER( sound_command_w )
 				gng_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 14;
-				sa_right = 15;			
+				sa_right = 15;
 				break;
 			/* stage #1 and #2 boss*/
 			case 0x2D:
@@ -214,7 +214,7 @@ static WRITE_HANDLER( sound_command_w )
 				gng_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 16;
-				sa_right = 17;			
+				sa_right = 17;
 				break;
 			/* Boss #5 and #6*/
 			case 0x2E:
@@ -223,7 +223,7 @@ static WRITE_HANDLER( sound_command_w )
 				gng_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 18;
-				sa_right = 19;			
+				sa_right = 19;
 				break;
 			/* the map*/
 			case 0x30:
@@ -232,7 +232,7 @@ static WRITE_HANDLER( sound_command_w )
 				gng_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 18;
-				sa_right = 19;			
+				sa_right = 19;
 				break;
 			/* 2nd Lap clear */
 			case 0x32:
@@ -241,7 +241,7 @@ static WRITE_HANDLER( sound_command_w )
 				gng_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 20;
-				sa_right = 21;			
+				sa_right = 21;
 				break;
 			/* stage #3 and #4*/
 			case 0x33:
@@ -250,7 +250,7 @@ static WRITE_HANDLER( sound_command_w )
 				gng_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 20;
-				sa_right = 21;			
+				sa_right = 21;
 				break;
 			/* stage #3 and #4 boss*/
 			case 0x34:
@@ -259,7 +259,7 @@ static WRITE_HANDLER( sound_command_w )
 				gng_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 20;
-				sa_right = 21;			
+				sa_right = 21;
 				break;
 			/* stage introduction*/
 			case 0x36:
@@ -268,7 +268,7 @@ static WRITE_HANDLER( sound_command_w )
 				gng_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 20;
-				sa_right = 21;			
+				sa_right = 21;
 				break;
 			//*last boss intro  */
 			case 0x38:
@@ -277,21 +277,21 @@ static WRITE_HANDLER( sound_command_w )
 				gng_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 20;
-				sa_right = 21;			
+				sa_right = 21;
 				break;
 			/* before stage intro*/
-			case 0x3A:			
+			case 0x3A:
                if(gng_lastwave == false) {
 					gng_diddy = false;
 					gng_title_diddy = false;
 					gng_lastwave = true;
 					sa_play_sample = true;
 					sa_left = 22;
-					sa_right = 23;		
+					sa_right = 23;
 			   }
 				else
 					gng_do_nothing = true;
-				break;    
+				break;
                 default:
 				soundlatch_w(offset,data & 0xff);
 			break;
@@ -306,19 +306,19 @@ static WRITE_HANDLER( sound_command_w )
 
 			sample_start(0, sa_left, sa_loop);
 			sample_start(1, sa_right, sa_loop);
-			
+
 			// Determine how we should mix these samples together.
-			if(sample_playing(0) == 0 && sample_playing(1) == 1) { // Right channel only. Lets make it play in both speakers.
+			if(!sample_playing(0)  && sample_playing(1)) { // Right channel only. Lets make it play in both speakers.
 				sample_set_stereo_volume(1, 100, 100);
 			}
-			else if(sample_playing(0) == 1 && sample_playing(1) == 0) { // Left channel only. Lets make it play in both speakers.
+			else if(sample_playing(0) && !sample_playing(1)) { // Left channel only. Lets make it play in both speakers.
 				sample_set_stereo_volume(0, 100, 100);
 			}
-			else if(sample_playing(0) == 1 && sample_playing(1) == 1) { // Both left and right channels. Lets make them play in there respective speakers.
+			else if(sample_playing(0)  && sample_playing(1)) { // Both left and right channels. Lets make them play in there respective speakers.
 				sample_set_stereo_volume(0, 100, 0);
 				sample_set_stereo_volume(1, 0, 100);
 			}
-			else if(sample_playing(0) == 0 && sample_playing(1) == 0 && gng_do_nothing == false) { // No sample playing, revert to the default sound.
+			else if(!sample_playing(0) && !sample_playing(1) && gng_do_nothing == false) { // No sample playing, revert to the default sound.
 				sa_play_original = false;
 				soundlatch_w(offset,data & 0xff);
 			}
@@ -335,7 +335,7 @@ static WRITE_HANDLER( sound_command_w )
 			for(a = 0; a <= o_max_samples; a++) {
 				sample_stop(a);
 			}
-		    
+
             // Now play the default sound.
 			soundlatch_w(offset,data & 0xff);
 			cpu_set_irq_line(1,IRQ_LINE_NMI,PULSE_LINE);
@@ -346,7 +346,7 @@ static WRITE_HANDLER( sound_command_w )
 	}
 }
 
-		
+
 static MEMORY_READ_START( readmem )
 	{ 0x0000, 0x2fff, MRA_RAM },
 	{ 0x3000, 0x3000, input_port_0_r },
@@ -699,7 +699,7 @@ static struct YM2203interface ym2203_interface =
 {
 	2,			/* 2 chips */
 	1500000,	/* 1.5 MHz (?) */
-		
+
 	{ YM2203_VOL(20,40), YM2203_VOL(20,40) },
 	{ 0 },
 	{ 0 },
@@ -723,7 +723,7 @@ static MACHINE_DRIVER_START( gng )
 
 	MDRV_FRAMES_PER_SECOND(60)
 	MDRV_VBLANK_DURATION(DEFAULT_60HZ_VBLANK_DURATION)
-	
+
 
 	/* video hardware */
 	MDRV_VIDEO_ATTRIBUTES(VIDEO_TYPE_RASTER | VIDEO_BUFFERS_SPRITERAM)

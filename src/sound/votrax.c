@@ -72,7 +72,8 @@ void votrax_w(int data)
 		mixer_play_sample(VotraxChannel,VotraxSamples->sample[Phoneme]->data,
 				  VotraxSamples->sample[Phoneme]->length,
 				  VotraxBaseFrequency+(256*Intonation),
-				  0);
+				  0,
+				  1);
 	}
 }
 

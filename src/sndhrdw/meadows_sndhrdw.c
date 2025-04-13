@@ -42,9 +42,9 @@ int meadows_sh_start(const struct MachineSound *msound)
 	vol[0]=vol[1]=255;
 	channel = mixer_allocate_channels(2,vol);
 	mixer_set_volume(channel,0);
-	mixer_play_sample(channel,waveform,sizeof(waveform),freq1,1);
+	mixer_play_sample(channel,waveform,sizeof(waveform),freq1,1,1);
 	mixer_set_volume(channel+1,0);
-	mixer_play_sample(channel+1,waveform,sizeof(waveform),freq2,1);
+	mixer_play_sample(channel+1,waveform,sizeof(waveform),freq2,1,1);
     return 0;
 }
 
