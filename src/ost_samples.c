@@ -471,77 +471,77 @@ const char *const sf2_sample_set_names[] =
 struct Samplesinterface ost_contra =
 {
 	2,	/* 2 channels*/
-	100, /* volume*/
+	39, /* volume*/
 	contra_sample_set_names
 };
 
 struct Samplesinterface ost_ddragon =
 {
 	2,	/* 2 channels*/
-	100, /* volume*/
+	39, /* volume*/
 	ddragon_sample_set_names
 };
 
 struct Samplesinterface ost_ffight =
 {
 	2,	/* 2 channels*/
-	100, /* volume*/
+	39, /* volume*/
 	ffight_sample_set_names
 };
 
 struct Samplesinterface ost_ikari =
 {
 	2,	/* 2 channels*/
-	100, /* volume*/
+	39, /* volume*/
 	ikari_sample_set_names
 };
 
 struct Samplesinterface ost_mk =
 {
 	2,	/* 2 channels*/
-	100, /* volume*/
+	39, /* volume*/
 	mk_sample_set_names
 };
 
 struct Samplesinterface ost_moonwalker =
 {
 	2,	/* 2 channels*/
-	100, /* volume*/
+	50, /* volume*/
 	moonwalker_sample_set_names
 };
 
 struct Samplesinterface ost_nba_jam =
 {
 	2,	/* 2 channels*/
-	100, /* volume*/
+	39, /* volume*/
 	nba_jam_sample_set_names
 };
 
 struct Samplesinterface ost_outrun =
 {
 	2,	/* 2 channels*/
-	100, /* volume*/
+	39, /* volume*/
 	outrun_sample_set_names
 };
 
 struct Samplesinterface ost_robocop =
 {
 	2,	/* 2 channels*/
-	100, /* volume*/
+	39, /* volume*/
 	robocop_sample_set_names
 };
 
 struct Samplesinterface ost_sf1 =
 {
 	2,	/* 2 channels*/
-	100, /* volume*/
+	39, /* volume*/
 	sf1_sample_set_names
 };
 
 struct Samplesinterface ost_sf2 =
 {
 	2,	/* 2 channels*/
-	100, /* volume*/
+	39, /* volume*/
 	sf2_sample_set_names
 };
 
@@ -664,20 +664,20 @@ static void ost_stop_samples(void)
 static void ost_mix_samples(void)
 {
   /* Determine how we should mix these samples together.*/
-  if(sample_playing(0) == 0 && sample_playing(1) == 1) { /* Right channel only. Lets make it play in both speakers.*/
-    sample_set_stereo_volume(1, sa_volume, sa_volume);
+  if(!sample_playing(0) && sample_playing(1)) { /* Right channel only. Lets make it play in both speakers.*/
+    ost_sample_set_stereo_volume(1, sa_volume, sa_volume);
   }
 
-  else if(sample_playing(0) == 1 && sample_playing(1) == 0) { /* Left channel only. Lets make it play in both speakers.*/
-    sample_set_stereo_volume(0, sa_volume, sa_volume);
+  else if(sample_playing(0) && !sample_playing(1) ) { /* Left channel only. Lets make it play in both speakers.*/
+    ost_sample_set_stereo_volume(0, sa_volume, sa_volume);
   }
 
-  else if(sample_playing(0) == 1 && sample_playing(1) == 1) { /* Both left and right channels. Lets make them play in there respective speakers.*/
-    sample_set_stereo_volume(0, sa_volume, 0);
-    sample_set_stereo_volume(1, 0, sa_volume);
+  else if(sample_playing(0) && sample_playing(1)) { /* Both left and right channels. Lets make them play in there respective speakers.*/
+    ost_sample_set_stereo_volume(0, sa_volume, 0);
+    ost_sample_set_stereo_volume(1, 0, sa_volume);
   }
 
-  else if(sample_playing(0) == 0 && sample_playing(1) == 0) { /* No sample playing, revert to the default sound.*/
+  else if(!sample_playing(0)  && !sample_playing(1) ) { /* No sample playing, revert to the default sound.*/
     schedule_default_sound = true;
   }
 }
