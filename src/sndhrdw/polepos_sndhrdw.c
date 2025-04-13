@@ -174,5 +174,5 @@ void polepos_sample_play(int sample)
 	if (Machine->sample_rate == 0)
 		return;
 
-	mixer_play_sample(channel, speech + start * 16, len * 16, 4000*8, 0);
+	mixer_play_sample(channel, speech + start * 16, len * 16, 4000*8, 0,1);
 }

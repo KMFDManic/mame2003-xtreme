@@ -69,7 +69,7 @@ void play_channel1(int data)
 	if (data) {
 		freq1 = 2457600 / 16 / data / 8;
 		mixer_set_volume(channellfo+0, channel_playing1 * 100);
-		mixer_play_sample_16(channellfo+0, backgroundwave, sizeof(backgroundwave), sizeof(backgroundwave)*freq1,1);
+		mixer_play_sample_16(channellfo+0, backgroundwave, sizeof(backgroundwave), sizeof(backgroundwave)*freq1,1,1);
 	}
 	else {
 		polyplay_sh_stop();
@@ -81,7 +81,7 @@ void play_channel2(int data)
 	if (data) {
 		freq2 = 2457600 / 16 / data / 8;
 		mixer_set_volume(channellfo+1, channel_playing2 * 100);
-		mixer_play_sample_16(channellfo+1, backgroundwave, sizeof(backgroundwave), sizeof(backgroundwave)*freq2,1);
+		mixer_play_sample_16(channellfo+1, backgroundwave, sizeof(backgroundwave), sizeof(backgroundwave)*freq2,1,1);
 	}
 	else {
 		polyplay_sh_stop();

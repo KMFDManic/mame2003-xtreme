@@ -76,7 +76,7 @@ int targ_sh_start(const struct MachineSound *msound)
 	tone_active=0;
 	sound_a_freq = 0x00;
 	mixer_set_volume(tone_channel,0);
-	mixer_play_sample(tone_channel,(signed char*)waveform1,32,1000,1);
+	mixer_play_sample(tone_channel,(signed char*)waveform1,32,1000,1,1);
 	return 0;
 }
 

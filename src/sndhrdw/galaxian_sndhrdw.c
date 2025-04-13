@@ -143,7 +143,8 @@ WRITE_HANDLER( galaxian_noise_enable_w )
 			mixer_play_sample(channelnoise,Machine->samples->sample[1]->data,
 					Machine->samples->sample[1]->length,
 					Machine->samples->sample[1]->smpfreq,
-					0);
+					0,
+					1);
 		last_port1=data;
 	}
 	else
@@ -174,15 +175,16 @@ WRITE_HANDLER( galaxian_shoot_enable_w )
 			mixer_play_sample(channelshoot,Machine->samples->sample[0]->data,
 					Machine->samples->sample[0]->length,
 					Machine->samples->sample[0]->smpfreq,
-					0);
+					0,
+					1);
 		}
 		else
 #endif
 		{
 #if NEW_SHOOT
-			mixer_play_sample_16(channelshoot, shootwave, shoot_length, shoot_rate, 0);
+			mixer_play_sample_16(channelshoot, shootwave, shoot_length, shoot_rate, 0,1);
 #else
-			mixer_play_sample_16(channelshoot, shootwave, SHOOT_LENGTH, 10*SHOOT_RATE, 0);
+			mixer_play_sample_16(channelshoot, shootwave, SHOOT_LENGTH, 10*SHOOT_RATE, 0,1);
 #endif
 			mixer_set_volume(channelshoot,SHOOT_VOLUME);
 		}
@@ -473,22 +475,22 @@ static int galaxian_sh_start(const struct MachineSound *msound)
 #endif
 	{
 		mixer_set_volume(channelnoise,0);
-		mixer_play_sample_16(channelnoise,noisewave,NOISE_LENGTH,NOISE_RATE,1);
+		mixer_play_sample_16(channelnoise,noisewave,NOISE_LENGTH,NOISE_RATE,1,1);
 	}
 #if SAMPLES
 	if (!shootsampleloaded)
 #endif
 	{
 		mixer_set_volume(channelshoot,0);
-		mixer_play_sample_16(channelshoot,shootwave,SHOOT_LENGTH,SHOOT_RATE,1);
+		mixer_play_sample_16(channelshoot,shootwave,SHOOT_LENGTH,SHOOT_RATE,1,1);
 	}
 
 	mixer_set_volume(channellfo+0,0);
-	mixer_play_sample_16(channellfo+0,backgroundwave,sizeof(backgroundwave),1000,1);
+	mixer_play_sample_16(channellfo+0,backgroundwave,sizeof(backgroundwave),1000,1,1);
 	mixer_set_volume(channellfo+1,0);
-	mixer_play_sample_16(channellfo+1,backgroundwave,sizeof(backgroundwave),1000,1);
+	mixer_play_sample_16(channellfo+1,backgroundwave,sizeof(backgroundwave),1000,1,1);
 	mixer_set_volume(channellfo+2,0);
-	mixer_play_sample_16(channellfo+2,backgroundwave,sizeof(backgroundwave),1000,1);
+	mixer_play_sample_16(channellfo+2,backgroundwave,sizeof(backgroundwave),1000,1,1);
 
 	noisetimer = timer_alloc(noise_timer_cb);
 	lfotimer = timer_alloc(lfo_timer_cb);
