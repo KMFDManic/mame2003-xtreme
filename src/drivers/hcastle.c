@@ -101,7 +101,7 @@ static WRITE_HANDLER( hcastle_soundirq_w )
 	   bool hcastle_do_nothing = false;
 	   bool hcastle_stop_samples = false;
 	   bool hcastle_play_default = false;
-		
+
 		if(hcastle_start == true) {
 			sa_play_sample = true;
 			sa_left = 0;
@@ -110,8 +110,8 @@ static WRITE_HANDLER( hcastle_soundirq_w )
 			hcastle_diddy = true;
 			hcastle_lastwave = false;
 		}
-			
-		switch (data) {	            
+
+		switch (data) {
 			/* Lullaby of devils - Ranking.*/
 			case 0x50:
 			    hcastle_diddy = false;
@@ -119,16 +119,16 @@ static WRITE_HANDLER( hcastle_soundirq_w )
 				hcastle_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 0;
-				sa_right = 1;			
-				break;			
-			/* Never Ends - Game Over*/ 
+				sa_right = 1;
+				break;
+			/* Never Ends - Game Over*/
 			case 0x51:
 				hcastle_diddy = false;
 				hcastle_title_diddy = false;
 				hcastle_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 2;
-				sa_right = 3;			
+				sa_right = 3;
 				break;
 			/* Cross your Heart - Stage 1*/
 			case 0x52:
@@ -137,15 +137,15 @@ static WRITE_HANDLER( hcastle_soundirq_w )
 				hcastle_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 4;
-				sa_right = 5;	
-                break;				
+				sa_right = 5;
+                break;
 			/* Bloody Tears - Satge 3*/
 			case 0x53:
 		        hcastle_diddy = false;
 				hcastle_title_diddy = false;
 				hcastle_lastwave = false;
 				sa_left = 6;
-				sa_right = 7;				
+				sa_right = 7;
 				break;
 			/* Lullaby of Devils - Stage 2 */
 			case 0x54:
@@ -154,7 +154,7 @@ static WRITE_HANDLER( hcastle_soundirq_w )
 				hcastle_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 8;
-				sa_right = 9;			
+				sa_right = 9;
 				break;
 			/* The Revived Devil - Boss */
 			case 0x55:
@@ -162,7 +162,7 @@ static WRITE_HANDLER( hcastle_soundirq_w )
 				hcastle_title_diddy = false;
 				hcastle_lastwave = false;
 				sa_left = 10;
-				sa_right = 11;							
+				sa_right = 11;
 				break;
 			/* Wedding March - Introduction */
 			case 0x56:
@@ -171,8 +171,8 @@ static WRITE_HANDLER( hcastle_soundirq_w )
 				hcastle_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 12;
-				sa_right = 13;			
-				break;			
+				sa_right = 13;
+				break;
 			/* Basement Meoldy - Stage 4 */
 			case 0x57:
 		        hcastle_diddy = false;
@@ -180,7 +180,7 @@ static WRITE_HANDLER( hcastle_soundirq_w )
 				hcastle_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 14;
-				sa_right = 15;			
+				sa_right = 15;
 				break;
 			/* Again - Stage Clear */
 			case 0x59:
@@ -189,7 +189,7 @@ static WRITE_HANDLER( hcastle_soundirq_w )
 				hcastle_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 16;
-				sa_right = 17;			
+				sa_right = 17;
 				break;
 			/* Beats of the Clock Tower - Stage 5 */
 			case 0x5A:
@@ -198,7 +198,7 @@ static WRITE_HANDLER( hcastle_soundirq_w )
 				hcastle_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 18;
-				sa_right = 19;			
+				sa_right = 19;
 				break;
 			/* Dont wait till tonight - Stage 6 */
 			case 0x5B:
@@ -207,7 +207,7 @@ static WRITE_HANDLER( hcastle_soundirq_w )
 				hcastle_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 20;
-				sa_right = 21;			
+				sa_right = 21;
 				break;
 			/* Dracula's Room - Final Boos 1*/
 			case 0x5C:
@@ -216,7 +216,7 @@ static WRITE_HANDLER( hcastle_soundirq_w )
 				hcastle_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 22;
-				sa_right = 23;			
+				sa_right = 23;
 				break;
 			/* Final Boss */
 			case 0x5D:
@@ -225,7 +225,7 @@ static WRITE_HANDLER( hcastle_soundirq_w )
 				hcastle_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 24;
-				sa_right = 25;			
+				sa_right = 25;
 				break;
 			/* Haunted Castle destroyed - Ending */
 			case 0x5E:
@@ -234,7 +234,7 @@ static WRITE_HANDLER( hcastle_soundirq_w )
 				hcastle_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 26;
-				sa_right = 27;			
+				sa_right = 27;
 				break;
 			/* No Retrun - Intermission */
 			case 0x61:
@@ -243,21 +243,21 @@ static WRITE_HANDLER( hcastle_soundirq_w )
 				hcastle_lastwave = false;
 				sa_play_sample = true;
 				sa_left = 28;
-				sa_right = 29;			
+				sa_right = 29;
 				break;
 			//* Dracula Arised - Title  */
-			case 0x63:			
+			case 0x63:
                if(hcastle_lastwave == false) {
 					hcastle_diddy = false;
 				    hcastle_title_diddy = false;
 				    hcastle_lastwave = false;
 					sa_play_sample = true;
 					sa_left = 30;
-					sa_right = 31;		
+					sa_right = 31;
 			   }
 				else
 				    hcastle_do_nothing = true;
-				break;    
+				break;
                 default:
 				soundlatch_w(0,data & 0xff);
 				cpu_set_irq_line( 1, 0, HOLD_LINE );
@@ -273,19 +273,19 @@ static WRITE_HANDLER( hcastle_soundirq_w )
 
 			sample_start(0, sa_left, sa_loop);
 			sample_start(1, sa_right, sa_loop);
-			
+
 			// Determine how we should mix these samples together.
-			if(sample_playing(0) == 0 && sample_playing(1) == 1) { // Right channel only. Lets make it play in both speakers.
+			if(!sample_playing(0)  && sample_playing(1)) { // Right channel only. Lets make it play in both speakers.
 				sample_set_stereo_volume(1, 100, 100);
 			}
-			else if(sample_playing(0) == 1 && sample_playing(1) == 0) { // Left channel only. Lets make it play in both speakers.
+			else if(sample_playing(0) && !sample_playing(1)) { // Left channel only. Lets make it play in both speakers.
 				sample_set_stereo_volume(0, 100, 100);
 			}
-			else if(sample_playing(0) == 1 && sample_playing(1) == 1) { // Both left and right channels. Lets make them play in there respective speakers.
+			else if(sample_playing(0) && sample_playing(1)) { // Both left and right channels. Lets make them play in there respective speakers.
 				sample_set_stereo_volume(0, 100, 0);
 				sample_set_stereo_volume(1, 0, 100);
 			}
-			else if(sample_playing(0) == 0 && sample_playing(1) == 0 && hcastle_do_nothing == false) { // No sample playing, revert to the default sound.
+			else if(!sample_playing(0)  && !sample_playing(1)  && hcastle_do_nothing == false) { // No sample playing, revert to the default sound.
 				sa_play_original = false;
 				soundlatch_w(0,data & 0xff);
 				cpu_set_irq_line( 1, 0, HOLD_LINE );
@@ -303,7 +303,7 @@ static WRITE_HANDLER( hcastle_soundirq_w )
 			for(a = 0; a <= o_max_samples; a++) {
 				sample_stop(a);
 			}
-		    
+
             // Now play the default sound.
 			soundlatch_w(0,data & 0xff);
 			cpu_set_irq_line( 1, 0, HOLD_LINE );
@@ -314,7 +314,7 @@ static WRITE_HANDLER( hcastle_soundirq_w )
 		}
 	}
 }
-	
+
 static WRITE_HANDLER( hcastle_coin_w )
 {
 	coin_counter_w(0,data & 0x40);
