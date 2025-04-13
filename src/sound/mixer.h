@@ -85,6 +85,9 @@ const char *mixer_get_name(int channel);
   use this function to emulate that.
 */
 void mixer_set_volume(int channel,int volume);
+void mixer_set_stereo_volume(int ch, int l_vol, int r_vol );
+void ost_mixer_set_volume(int channel,int volume);
+void ost_mixer_set_stereo_volume(int ch, int l_vol, int r_vol );
 
 void mixer_play_sample(int channel,INT8 *data,int len,int freq,int loop, int samplenum);
 void mixer_play_sample_16(int channel,INT16 *data,int len,int freq,int loop, int samplenum);
@@ -115,7 +118,5 @@ void mixer_load_config(const struct mixer_config *config);
 void mixer_save_config(struct mixer_config *config);
 void mixer_read_config(mame_file *f);
 void mixer_write_config(mame_file *f);
-
-void mixer_set_stereo_volume(int ch, int l_vol, int r_vol );
 
 #endif

@@ -925,6 +925,33 @@ const char *mixer_get_name(int ch)
 
 
 /***************************************************************************
+	ost mixer_set_volume
+***************************************************************************/
+
+void ost_mixer_set_volume(int ch, int volume)
+{
+	struct mixer_channel_data *channel = &mixer_channel[ch];
+
+	mixer_update_channel(channel, sound_scalebufferpos(samples_this_frame));
+	channel->left_volume  = ((volume * channel->mixing_level * 256) << channel->gain) / (100*100);
+	channel->right_volume = ((volume * channel->mixing_level * 256) << channel->gain) / (100*100);
+
+}
+
+/***************************************************************************
+	ost_mixer_set_stereo_volume
+***************************************************************************/
+void ost_mixer_set_stereo_volume(int ch, int l_vol, int r_vol )
+{
+	struct mixer_channel_data *channel = &mixer_channel[ch];
+
+	mixer_update_channel(channel, sound_scalebufferpos(samples_this_frame));
+	channel->left_volume  = ((l_vol * channel->mixing_level * 256) << channel->gain) / (100*100);
+	channel->right_volume = ((r_vol * channel->mixing_level * 256) << channel->gain) / (100*100);
+
+}
+
+/***************************************************************************
 	mixer_set_volume
 ***************************************************************************/
 
@@ -1133,7 +1160,7 @@ void mixer_play_sample(int ch, INT8 *data, int len, int freq, int loop, int samp
 	channel->data_start = data;
 	channel->data_current = data;
 	channel->data_end = (UINT8 *)data + len;
-	channel->is_playing = samplenum;
+	channel->is_playing = samplenum+1;
 	channel->is_looping = loop;
 	channel->is_16bit = 0;
 }
@@ -1162,7 +1189,7 @@ void mixer_play_sample_16(int ch, INT16 *data, int len, int freq, int loop, int 
 	channel->data_start = data;
 	channel->data_current = data;
 	channel->data_end = (UINT8 *)data + len;
-	channel->is_playing = samplenum;
+	channel->is_playing = samplenum+1;
 	channel->is_looping = loop;
 	channel->is_16bit = 1;
 }

@@ -77,6 +77,31 @@ void sample_set_freq(int channel,int freq)
 	mixer_set_sample_frequency(channel + firstchannel,freq);
 }
 
+void ost_sample_set_volume(int channel,int volume)
+{
+	if (Machine->sample_rate == 0) return;
+	if (Machine->samples == 0) return;
+	if (channel >= numchannels)
+	{
+		logerror("error: sample_adjust() called with channel = %d, but only %d channels allocated\n",channel,numchannels);
+		return;
+	}
+	ost_mixer_set_volume(channel + firstchannel,volume);
+}
+
+// Set sample volume by speaker.
+void ost_sample_set_stereo_volume(int channel,int volume_left, int volume_right)
+{
+	if (Machine->sample_rate == 0) return;
+	if (Machine->samples == 0) return;
+	if (channel >= numchannels)
+	{
+		logerror("error: sample_adjust() called with channel = %d, but only %d channels allocated\n",channel,numchannels);
+		return;
+	}
+	ost_mixer_set_stereo_volume(channel + firstchannel,volume_left, volume_right);
+}
+
 // Set sample volume by speaker.
 void sample_set_stereo_volume(int channel,int volume_left, int volume_right)
 {
@@ -149,7 +174,7 @@ int sample_playing(int channel)
 		return 0;
 	}
 
-	return mixer_is_sample_playing(channel + firstchannel);
+	return  mixer_is_sample_playing(channel + firstchannel);
 }
 
 
