@@ -184,7 +184,7 @@ static int getDriverIndex(const char* aPath)
           return i;
        }
     }
-
+	log_cb(RETRO_LOG_INFO, "Game not found in drivers: %s.\n", driverName);
     return -1;
 }
 
@@ -639,7 +639,7 @@ bool retro_load_game(const struct retro_game_info *game)
     // Find game index
     driverIndex = getDriverIndex(game->path);
 
-    if(driverIndex)
+    if(driverIndex != -1)
     {
         #define describe_buttons(INDEX) \
         { INDEX, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT,  "Joystick Left" },\
