@@ -1,6 +1,8 @@
 DEBUG=0
 DEBUGGER=0
 SPLIT_UP_LINK=0
+HIDE ?= @
+
 CORE_DIR := src
 TARGET_NAME := km_mame2003_xtreme_amped
 
@@ -549,25 +551,26 @@ $(TARGET): $(OBJECTS)
 ifeq ($(STATIC_LINKING),1)
 	@echo Archiving $@...
 ifeq ($(SPLIT_UP_LINK), 1)
-	$(AR) rcs $@ $(foreach OBJECTS,$(OBJECTS),$(NEWLINE) $(AR) q $@ $(OBJECTS))
+	$(HIDE)$(AR) rcs $@ $(foreach OBJECTS,$(OBJECTS),$(NEWLINE) $(AR) q $@ $(OBJECTS))
 else
-	$(AR) rcs $@ $(OBJECTS)
+	$(HIDE)$(AR) rcs $@ $(OBJECTS)
 endif
 else
 	@echo Linking $@...
 	@echo platform $(system_platform)
 ifeq ($(SPLIT_UP_LINK), 1)
 	# Use a temporary file to hold the list of objects, as it can exceed windows shell command limits
-	$(file >$@.in,$(OBJECTS))
-	$(LD) $(LDFLAGS) $(LINKOUT)$@ @$@.in $(LIBS)
+	$(HIDE)$(file >$@.in,$(OBJECTS))
+	$(HIDE)$(LD) $(LDFLAGS) $(LINKOUT)$@ @$@.in $(LIBS)
 	@rm $@.in
 else
-	$(LD) $(LDFLAGS) $(LINKOUT)$@ $(OBJECTS) $(LIBS)
+	$(HIDE)$(LD) $(LDFLAGS) $(LINKOUT)$@ $(OBJECTS) $(LIBS)
 endif
 endif
 
 %.o: %.c
-	$(CC) $(CDEFS) $(CFLAGS) $(PLATCFLAGS) -c $(OBJOUT)$@ $<
+	@echo Compiling $<...
+	$(HIDE)$(CC) $(CDEFS) $(CFLAGS) $(PLATCFLAGS) -c $(OBJOUT)$@ $<
 
 
 %.o: %.s
