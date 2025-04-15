@@ -10,7 +10,8 @@ redesigned (8bpp!) graphics and different sound hardware... Crazy
 #include "driver.h"
 #include "vidhrdw/generic.h"
 
-data8_t *bg_paletteram,*bg_vram;
+data8_t *bg_paletteram;
+extern data8_t *bg_vram;
 
 /* vidhrdw/bublbobl.c */
 extern unsigned char *bublbobl_objectram;

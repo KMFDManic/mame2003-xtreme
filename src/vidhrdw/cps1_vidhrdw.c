@@ -247,7 +247,7 @@ struct CPS1config *cps1_game_config;
 #define CPS_B_16 0x40,0x0406, 0,0,0,0, /* n/a */   0x4c,{0x4a,0x48,0x46,0x44},0x42, {0x10,0x0a,0x0a,0x00,0x00}
 #define CPS_B_17 0x48,0x0407, 0,0,0,0, /* n/a */   0x54,{0x52,0x50,0x4e,0x4c},0x4a, {0x08,0x10,0x02,0x00,0x00}
 #define CPS_B_18 0xd0,0x0408, 0,0,0,0, /* n/a */   0xdc,{0xda,0xd8,0xd6,0xd4},0xd2, {0x10,0x08,0x02,0x00,0x00}
-#define NOBATTRY 0x00,0x0000, 0x40,0x42,0x44,0x46, 0x66,{0x68,0x6a,0x6c,0x6e},0x70, {0x02,0x04,0x08,0x30,0x30}	// pang3 sets layer enable to 0x26 on startup
+#define NOBATTRY 0x00,0x0000, 0x40,0x42,0x44,0x46, 0x66,{0x68,0x6a,0x6c,0x6e},0x70, {0x02,0x04,0x08,0x30,0x30}	/* pang3 sets layer enable to 0x26 on startup*/
 #define BATTRY_1 0x72,0x0800, 0x4e,0x4c,0x4a,0x48, 0x68,{0x66,0x64,0x62,0x60},0x70, {0x20,0x04,0x08,0x12,0x12}
 #define BATTRY_2 0x00,0x0000, 0x5e,0x5c,0x5a,0x58, 0x60,{0x6e,0x6c,0x6a,0x68},0x70, {0x30,0x08,0x30,0x00,0x00}
 #define BATTRY_3 0x00,0x0000, 0x46,0x44,0x42,0x40, 0x60,{0x6e,0x6c,0x6a,0x68},0x70, {0x20,0x12,0x12,0x00,0x00}
@@ -284,6 +284,7 @@ static struct CPS1config cps1_config_table[]=
 	{"ffightu", CPS_B_01, 0,0,0, 0x0001,0xffff,0x0001,0xffff },
 	{"ffightj", CPS_B_04, 0,0,0, 0x0001,0xffff,0x0001,0xffff },
 	{"ffightj1",CPS_B_02, 0,0,0, 0x0001,0xffff,0x0001,0xffff },
+  {"ffightae",NOBATTRY, 0,0,0, 0x0001,0xffff,0x0001,0xffff }, /* i think this is correct */
 	{"1941",    CPS_B_05, 0,0,0, 0x0000,0xffff,0x0400,0x07ff },
 	{"1941j",   CPS_B_05, 0,0,0, 0x0000,0xffff,0x0400,0x07ff },
 	{"unsquad", CPS_B_11, 0,0,0, 0x0000,0xffff,0x0001,0xffff },	/* CPSB ID not checked, but it's the same as sf2eg */
@@ -311,7 +312,7 @@ static struct CPS1config cps1_config_table[]=
 	{"sf2ue",   CPS_B_18, 2,2,2, 0x0000,0xffff,0x0000,0xffff },
 	{"sf2uf",   CPS_B_15, 2,2,2, 0x0000,0xffff,0x0000,0xffff },
 	{"sf2ui",   CPS_B_14, 2,2,2, 0x0000,0xffff,0x0000,0xffff },
-	{"sf2uk",   CPS_B_17, 2,2,2, 0x0000,0xffff,0x0000,0xffff }, // check CPS_B
+	{"sf2uk",   CPS_B_17, 2,2,2, 0x0000,0xffff,0x0000,0xffff }, /* check CPS_B*/
 	{"sf2j",    CPS_B_13, 2,2,2, 0x0000,0xffff,0x0000,0xffff },
 	{"sf2ja",   CPS_B_17, 2,2,2, 0x0000,0xffff,0x0000,0xffff },
 	{"sf2jc",   CPS_B_12, 2,2,2, 0x0000,0xffff,0x0000,0xffff },
@@ -330,6 +331,7 @@ static struct CPS1config cps1_config_table[]=
 	{"knightsu",BATTRY_4, 0,0,0, 0x0000,0xffff,0x0000,0xffff, 3 },
 	{"knightsj",BATTRY_4, 0,0,0, 0x0000,0xffff,0x0000,0xffff, 3 },
 	{"sf2ce",   NOBATTRY, 2,2,2, 0x0000,0xffff,0x0000,0xffff },
+	{"sf2mix",   NOBATTRY, 2,2,2, 0x0000,0xffff,0x0000,0xffff },
 	{"sf2ceua", NOBATTRY, 2,2,2, 0x0000,0xffff,0x0000,0xffff },
 	{"sf2ceub", NOBATTRY, 2,2,2, 0x0000,0xffff,0x0000,0xffff },
 	{"sf2ceuc", NOBATTRY, 2,2,2, 0x0000,0xffff,0x0000,0xffff },
@@ -377,34 +379,61 @@ static struct CPS1config cps1_config_table[]=
 	{"pnickj",  NOBATTRY, 0,0,0, 0x0000,0xffff,0x0000,0xffff },
 	{"pang3",   NOBATTRY, 0,0,0, 0x0000,0xffff,0x0000,0xffff, 5 },	/* EEPROM port is among the CPS registers */
 	{"pang3j",  NOBATTRY, 0,0,0, 0x0000,0xffff,0x0000,0xffff, 5 },	/* EEPROM port is among the CPS registers */
-	#ifdef MESS
-	{"sfzch",   NOBATTRY, 0,0,0, 0x0000,0xffff,0x0000,0xffff },
-	#endif
+
+    /* CPS Prototype */
+  {"gulunpa", NOBATTRY, 0,0,0, 0x0000,0xffff,0x0000,0xffff }, /* Best guess likely incorrect */
+
+    /* CPS Changer */
+	{"wofch",   NOBATTRY, 0,0,0, 0x0000,0xffff,0x0000,0xffff },
+
 
     /* CPS2 games */
-	{"cps2",    NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff },
-	{"ssf2",    NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
-	{"ssf2u",   NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
-	{"ssf2a",   NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
-	{"ssf2ar1", NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
-	{"ssf2j",   NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
-	{"ssf2jr1", NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
-	{"ssf2jr2", NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
-	{"ssf2tb",  NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
-	{"ssf2tbj", NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
-	{"ssf2t",   NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff, 9 },
-	{"ssf2tu",  NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff, 9 },
-	{"ssf2tur1",NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff, 9 },
-	{"ssf2ta",  NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff, 9 },
-	{"ssf2xj",  NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff, 9 },
-	{"hsf2a",   NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff, 9 },
-	{"xmcota",  NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff, 8 },
-	{"xmcotau", NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff, 8 },
-	{"xmcotah", NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff, 8 },
-	{"xmcotaj", NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff, 8 },
-	{"xmcotaj1",NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff, 8 },
-	{"xmcotajr",NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff, 8 },
-	{"xmcotaa", NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff, 8 },
+	{"cps2",     NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff },
+	{"hsf2a",    NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff, 9 },
+	{"hsf2j1",   NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff, 9 },
+	{"hsf2j",    NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff, 9 },
+	{"hsf2",     NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff, 9 },
+	{"ssf2a",    NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
+	{"ssf2ar1",  NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
+	{"ssf2h",    NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
+	{"ssf2j",    NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
+	{"ssf2jr1",  NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
+	{"ssf2jr2",  NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
+	{"ssf2",     NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
+	{"ssf2r1",   NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
+	{"ssf2ta",   NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff, 9 },
+	{"ssf2tbj",  NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
+	{"ssf2tb",   NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
+	{"ssf2t",    NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff, 9 },
+	{"ssf2th",   NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff, 9 },
+	{"ssf2tu",   NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff, 9 },
+	{"ssf2tur1", NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff, 9 },
+	{"ssf2u",    NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
+	{"ssf2us2",  NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff,9 },
+	{"ssf2xj",   NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff, 9 },
+	{"ssf2xjr1", NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff, 9 },
+	{"ssf2xjr1r",NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff, 9 },
+	{"xmcota",   NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff, 8 },
+	{"xmcotar1", NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff, 8 },
+	{"xmcotau",  NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff, 8 },
+	{"xmcotab",  NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff, 8 },
+	{"xmcotah",  NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff, 8 },
+	{"xmcotahr1",NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff, 8 },
+	{"xmcotaj",  NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff, 8 },
+	{"xmcotaj1", NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff, 8 },
+	{"xmcotaj2", NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff, 8 },
+	{"xmcotaj3", NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff, 8 },
+	{"xmcotajr", NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff, 8 },
+	{"xmcotaa",  NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff, 8 },
+	{"xmcotaar1",NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff, 8 },
+	{"xmcotaar2",NOBATTRY, 4,4,4, 0x0000,0xffff,0x0000,0xffff, 8 },
+	{"ssf2tb",   NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
+	{"ssf2tbr1", NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
+	{"ssf2tbu",  NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
+	{"ssf2tbj",  NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
+	{"ssf2tbj1", NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
+	{"ssf2tba",  NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
+	{"ssf2tbh",  NOBATTRY, 4,4,0, 0x0000,0xffff,0x0000,0xffff },
 	{0}		/* End of table */
 };
 
@@ -508,9 +537,7 @@ INLINE data16_t *cps1_base(int offset,int boundary)
 
 READ16_HANDLER( cps1_output_r )
 {
-#if VERBOSE
-if (offset >= 0x18/2) logerror("PC %06x: read output port %02x\n",activecpu_get_pc(),offset*2);
-#endif
+  if (offset >= 0x18/2) log_cb(RETRO_LOG_DEBUG, LOGPRE "PC %06x: read output port %02x\n",activecpu_get_pc(),offset*2);
 
 	/* Some games interrogate a couple of registers on bootup. */
 	/* These are CPS1 board B self test checks. They wander from game to */
@@ -559,9 +586,8 @@ WRITE16_HANDLER( cps1_output_w )
 
 #ifdef MAME_DEBUG
 if (cps1_game_config->control_reg && offset == cps1_game_config->control_reg/2 && data != 0x3f)
-	logerror("control_reg = %04x",data);
+	log_cb(RETRO_LOG_DEBUG, LOGPRE "control_reg = %04x",data);
 #endif
-#if VERBOSE
 if (offset > 0x22/2 &&
         offset != cps1_game_config->layer_control/2 &&
 		offset != cps1_game_config->priority[0]/2 &&
@@ -569,14 +595,13 @@ if (offset > 0x22/2 &&
 		offset != cps1_game_config->priority[2]/2 &&
 		offset != cps1_game_config->priority[3]/2 &&
 		offset != cps1_game_config->control_reg/2)
-	logerror("PC %06x: write %02x to output port %02x\n",activecpu_get_pc(),data,offset*2);
+	log_cb(RETRO_LOG_DEBUG, LOGPRE "PC %06x: write %02x to output port %02x\n",activecpu_get_pc(),data,offset*2);
 
 #ifdef MAME_DEBUG
 if (offset == 0x22/2 && (data & ~0x8001) != 0x0e)
-	logerror("port 22 = %04x",data);
+	log_cb(RETRO_LOG_DEBUG, LOGPRE "port 22 = %04x",data);
 if (cps1_game_config->priority[0] && offset == cps1_game_config->priority[0]/2 && data != 0x00)
 	usrintf_showmessage("priority0 %04x",data);
-#endif
 #endif
 }
 
@@ -731,7 +756,7 @@ static void unshuffle(UINT64 *buf,int len)
 	}
 }
 
-static void cps2_gfx_decode(void)
+void cps2_gfx_decode(void)
 {
 	const int banksize=0x200000;
 	int size=memory_region_length(REGION_GFX1);
@@ -1176,7 +1201,7 @@ VIDEO_START( cps )
 
 	if (!cps1_game_config)
 	{
-		logerror("cps1_game_config hasn't been set up yet");
+		log_cb(RETRO_LOG_DEBUG, LOGPRE "cps1_game_config hasn't been set up yet");
 		return -1;
 	}
 
@@ -1354,8 +1379,8 @@ void cps1_render_sprites(struct mame_bitmap *bitmap, const struct rectangle *cli
 		int colour=*(base+3);
 		int col=colour&0x1f;
 
-//		x-=0x20;
-//		y+=0x20;
+/*		x-=0x20;*/
+/*		y+=0x20;*/
 
 		if (cps1_game_config->kludge == 7)
 		{
@@ -1522,11 +1547,11 @@ static data16_t *cps2_objbase(void)
 
 	if (cps2_objram_bank & 1) baseptr ^= 0x0080;
 
-//usrintf_showmessage("%04x %d",cps2_port(CPS2_OBJ_BASE),cps2_objram_bank&1);
+/*usrintf_showmessage("%04x %d",cps2_port(CPS2_OBJ_BASE),cps2_objram_bank&1);*/
 
 	if (baseptr == 0x7000)
 		return cps2_objram1;
-	else //if (baseptr == 0x7080)
+	else /*if (baseptr == 0x7080)*/
 		return cps2_objram2;
 }
 
@@ -1676,8 +1701,8 @@ void cps2_render_sprites(struct mame_bitmap *bitmap,const struct rectangle *clip
 							sy = (y+nys*16+yoffs) & 0x3ff;
 
 							DRAWSPRITE(
-//										code+nxs+0x10*nys,
-									(code & ~0xf) + ((code + nxs) & 0xf) + 0x10*nys,	//	pgear fix
+/*										code+nxs+0x10*nys,*/
+									(code & ~0xf) + ((code + nxs) & 0xf) + 0x10*nys,	/*	pgear fix*/
 									(col&0x1f) + palette_basecolor[0],
 									0,0,
 									sx,sy);
@@ -1700,10 +1725,10 @@ void cps2_render_sprites(struct mame_bitmap *bitmap,const struct rectangle *clip
 
 
 
-
 void cps1_render_stars(struct mame_bitmap *bitmap,const struct rectangle *cliprect)
 {
 	int offs;
+	int cnt;
 	UINT8 *stars_rom = memory_region(REGION_GFX2);
 
 	if (!stars_rom && (cps1_stars_enabled[0] || cps1_stars_enabled[1]))
@@ -1719,7 +1744,7 @@ void cps1_render_stars(struct mame_bitmap *bitmap,const struct rectangle *clipre
 		for (offs = 0;offs < stars_rom_size/2;offs++)
 		{
 			int col = stars_rom[8*offs+4];
-			if (col != 0x0f)
+			if ((col & 0x1f) != 0x0f)
 			{
 				int sx = (offs / 256) * 32;
 				int sy = (offs % 256);
@@ -1731,7 +1756,8 @@ void cps1_render_stars(struct mame_bitmap *bitmap,const struct rectangle *clipre
 					sy = 255 - sy;
 				}
 
-				col = ((col & 0xe0) >> 1) + (cpu_getcurrentframe()/16 & 0x0f);
+        cnt = (cpu_getcurrentframe() / 16 ) % ((col & 0x80) ? 15 : 16);
+				col = ((col & 0xe0) >> 1) + cnt;
 
 				if (sx >= cliprect->min_x && sx <= cliprect->max_x &&
 					sy >= cliprect->min_y && sy <= cliprect->max_y)
@@ -1745,7 +1771,7 @@ void cps1_render_stars(struct mame_bitmap *bitmap,const struct rectangle *clipre
 		for (offs = 0;offs < stars_rom_size/2;offs++)
 		{
 			int col = stars_rom[8*offs];
-			if (col != 0x0f)
+	        if ((col & 0x1f) != 0x0f)
 			{
 				int sx = (offs / 256) * 32;
 				int sy = (offs % 256);
@@ -1757,7 +1783,8 @@ void cps1_render_stars(struct mame_bitmap *bitmap,const struct rectangle *clipre
 					sy = 255 - sy;
 				}
 
-				col = ((col & 0xe0) >> 1) + (cpu_getcurrentframe()/16 & 0x0f);
+				cnt = (cpu_getcurrentframe() / 16 ) % ((col & 0x80) ? 15 : 16);
+				col = ((col & 0xe0) >> 1) + cnt;
 
 				if (sx >= cliprect->min_x && sx <= cliprect->max_x &&
 					sy >= cliprect->min_y && sy <= cliprect->max_y)

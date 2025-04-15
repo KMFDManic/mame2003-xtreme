@@ -6,7 +6,7 @@
 
   SAA 5050 -- Character display  (TODO: fix up background colours)
   S2636 (x2) -- Sprites, Sprite->Sprite collisions
-  Playfield graphics generator 
+  Playfield graphics generator
       (TODO: probably best to switch this to tilemaps one day, figure out banking)
 
 */
@@ -16,8 +16,8 @@
 #include "vidhrdw/generic.h"
 #include "vidhrdw/s2636.h"
 
-unsigned char* s2636_1_ram;
-unsigned char* s2636_2_ram;
+extern unsigned char* s2636_1_ram;
+extern unsigned char* s2636_2_ram;
 
 static INT8 frame_count;
 
@@ -50,7 +50,7 @@ struct mame_bitmap* collision_bitmap;
 
 int temp_x,temp_y;
 
-struct 
+struct
 {
 	int x;
 	int y;

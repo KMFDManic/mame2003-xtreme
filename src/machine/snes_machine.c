@@ -29,8 +29,8 @@ static UINT16 vram_fg_count;	/* Fullgraphic increase count */
 static UINT16 vram_fg_incr;		/* Fullgraphic increase */
 static UINT16 vram_fg_cntr;		/* Fullgraphic counter */
 static INT16 vram_fg_offset;	/* Fullgraphic offset */
-UINT8  spc_port_in[4];	/* Port for sending data to the SPC700 */
-UINT8  spc_port_out[4];	/* Port for receiving data from the SPC700 */
+extern UINT8  spc_port_in[4];	/* Port for sending data to the SPC700 */
+extern UINT8  spc_port_out[4];	/* Port for receiving data from the SPC700 */
 static UINT8 snes_hdma_chnl;	/* channels enabled for HDMA */
 static struct
 {
