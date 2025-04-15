@@ -4,10 +4,6 @@ SPLIT_UP_LINK=0
 CORE_DIR := src
 TARGET_NAME := km_mame2003_xtreme_amped
 
-#gcc 10 sets -fno-common this will patch you to compile until the issue is fixed
-
-#CFLAGS += -fcommon
-
 GIT_VERSION ?= " $(shell git rev-parse --short HEAD || echo unknown)"
 ifneq ($(GIT_VERSION)," unknown")
 	CFLAGS += -DGIT_VERSION=\"$(GIT_VERSION)\"
