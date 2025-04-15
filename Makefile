@@ -1,6 +1,8 @@
 DEBUG=0
 DEBUGGER=0
 SPLIT_UP_LINK=0
+HIDE ?= @
+
 CORE_DIR := src
 TARGET_NAME := km_mame2003_xtreme_amped
 
@@ -81,7 +83,7 @@ ifeq ($(platform), unix)
 
    CFLAGS += $(fpic)
    PLATCFLAGS += -Dstricmp=strcasecmp
-   LDFLAGS += $(fpic) -shared -Wl,--version-script=link.T
+   LDFLAGS += $(fpic) -shared -Wl,--no-undefined  -Wl,--version-script=link.T
 
 else ifeq ($(platform), linux-portable)
    TARGET = $(TARGET_NAME)_libretro.so
@@ -147,7 +149,7 @@ else ifeq ($(platform), rpi2)
    CFLAGS += $(fpic)
    LDFLAGS += $(fpic) -shared -Wl,--version-script=link.T
    PLATCFLAGS += -Dstricmp=strcasecmp
-   PLATCFLAGS += -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard 
+   PLATCFLAGS += -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
    PLATCFLAGS += -fomit-frame-pointer -ffast-math -fsigned-char
    CXXFLAGS = $(CFLAGS) -fno-rtti -fno-exceptions
    CPU_ARCH := arm
@@ -210,7 +212,7 @@ else ifneq (,$(findstring AMLG,$(platform)))
 	-fno-unwind-tables -fno-asynchronous-unwind-tables -fno-unroll-loops \
 	-fmerge-all-constants -fno-math-errno -fsigned-char \
 	-marm -march=armv8-a+crc -mfloat-abi=hard -mfpu=neon-fp-armv8
-	 
+
 ifneq (,$(findstring AMLG12B,$(platform)))
 	CFLAGS += -mtune=cortex-a73.cortex-a53
 else
@@ -231,11 +233,11 @@ endif
 	LDFLAGS += -static-libgcc -static-libstdc++
 	endif
 #######################################
-   
+
 else ifeq ($(platform), android-armv7)
    TARGET = $(TARGET_NAME)_libretro_android.so
 
-   CFLAGS += -fPIC 
+   CFLAGS += -fPIC
    PLATCFLAGS += -march=armv7-a -mfloat-abi=softfp -Dstricmp=strcasecmp
    LDFLAGS += -fPIC -shared -Wl,--version-script=link.T
 
@@ -245,7 +247,7 @@ else ifeq ($(platform), android-armv7)
 else ifeq ($(platform), qnx)
    TARGET = $(TARGET_NAME)_libretro_$(platform).so
 
-   CFLAGS += -fPIC 
+   CFLAGS += -fPIC
    PLATCFLAGS += -march=armv7-a -Dstricmp=strcasecmp
    LDFLAGS += -fPIC -shared -Wl,--version-script=link.T
 
@@ -256,7 +258,7 @@ else ifeq ($(platform), qnx)
 else ifeq ($(platform), wii)
    TARGET = $(TARGET_NAME)_libretro_$(platform).a
    BIGENDIAN = 1
-    
+
    CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc$(EXE_EXT)
    AR = $(DEVKITPPC)/bin/powerpc-eabi-ar$(EXE_EXT)
    PLATCFLAGS += -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float -D__ppc__ -D__POWERPC__ -Dstricmp=strcasecmp
@@ -266,7 +268,7 @@ else ifeq ($(platform), wii)
 else ifeq ($(platform), wiiu)
    TARGET = $(TARGET_NAME)_libretro_$(platform).a
    BIGENDIAN = 1
-    
+
    CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc$(EXE_EXT)
    AR = $(DEVKITPPC)/bin/powerpc-eabi-ar$(EXE_EXT)
    PLATCFLAGS += -DGEKKO -DWIIU -mwup -mcpu=750 -meabi -mhard-float -D__ppc__ -D__POWERPC__ -Dstricmp=strcasecmp
@@ -284,7 +286,7 @@ else ifeq ($(platform), switch)
 else ifeq ($(platform), ps3)
    TARGET = $(TARGET_NAME)_libretro_$(platform).a
    BIGENDIAN = 1
-    
+
    CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
    AR = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-ar.exe
    PLATCFLAGS += -D__CELLOS_LV2__ -D__ppc__ -D__POWERPC__ -Dstricmp=strcasecmp
@@ -292,7 +294,7 @@ else ifeq ($(platform), ps3)
 else ifeq ($(platform), sncps3)
    TARGET = $(TARGET_NAME)_libretro_ps3.a
    BIGENDIAN = 1
-    
+
    CC = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
    AR = $(CELL_SDK)/host-win32/sn/bin/ps3snarl.exe
    PLATCFLAGS += -D__CELLOS_LV2__ -D__ppc__ -D__POWERPC__ -Dstricmp=strcasecmp
@@ -300,7 +302,7 @@ else ifeq ($(platform), sncps3)
 else ifeq ($(platform), psl1ght)
    TARGET = $(TARGET_NAME)_libretro_$(platform).a
    BIGENDIAN = 1
-    
+
    CC = $(PS3DEV)/ppu/bin/ppu-gcc$
    AR = $(PS3DEV)/ppu/bin/ppu-ar$
    PLATCFLAGS += -D__CELLOS_LV2__ -D__ppc__ -D__POWERPC__ -Dstricmp=strcasecmp
@@ -323,7 +325,7 @@ else ifeq ($(platform), vita)
 	CFLAGS += -mthumb -mfloat-abi=hard -fsingle-precision-constant
 	CFLAGS += -Wall -mword-relocations
 	CFLAGS += -fomit-frame-pointer -ffast-math
-	CFLAGS += -fno-unwind-tables -fno-asynchronous-unwind-tables 
+	CFLAGS += -fno-unwind-tables -fno-asynchronous-unwind-tables
 	CFLAGS +=  -fno-optimize-sibling-calls
 	CFLAGS += -ftree-vectorize -funroll-loops -fno-short-enums
 	CXXFLAGS = $(CFLAGS) -fno-rtti -fno-exceptions
@@ -331,7 +333,7 @@ else ifeq ($(platform), vita)
 	ARM = 1
 	STATIC_LINKING := 1
 	DEBUG = 0
-		
+
 else ifneq (,$(findstring armv,$(platform)))
    TARGET = $(TARGET_NAME)_libretro.so
 
@@ -524,7 +526,7 @@ CDEFS = $(DEFS) $(COREDEFS) $(CPUDEFS) $(SOUNDDEFS) $(ASMDEFS) $(DBGDEFS)
 OBJECTS := $(sort $(SOURCES_C:.c=.o) ) $(SOURCES_ASM:.s=.o)
 
 OBJOUT   = -o
-LINKOUT  = -o 
+LINKOUT  = -o
 
 ifneq (,$(findstring msvc,$(platform)))
 	OBJOUT = -Fo
@@ -549,25 +551,26 @@ $(TARGET): $(OBJECTS)
 ifeq ($(STATIC_LINKING),1)
 	@echo Archiving $@...
 ifeq ($(SPLIT_UP_LINK), 1)
-	$(AR) rcs $@ $(foreach OBJECTS,$(OBJECTS),$(NEWLINE) $(AR) q $@ $(OBJECTS))
+	$(HIDE)$(AR) rcs $@ $(foreach OBJECTS,$(OBJECTS),$(NEWLINE) $(AR) q $@ $(OBJECTS))
 else
-	$(AR) rcs $@ $(OBJECTS)
+	$(HIDE)$(AR) rcs $@ $(OBJECTS)
 endif
 else
 	@echo Linking $@...
 	@echo platform $(system_platform)
 ifeq ($(SPLIT_UP_LINK), 1)
 	# Use a temporary file to hold the list of objects, as it can exceed windows shell command limits
-	$(file >$@.in,$(OBJECTS))
-	$(LD) $(LDFLAGS) $(LINKOUT)$@ @$@.in $(LIBS)
+	$(HIDE)$(file >$@.in,$(OBJECTS))
+	$(HIDE)$(LD) $(LDFLAGS) $(LINKOUT)$@ @$@.in $(LIBS)
 	@rm $@.in
 else
-	$(LD) $(LDFLAGS) $(LINKOUT)$@ $(OBJECTS) $(LIBS)
+	$(HIDE)$(LD) $(LDFLAGS) $(LINKOUT)$@ $(OBJECTS) $(LIBS)
 endif
 endif
 
 %.o: %.c
-	$(CC) $(CDEFS) $(CFLAGS) $(PLATCFLAGS) -c $(OBJOUT)$@ $<
+	@echo Compiling $<...
+	$(HIDE)$(CC) $(CDEFS) $(CFLAGS) $(PLATCFLAGS) -c $(OBJOUT)$@ $<
 
 
 %.o: %.s

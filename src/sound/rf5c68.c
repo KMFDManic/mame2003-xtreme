@@ -102,11 +102,11 @@ static void rf5c68_update( int num, INT16 **buffer, int length )
 				sample &= 0x7f;
 
 				// apply volume
-				int lv = sample * ((chan->pan & 0xf) * (chan->env>>4));
-				int rv = sample * ((chan->pan >>4)   * (chan->env>>4));
+				int lv = sample * ((chan->pan & 0xf) * (chan->env>>4)) >>1;
+				int rv = sample * ((chan->pan >>4)   * (chan->env>>4)) >>1;
 
-				left[j] += ( sign * lv) >> 1;
-				right[j] += (sign * rv) >> 1;
+				left[j] += ( sign * lv);
+				right[j] += (sign * rv);
 			}
 		}
 	}
