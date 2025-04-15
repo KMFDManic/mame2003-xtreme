@@ -57,7 +57,7 @@ unsigned char *s2636_3_ram;
 struct mame_bitmap *s2636_1_bitmap;
 struct mame_bitmap *s2636_2_bitmap;
 struct mame_bitmap *s2636_3_bitmap;
-struct mame_bitmap *collision_bitmap;
+extern struct mame_bitmap *collision_bitmap;
 struct mame_bitmap *collision_background;
 struct mame_bitmap *scrolled_background;
 

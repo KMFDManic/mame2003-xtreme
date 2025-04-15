@@ -473,7 +473,7 @@ SOURCES_C += $(CORE_DIR)/drivers/pacman.c \
 				 $(CORE_DIR)/machine/kabuki.c \
 				 $(CORE_DIR)/vidhrdw/mitchell_vidhrdw.c $(CORE_DIR)/drivers/mitchell.c \
 				 $(CORE_DIR)/vidhrdw/cbasebal_vidhrdw.c $(CORE_DIR)/drivers/cbasebal.c \
-				 $(CORE_DIR)/vidhrdw/cps1_vidhrdw.c $(CORE_DIR)/drivers/cps1.c $(CORE_DIR)/drivers/cps2.c \
+				 $(CORE_DIR)/vidhrdw/cps1_vidhrdw.c $(CORE_DIR)/drivers/cps1.c $(CORE_DIR)/drivers/cps2.c $(CORE_DIR)/machine/cps2crypt.c \
 				 $(CORE_DIR)/drivers/zn.c \
 				 $(CORE_DIR)/vidhrdw/tms34061_vidhrdw.c \
 				 $(CORE_DIR)/machine/capbowl_machine.c $(CORE_DIR)/vidhrdw/capbowl_vidhrdw.c $(CORE_DIR)/drivers/capbowl.c \
@@ -1019,8 +1019,8 @@ SOURCES_C += $(CORE_DIR)/drivers/pacman.c \
 				 $(CORE_DIR)/drivers/pktgaldx.c \
 				 $(CORE_DIR)/machine/model1_machine.c $(CORE_DIR)/vidhrdw/model1_vidhrdw.c $(CORE_DIR)/drivers/model1.c \
 				 $(CORE_DIR)/driver.c $(CORE_DIR)/cheat.c
-				 
-				 
+
+
 
 # List of CPU core (and, for a debug build, disassembler) object files
 #
@@ -1081,7 +1081,7 @@ endif
 endif
 
 ifeq ($(HAS_ADSP2100),1)
-SOURCES_C += $(CORE_DIR)/cpu/adsp2100/adsp2100.c 
+SOURCES_C += $(CORE_DIR)/cpu/adsp2100/adsp2100.c
 ifeq ($(DEBUGGER),1)
 SOURCES_C += $(CORE_DIR)/cpu/adsp2100/2100dasm.c
 endif

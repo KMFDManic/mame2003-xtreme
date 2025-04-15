@@ -9,15 +9,6 @@ extern size_t cps1_output_size;
 extern const struct Memory_ReadAddress qsound_readmem[];
 extern const struct Memory_WriteAddress qsound_writemem[];
 
-bool	ff_provision_alt_song; // For Final Fight SegaCD music hack.
-bool	ff_play_alternate_song; // For Final Fight SegaCD music hack.
-bool	ff_playing_final_fight; // For Final Fight SegaCD music hack.
-
-// Street Fighter II music samples.
-bool	sf2_playing_street_fighter;
-bool 	fadingMusic;
-float 	fadeMusicVolume;
-	
 READ16_HANDLER( qsound_sharedram1_r );
 WRITE16_HANDLER( qsound_sharedram1_w );
 
