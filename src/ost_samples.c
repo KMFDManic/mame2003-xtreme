@@ -28,12 +28,13 @@ int      start_counter;
 
 /* ost functions */
 static void ost_start_samples_stereo(int samp, int sa_loop);
-static void ost_start_samples(int sa_left, int sa_right, int sa_loop);
+static void ost_start_samples_custom(int sa_left, int sa_right, int sa_loop);
 static void ost_stop_samples(void);
 static void ost_mix_samples(void);
 static void ost_set_last_played(int sa_left, int sa_right);
 static bool ost_last_played(int sa_left, int sa_right);
-
+static int ost_check_playing_stereo(int samp);
+static int ost_check_playing_custom(int sa_left, int sa_right);
 
 /* ost routines */
 bool (*generate_ost_sound) (int);
@@ -644,7 +645,7 @@ void install_ost_support(struct InternalMachineDriver *machine, int ost)
 }
 
 
-static void ost_start_samples(int sa_left, int sa_right, int sa_loop)
+static void ost_start_samples_custom(int sa_left, int sa_right, int sa_loop)
 {
   ost_stop_samples();
 
@@ -696,6 +697,28 @@ static void ost_set_last_played(int sa_left, int sa_right)
 {
   last_left  = sa_left;
   last_right = sa_right;
+}
+
+static int ost_check_playing_custom(int sa_left, int sa_right)
+{
+  last_left  = sa_left; // not used just legacy
+  last_right = sa_right;
+
+  if( sample_playing(0) == sa_left+1  || sample_playing(1) == sa_right+1 )
+    return 1;
+
+  return 0;
+}
+
+static int ost_check_playing_stereo(int samp)
+{
+  last_left  = samp; // not used just legacy
+  last_right = samp+1;
+
+  if( sample_playing(0) == samp+1  || sample_playing(1) == samp+2 )
+    return 1;
+
+  return 0;
 }
 
 
@@ -1328,31 +1351,31 @@ static bool routine_moonwalker(int data)
 
 		/* Stage 1 and Stage 5. Bad. */
 		case 0x81:
-			if(!ost_last_played(0, 1))
+			if(!ost_check_playing_stereo(0))
 				ost_start_samples_stereo(0, 1);
 			break;
 
 		/* Stage 2. Smooth Criminal. */
 		case 0x82:
-			if(!ost_last_played(2, 3))
+			if(!ost_check_playing_stereo(2))
 				ost_start_samples_stereo(2, 1);
 			break;
 
 		/* Stage 3. Beat It. */
 		case 0x84:
-			if(!ost_last_played(4, 5))
+			if(!ost_check_playing_stereo(4))
 				ost_start_samples_stereo(4, 1);
 			break;
 
 		/* Stage 4. Thriller. */
 		case 0x8A:
-			if(!ost_last_played(6, 7))
+			if(!ost_check_playing_stereo(6))
 				ost_start_samples_stereo(6, 1);
 			break;
 
 		/* Ending. Billie Jean. */
 		case 0x89:
-			if(!ost_last_played(8, 9))
+			if(!ost_check_playing_stereo(8))
 				ost_start_samples_stereo(8, 1);
 			break;
 
