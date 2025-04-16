@@ -701,10 +701,11 @@ static void ost_set_last_played(int sa_left, int sa_right)
 
 static int ost_check_playing_custom(int sa_left, int sa_right)
 {
-  last_left  = sa_left; // not used just legacy
-  last_right = sa_right;
+  //compensate the offset on channel played
+  sa_left =  sa_left  < 0 ? 0 : sa_left+1;
+  sa_right = sa_right < 0 ? 0: sa_right+1;
 
-  if( sample_playing(0) == sa_left+1  || sample_playing(1) == sa_right+1 )
+  if( sample_playing(0) == sa_left  || sample_playing(1) == sa_right )
     return 1;
 
   return 0;
@@ -712,10 +713,11 @@ static int ost_check_playing_custom(int sa_left, int sa_right)
 
 static int ost_check_playing_stereo(int samp)
 {
-  last_left  = samp; // not used just legacy
-  last_right = samp+1;
+  //compensate the offset on channel played
+  int left = samp  < 0 ? 0 : samp +1;
+  int right = samp < 0 ? 0: samp +2;
 
-  if( sample_playing(0) == samp+1  || sample_playing(1) == samp+2 )
+  if( sample_playing(0) == left  || sample_playing(1) == right )
     return 1;
 
   return 0;
