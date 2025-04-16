@@ -1514,14 +1514,14 @@ static bool routine_outrun(int data)
   /* initialize ost config */
   schedule_default_sound = false;
 
-  if(ost_last_played(0, 0)) /* first run */
+  if(ost_check_playing_stereo(-1)) //check for no samples playing
     ost_start_samples_stereo(0, 1);
 
   switch (data) {
     /* --> Title screen */
     case 0x0:
       if(start_counter == 0)
-        if(!ost_last_played(0, 1))
+        if(!ost_check_playing_stereo(0))
           ost_start_samples_stereo(0, 1);
 
       start_counter++;
@@ -1550,7 +1550,7 @@ static bool routine_outrun(int data)
 
     /* --> Last Wave */
     case 0x93:
-      if(!ost_last_played(4, 5))
+      if(!ost_check_playing_stereo(4))
         ost_start_samples_stereo(4, 1);
       break;
 
