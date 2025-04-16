@@ -43,9 +43,9 @@ static bool routine_ddragon    (int data);
 static bool routine_ffight     (int data);
 static bool routine_ikari      (int data);
 static bool routine_mk         (int data);
-static bool routine_moonwalker (int data);
+static bool routine_moonwalker (int data); //done
 static bool routine_nba_jam    (int data);
-static bool routine_outrun     (int data);
+static bool routine_outrun     (int data); //done
 static bool routine_robocop    (int data);
 static bool routine_sf1        (int data);
 static bool routine_sf2        (int data);
