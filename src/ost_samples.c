@@ -11,18 +11,14 @@
 /* ost configuration */
 static int  ost_support = OST_SUPPORT_DISABLED;
 static int  sa_volume;
-static int  last_left;
-static int  last_right;
 static bool fadingMusic;
 static bool schedule_default_sound;
 
 
 /* game specific variables */
-int      ddragon_stage;
-
-bool     ff_alternate_song_1;
-bool     ff_alternate_song_2;
-
+int      stage;
+bool     alternate_song_1;
+bool     alternate_song_2;
 int      start_counter;
 
 
@@ -31,24 +27,22 @@ static void ost_start_samples_stereo(int samp, int sa_loop);
 static void ost_start_samples_custom(int sa_left, int sa_right, int sa_loop);
 static void ost_stop_samples(void);
 static void ost_mix_samples(void);
-static void ost_set_last_played(int sa_left, int sa_right);
-static bool ost_last_played(int sa_left, int sa_right);
 static int ost_check_playing_stereo(int samp);
 static int ost_check_playing_custom(int sa_left, int sa_right);
 
 /* ost routines */
 bool (*generate_ost_sound) (int);
-static bool routine_contra     (int data);
-static bool routine_ddragon    (int data);
-static bool routine_ffight     (int data);
+static bool routine_contra     (int data); // no changes needed dont have the ost to test should be fine
+static bool routine_ddragon    (int data); //done game ending doesnt work though and is a bit buggy needs looked into
+static bool routine_ffight     (int data); //no changes needed
 static bool routine_ikari      (int data); //done
-static bool routine_mk         (int data);
+static bool routine_mk         (int data); //no changes needed
 static bool routine_moonwalker (int data); //done
-static bool routine_nba_jam    (int data);
+static bool routine_nba_jam    (int data); ////done
 static bool routine_outrun     (int data); //done
-static bool routine_robocop    (int data);
-static bool routine_sf1        (int data);
-static bool routine_sf2        (int data);
+static bool routine_robocop    (int data); //no changes needed
+static bool routine_sf1        (int data); //done
+static bool routine_sf2        (int data); //no changes needed
 
 
 const char *const contra_sample_set_names[] =
@@ -567,14 +561,12 @@ void ost_init(void)
 
   /* ost configuration */
   sa_volume   = 100;
-  last_left   = 0;
-  last_right  = 0;
   fadingMusic = false;
 
   /* game specific variables */
-  ddragon_stage       = 0;
-  ff_alternate_song_1 = false;
-  ff_alternate_song_2 = false;
+  stage       = 0;
+  alternate_song_1 = false;
+  alternate_song_2 = false;
   start_counter       = 0;
 }
 
@@ -651,8 +643,6 @@ static void ost_start_samples_custom(int sa_left, int sa_right, int sa_loop)
 
   sample_start(0, sa_left, sa_loop);
   sample_start(1, sa_right, sa_loop);
-
-  ost_set_last_played(sa_left, sa_right);
 }
 
 static void ost_start_samples_stereo(int samp, int sa_loop)
@@ -660,8 +650,6 @@ static void ost_start_samples_stereo(int samp, int sa_loop)
   ost_stop_samples();
   sample_start(0, samp, sa_loop);
   sample_start(1, samp+1, sa_loop);
-
-  ost_set_last_played(samp, samp+1);
 }
 
 static void ost_stop_samples(void)
@@ -692,13 +680,6 @@ static void ost_mix_samples(void)
   }
 }
 
-
-static void ost_set_last_played(int sa_left, int sa_right)
-{
-  last_left  = sa_left;
-  last_right = sa_right;
-}
-
 static int ost_check_playing_custom(int sa_left, int sa_right)
 {
   //compensate the offset on channel played
@@ -720,15 +701,6 @@ static int ost_check_playing_stereo(int samp)
     return 1;
 
   return 0;
-}
-
-
-static bool ost_last_played(int sa_left, int sa_right)
-{
-  if ( (last_left == sa_left) && (last_right == sa_right) )
-    return true;
-
-  return false;
 }
 
 
@@ -872,19 +844,19 @@ static bool routine_ddragon(int data)
   switch(data) {
     /* Return to title screen, stop music. */
     case 0xFF:
-      if(!ost_last_played(0, 1)) {
-        ddragon_stage = 0;
+      if(!ost_check_playing_stereo(0)) {
+        stage = 0;
         ost_stop_samples();
       }
       break;
 
     /* Title screen. */
     case 0x1:
-      if(!ost_last_played(0, 1) && ddragon_stage != 4) {
-        ddragon_stage = 0;
+      if(!ost_check_playing_stereo(0) && stage != 4) {
+        stage = 0;
         ost_start_samples_stereo(0, 1);
       }
-      else if(ddragon_stage == 4) /* Final boss fight. */
+      else if(stage == 4) /* Final boss fight. */
         ost_start_samples_stereo(22, 1);
       break;
 
@@ -892,26 +864,26 @@ static bool routine_ddragon(int data)
     case 0x2:
       schedule_default_sound = true;
 
-      if(ost_last_played(0, 1))
+      if(ost_check_playing_stereo(1))
         ost_stop_samples();
       break;
 
     /* Stage 1. */
     case 0x9:
-      ddragon_stage = 1;
+      stage = 1;
       ost_start_samples_stereo(2, 1);
       break;
 
     /* Stage 2. */
     case 0x7:
-      ddragon_stage = 2;
+      stage = 2;
       ost_start_samples_stereo(4, 1);
       break;
 
     /* Stage 3. */
     case 0xA:
-      if(ddragon_stage != 3) {
-        ddragon_stage = 3;
+      if(stage != 3) {
+        stage = 3;
         ost_start_samples_stereo(6, 1);
       }
       else
@@ -920,13 +892,13 @@ static bool routine_ddragon(int data)
 
     /* Stage 4. */
     case 0xD:
-      ddragon_stage = 4;
+      stage = 4;
       ost_start_samples_stereo(10, 1);
       break;
 
     /* Credits. */
     case 0x6:
-      ddragon_stage = 5;
+      stage = 5;
       ost_start_samples_stereo(12, 0);
       break;
 
@@ -942,7 +914,7 @@ static bool routine_ddragon(int data)
 
     /* Boss battle music. */
     case 0x3:
-      if(ddragon_stage == 3)
+      if(stage == 3)
         ost_start_samples_stereo(20, 1);
       else
         ost_start_samples_stereo(18, 1);
@@ -954,7 +926,7 @@ static bool routine_ddragon(int data)
   }
 
   /* Raise volume during credits */
-  if (ddragon_stage == 5) sa_volume = 100;
+  if (stage == 5) sa_volume = 100;
 
   ost_mix_samples();
 
@@ -979,7 +951,7 @@ static bool routine_ffight(int data)
 
     /* stage #2: subway intro*/
     case 0x42:
-      if (ff_alternate_song_2 == false)
+      if (alternate_song_2 == false)
         ost_start_samples_stereo(4, 1); /* play normal */
       else
         ost_start_samples_stereo(40, 1); /* play alternate */
@@ -1000,7 +972,7 @@ static bool routine_ffight(int data)
       ost_start_samples_stereo(10, 1);
 
       /* enable 1st alternate song */
-      ff_alternate_song_1 = true;
+      alternate_song_1 = true;
       break;
 
     /* bathroom music for bay area*/
@@ -1010,7 +982,7 @@ static bool routine_ffight(int data)
 
     /* bay area post-bathroom ending/boss / final boss room entrance*/
     case 0x47:
-      if (ff_alternate_song_1 == false)
+      if (alternate_song_1 == false)
         ost_start_samples_stereo(14, 1); /* play normal */
       else
         ost_start_samples_stereo(36, 1); /* play alternate */
@@ -1036,8 +1008,8 @@ static bool routine_ffight(int data)
       ost_start_samples_stereo(22, 0);
 
       /* reset alternate songs */
-      ff_alternate_song_1 = false;
-      ff_alternate_song_2 = false;
+      alternate_song_1 = false;
+      alternate_song_2 = false;
       break;
 
     /* post explosion ditty*/
@@ -1070,15 +1042,15 @@ static bool routine_ffight(int data)
       ost_start_samples_stereo(28, 0);
 
       /* enable 2nd alternate song if 1st has been enabled */
-      if (ff_alternate_song_1 == true)
-        ff_alternate_song_2 = true;
+      if (alternate_song_1 == true)
+        alternate_song_2 = true;
       break;
 
     /* final stage clear ditty*/
     case 0x58:
       ost_start_samples_stereo(26, 0);
-      ff_alternate_song_1 = false;
-      ff_alternate_song_2 = false;
+      alternate_song_1 = false;
+      alternate_song_2 = false;
       break;
 
     /* Lets stop the Final Fight sample music.*/
@@ -1421,7 +1393,7 @@ static bool routine_nba_jam(int data)
     case 0x00:
       schedule_default_sound = true;
 
-      if(!ost_last_played(0, 1) && start_counter == 2)
+      if(!ost_check_playing_stereo(0) && start_counter == 2)
         ost_start_samples_stereo(0, 1);
       else if (start_counter < 2)
         start_counter++;
@@ -1513,10 +1485,10 @@ static bool routine_outrun(int data)
   /* initialize ost config */
   schedule_default_sound = false;
 
-  if(ost_check_playing_stereo(-1) && !ddragon_stage) //check 1 time for no samples playing
+  if(ost_check_playing_stereo(-1) && !stage) //check 1 time for no samples playing
   {
     ost_start_samples_stereo(0, 1);
-    ddragon_stage =1;
+    stage =1;
   }
   switch (data) {
     /* --> Title screen */
@@ -1657,9 +1629,11 @@ static bool routine_sf1(int data)
   /* initialize ost config */
   schedule_default_sound = false;
 
-  if(ost_last_played(0, 0)) /* first run */
+ if(ost_check_playing_stereo(-1) && !stage) //check 1 time for no samples playing
+  {
     ost_start_samples_stereo(0, 1);
-
+    stage =1;
+  }
   switch (data) {
     /* Retsu */
     case 0x28:
