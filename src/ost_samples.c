@@ -41,7 +41,7 @@ bool (*generate_ost_sound) (int);
 static bool routine_contra     (int data);
 static bool routine_ddragon    (int data);
 static bool routine_ffight     (int data);
-static bool routine_ikari      (int data);
+static bool routine_ikari      (int data); //done
 static bool routine_mk         (int data);
 static bool routine_moonwalker (int data); //done
 static bool routine_nba_jam    (int data);
@@ -716,7 +716,6 @@ static int ost_check_playing_stereo(int samp)
   //compensate the offset on channel played
   int left = samp  < 0 ? 0 : samp +1;
   int right = samp < 0 ? 0: samp +2;
-
   if( sample_playing(0) == left  || sample_playing(1) == right )
     return 1;
 
@@ -1107,7 +1106,7 @@ static bool routine_ikari(int data)
   switch (data) {
     /* Title Demo */
     case 0x70:
-      if (!ost_last_played(8, 9)) /* ignore if playing Victory */
+      if (!ost_check_playing_stereo(8)) /* ignore if playing Victory */
         ost_start_samples_stereo(0, 0);
       break;
 
@@ -1129,13 +1128,13 @@ static bool routine_ikari(int data)
 
     /* Victory */
     case 0x68:
-      if (!ost_last_played(8, 9)) /* prevent restarting Victory - glitch if invincibility is active */
+      if (!ost_check_playing_stereo(8)) /* prevent restarting Victory - glitch if invincibility is active */
         ost_start_samples_stereo(8, 0);
       break;
 
     /* Game Over and Glory */
     case 0x60:
-      if (!ost_last_played(8, 9)) /* ignore if playing Victory */
+      if (!ost_check_playing_stereo(8)) /* ignore if playing Victory */
         ost_start_samples_stereo(10, 0);
       break;
 
@@ -1514,9 +1513,11 @@ static bool routine_outrun(int data)
   /* initialize ost config */
   schedule_default_sound = false;
 
-  if(ost_check_playing_stereo(-1)) //check for no samples playing
+  if(ost_check_playing_stereo(-1) && !ddragon_stage) //check 1 time for no samples playing
+  {
     ost_start_samples_stereo(0, 1);
-
+    ddragon_stage =1;
+  }
   switch (data) {
     /* --> Title screen */
     case 0x0:
