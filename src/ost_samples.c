@@ -68,7 +68,7 @@ const char *const bionicc_sample_set_names[] =
 	0
 };
 /********************************bionicc********************************/
-static struct Samplesinterface bionicc_samples_set =
+static struct Samplesinterface ost_bionicc =
 {
 	2,	// 2 channels
 	39, // volume
@@ -2020,6 +2020,11 @@ void install_ost_support(struct InternalMachineDriver *machine, int ost)
 
   switch(ost)
   {
+    case OST_SUPPORT_BIONICC:
+      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_bionicc)
+      generate_ost_sound = routine_bionicc;
+    break;
+
     case OST_SUPPORT_CONTRA:
       MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_contra)
       generate_ost_sound = routine_contra;
@@ -2074,6 +2079,7 @@ void install_ost_support(struct InternalMachineDriver *machine, int ost)
       MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_sf2)
       generate_ost_sound = routine_sf2;
       break;
+
   }
 }
 
