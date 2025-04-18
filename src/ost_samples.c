@@ -261,7 +261,7 @@ static bool routine_ddragon(int data)
     case 0x2:
       schedule_default_sound = true;
 
-      if(ost_check_playing_stereo(1))
+      if(ost_check_playing_stereo(0))
         ost_stop_samples();
       break;
 
