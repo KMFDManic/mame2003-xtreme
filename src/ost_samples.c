@@ -7,7 +7,6 @@
 #include "driver.h"
 #include "ost_samples.h"
 
-
 /* ost configuration */
 static int  ost_support = OST_SUPPORT_DISABLED;
 static int  sa_volume;
@@ -20,7 +19,6 @@ int      stage;
 bool     alternate_song_1;
 bool     alternate_song_2;
 int      start_counter;
-
 
 /* ost functions */
 static void ost_start_samples_stereo(int samp, int sa_loop);
@@ -44,7 +42,7 @@ static bool routine_robocop    (int data); //no changes needed
 static bool routine_sf1        (int data); //done
 static bool routine_sf2        (int data); //no changes needed
 
-
+/********************************contra********************************/
 const char *const contra_sample_set_names[] =
 {
   "*contra",
@@ -77,650 +75,12 @@ const char *const contra_sample_set_names[] =
   0
 };
 
-const char *const ddragon_sample_set_names[] =
-{
-  "*ddragon",
-  "title-01",
-  "title-02",
-  "stage1-01",
-  "stage1-02",
-  "stage2-01",
-  "stage2-02",
-  "stage3-01",
-  "stage3-02",
-  "stage3-alt-01",
-  "stage3-alt-02",
-  "stage4-01",
-  "stage4-02",
-  "credits-01",
-  "credits-02",
-  "diddy-01",
-  "diddy-02",
-  "complete-01",
-  "complete-02",
-  "boss-01",
-  "boss-02",
-  "boss-alt-01",
-  "boss-alt-02",
-  "finalboss-01",
-  "finalboss-02",
-  0
-};
-
-const char *const ffight_sample_set_names[] =
-{
-  "*ffight",
-  "track02-01",
-  "track02-02",
-  "track03-01",
-  "track03-02",
-  "track04-01",
-  "track04-02",
-  "track05-01",
-  "track05-02",
-  "track06-01",
-  "track06-02",
-  "track07-01",
-  "track07-02",
-  "track08-01",
-  "track08-02",
-  "track09-01",
-  "track09-02",
-  "track10-01",
-  "track10-02",
-  "track11-01",
-  "track11-02",
-  "track12-01",
-  "track12-02",
-  "track13-01",
-  "track13-02",
-  "track14-01",
-  "track14-02",
-  "track15-01",
-  "track15-02",
-  "track16-01",
-  "track16-02",
-  "track17-01",
-  "track17-02",
-  "track18-01",
-  "track18-02",
-  "track19-01",
-  "track19-02",
-  "track20-01",
-  "track20-02",
-  "track21-01",
-  "track21-02",
-  "track22-01",
-  "track22-02",
-  "track23-01",
-  "track23-02",
-  "track24-01",
-  "track24-02",
-  "track25-01",
-  "track25-02",
-  "track26-01",
-  "track26-02",
-  0
-};
-
-const char *const ikari_sample_set_names[] =
-{
-  "*ikari",
-  "title-01",
-  "title-02",
-  "landing-01",
-  "landing-02",
-  "theme-01",
-  "theme-02",
-  "gate-01",
-  "gate-02",
-  "victory-01",
-  "victory-02",
-  "glory-01",
-  "glory-02",
-  0
-};
-
-const char *const mk_sample_set_names[] =
-{
-  "*mk",
-  "title-01",
-  "title-02",
-  "c-select-01",
-  "c-select-02",
-  "battle-menu-01",
-  "battle-menu-02",
-  "continue-01",
-  "continue-02",
-  "fatality-01",
-  "fatality-02",
-  "courtyard-01",
-  "courtyard-02",
-  "courtyard-end-01",
-  "courtyard-end-02",
-  "courtyard-finish-him-01",
-  "courtyard-finish-him-02",
-  "test-your-might-01",
-  "test-your-might-02",
-  "test-your-might-end-01",
-  "test-your-might-end-02",
-  "gameover-01",
-  "gameover-02",
-  "warriors-shrine-01",
-  "warriors-shrine-02",
-  "warriors-shrine-end-01",
-  "warriors-shrine-end-02",
-  "warriors-shrine-finish-him-01",
-  "warriors-shrine-finish-him-02",
-  "pit-01",
-  "pit-02",
-  "pit-end-01",
-  "pit-end-02",
-  "pit-finish-him-01",
-  "pit-finish-him-02",
-  "throne-room-01",
-  "throne-room-02",
-  "throne-room-end-01",
-  "throne-room-end-02",
-  "throne-room-finish-him-01",
-  "throne-room-finish-him-02",
-  "goros-lair-01",
-  "goros-lair-02",
-  "goros-lair-end-01",
-  "goros-lair-end-02",
-  "goros-lair-finish-him-01",
-  "goros-lair-finish-him-02",
-  "endurance-switch-01",
-  "endurance-switch-02",
-  "victory-01",
-  "victory-02",
-  "palace-gates-01",
-  "palace-gates-02",
-  "palace-gates-end-01",
-  "palace-gates-end-02",
-  "palace-gates-finish-him-01",
-  "palace-gates-finish-him-02",
-  0
-};
-
-const char *const moonwalker_sample_set_names[] =
-{
-  "*moonwalk",
-  "bad-01",
-  "bad-02",
-  "smoothcriminal-01",
-  "smoothcriminal-02",
-  "beatit-01",
-  "beatit-02",
-  "thriller-01",
-  "thriller-02",
-  "billiejean-01",
-  "billiejean-02",
-  "title-01",
-  "title-02",
-  0
-};
-
-const char *const nba_jam_sample_set_names[] =
-{
-  "*nbajam",
-  "main-theme-01",
-  "main-theme-02",
-  "team-select-01",
-  "team-select-02",
-  "ingame-01", /* First & third quarter*/
-  "ingame-02",
-  "ingame-03", /* Second & fourth quarter*/
-  "ingame-04",
-  "intermission-01",
-  "intermission-02",
-  "halftime-01",
-  "halftime-02",
-  "theme-end-01",
-  "theme-end-02",
-  0
-};
-
-const char *const outrun_sample_set_names[] =
-{
-  "*outrun",
-  "intro-01",
-  "intro-02",
-  "title-cut-01",
-  "title-cut-02",
-  "map-01",
-  "map-02",
-  "track1-01",
-  "track1-02",
-  "track3-01",
-  "track3-02",
-  "track4-01",
-  "track4-02",
-  0
-};
-
-const char *const robocop_sample_set_names[] =
-{
-  "*robocop",
-  "title-01",
-  "title-02",
-  "opening-01",
-  "opening-02",
-  "main-01",
-  "main-02",
-  "crfield-01",
-  "crfield-02",
-  "lstbattle-01",
-  "lstbattle-02",
-  "boss-01",
-  "boss-02",
-  "bigboss-01",
-  "bigboss-02",
-  "bonus-01",
-  "bonus-02",
-  "clear-01",
-  "clear-02",
-  "over-01",
-  "over-02",
-  "entry-01",
-  "entry-02",
-  0
-};
-
-const char *const sf1_sample_set_names[] =
-{
-  "*sf1",
-  "retsu-01",
-  "retsu-02",
-  "geki-01",
-  "geki-02",
-  "joe-01",
-  "joe-02",
-  "mike-01",
-  "mike-02",
-  "birdie-01",
-  "birdie-02",
-  "eagle-01",
-  "eagle-02",
-  "lee-01",
-  "lee-02",
-  "gen-01",
-  "gen-02",
-  "adon-01",
-  "adon-02",
-  "sagat-01",
-  "sagat-02",
-  "ending-01",
-  "ending-02",
-  "vs-01",
-  "vs-02",
-  "select-01",
-  "select-02",
-  "bonus1-01",
-  "bonus1-02",
-  "bonus2-01",
-  "bonus2-02",
-  "score-01",
-  "score-02",
-  "won-01",
-  "won-02",
-  0
-};
-
-const char *const sf2_sample_set_names[] =
-{
-  "*sf2",
-  "ryuslow-01",
-  "ryuslow-02",
-  "ryufast-01",
-  "ryufast-02",
-  "blankaslow-01",
-  "blankaslow-02",
-  "blankafast-01",
-  "blankafast-02",
-  "chunlislow-01",
-  "chunlislow-02",
-  "chunlifast-01",
-  "chunlifast-02",
-  "ehondaslow-01",
-  "ehondaslow-02",
-  "ehondafast-01",
-  "ehondafast-02",
-  "guileslow-01",
-  "guileslow-02",
-  "guilefast-01",
-  "guilefast-02",
-  "dhalsimslow-01",
-  "dhalsimslow-02",
-  "dhalsimfast-01",
-  "dhalsimfast-02",
-  "balrogslow-01",
-  "balrogslow-02",
-  "balrogfast-01",
-  "balrogfast-02",
-  "sagatslow-01",
-  "sagatslow-02",
-  "sagatfast-01",
-  "sagatfast-02",
-  "mbisonslow-01",
-  "mbisonslow-02",
-  "mbisonfast-01",
-  "mbisonfast-02",
-  "versus-01",
-  "versus-02",
-  "endfight-01",
-  "endfight-02",
-  "continue-01",
-  "continue-02",
-  "highscore-01",
-  "highscore-02",
-  "intro-01",
-  "intro-02",
-  "playerjoin-01",
-  "playerjoin-02",
-  "playerselect-01",
-  "playerselect-02",
-  "gameover-01",
-  "gameover-02",
-  "kenslow-01",
-  "kenslow-02",
-  "kenfast-01",
-  "kenfast-02",
-  "zangiefslow-01",
-  "zangiefslow-02",
-  "zangieffast-01",
-  "zangieffast-02",
-  "vegaslow-01",
-  "vegaslow-02",
-  "vegafast-01",
-  "vegafast-02",
-  "bonusstage-01",
-  "bonusstage-02",
-  "mbisonending-01",
-  "mbisonending-02",
-  "kenendinga-01",
-  "kenendinga-02",
-  "kenendingb-01",
-  "kenendingb-02",
-  "ehondaending-01",
-  "ehondaending-02",
-  "blankaending-01",
-  "blankaending-02",
-  "guileending-01",
-  "guileending-02",
-  "zangiefending-01",
-  "zangiefending-02",
-  "specialending-01",
-  "specialending-02",
-  "ryuending-01",
-  "ryuending-02",
-  "dhalsimending-01",
-  "dhalsimending-02",
-  "chunliendinga-01",
-  "chunliendinga-02",
-  "chunliendingb-01",
-  "chunliendingb-02",
-  0
-};
-
-
 struct Samplesinterface ost_contra =
 {
   2,  /* 2 channels*/
   39, /* volume*/
   contra_sample_set_names
 };
-
-struct Samplesinterface ost_ddragon =
-{
-  2,  /* 2 channels*/
-  39, /* volume*/
-  ddragon_sample_set_names
-};
-
-struct Samplesinterface ost_ffight =
-{
-  2,  /* 2 channels*/
-  39, /* volume*/
-  ffight_sample_set_names
-};
-
-struct Samplesinterface ost_ikari =
-{
-  2,  /* 2 channels*/
-  39, /* volume*/
-  ikari_sample_set_names
-};
-
-struct Samplesinterface ost_mk =
-{
-  2,  /* 2 channels*/
-  39, /* volume*/
-  mk_sample_set_names
-};
-
-struct Samplesinterface ost_moonwalker =
-{
-  2,  /* 2 channels*/
-  39, /* volume*/
-  moonwalker_sample_set_names
-};
-
-struct Samplesinterface ost_nba_jam =
-{
-  2,  /* 2 channels*/
-  39, /* volume*/
-  nba_jam_sample_set_names
-};
-
-struct Samplesinterface ost_outrun =
-{
-  2,  /* 2 channels*/
-  39, /* volume*/
-  outrun_sample_set_names
-};
-
-struct Samplesinterface ost_robocop =
-{
-  2,  /* 2 channels*/
-  39, /* volume*/
-  robocop_sample_set_names
-};
-
-struct Samplesinterface ost_sf1 =
-{
-  2,  /* 2 channels*/
-  39, /* volume*/
-  sf1_sample_set_names
-};
-
-struct Samplesinterface ost_sf2 =
-{
-  2,  /* 2 channels*/
-  39, /* volume*/
-  sf2_sample_set_names
-};
-
-
-bool ost_support_enabled(int ost)
-{
-  if (!options.use_samples) return false;
-//  if (!options.use_alt_sound) return false;
-//  if (!options.content_flags[CONTENT_ALT_SOUND]) return false;
-
-  if (ost_support == ost) return true;
-
-  return false;
-}
-
-
-void ost_init(void)
-{
-  /* stop samples if playing */
-  ost_stop_samples();
-
-  /* ost configuration */
-  sa_volume   = 100;
-  fadingMusic = false;
-
-  /* game specific variables */
-  stage       = 0;
-  alternate_song_1 = false;
-  alternate_song_2 = false;
-  start_counter       = 0;
-}
-
-
-void install_ost_support(struct InternalMachineDriver *machine, int ost)
-{
-  /* set */
-  ost_support = ost;
-  MDRV_SOUND_ATTRIBUTES(SOUND_SUPPORTS_STEREO)
-
-  switch(ost)
-  {
-    case OST_SUPPORT_CONTRA:
-      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_contra)
-      generate_ost_sound = routine_contra;
-      break;
-
-    case OST_SUPPORT_DDRAGON:
-      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_ddragon)
-      generate_ost_sound = routine_ddragon;
-      break;
-
-    case OST_SUPPORT_FFIGHT:
-      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_ffight)
-      generate_ost_sound = routine_ffight;
-      break;
-
-    case OST_SUPPORT_IKARI:
-      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_ikari)
-      generate_ost_sound = routine_ikari;
-      break;
-
-    case OST_SUPPORT_MK:
-      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_mk)
-      generate_ost_sound = routine_mk;
-      break;
-
-    case OST_SUPPORT_MOONWALKER:
-      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_moonwalker)
-      generate_ost_sound = routine_moonwalker;
-      break;
-
-    case OST_SUPPORT_NBA_JAM:
-      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_nba_jam)
-      generate_ost_sound = routine_nba_jam;
-      break;
-
-    case OST_SUPPORT_OUTRUN:
-      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_outrun)
-      generate_ost_sound = routine_outrun;
-      break;
-
-    case OST_SUPPORT_ROBOCOP:
-      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_robocop)
-      generate_ost_sound = routine_robocop;
-      break;
-
-    case OST_SUPPORT_SF1:
-      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_sf1)
-      generate_ost_sound = routine_sf1;
-      break;
-
-    case OST_SUPPORT_SF2:
-      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_sf2)
-      generate_ost_sound = routine_sf2;
-      break;
-  }
-}
-
-
-static void ost_start_samples_custom(int sa_left, int sa_right, int sa_loop)
-{
-  ost_stop_samples();
-
-  sample_start(0, sa_left, sa_loop);
-  sample_start(1, sa_right, sa_loop);
-}
-
-static void ost_start_samples_stereo(int samp, int sa_loop)
-{
-  ost_stop_samples();
-  sample_start(0, samp, sa_loop);
-  sample_start(1, samp+1, sa_loop);
-}
-
-static void ost_stop_samples(void)
-{
-  sample_stop(0);
-  sample_stop(1);
-}
-
-
-static void ost_mix_samples(void)
-{
-  /* Determine how we should mix these samples together.*/
-  if(!sample_playing(0) && sample_playing(1)) { /* Right channel only. Lets make it play in both speakers.*/
-    ost_sample_set_stereo_volume(1, sa_volume, sa_volume);
-  }
-
-  else if(sample_playing(0) && !sample_playing(1) ) { /* Left channel only. Lets make it play in both speakers.*/
-    ost_sample_set_stereo_volume(0, sa_volume, sa_volume);
-  }
-
-  else if(sample_playing(0) && sample_playing(1)) { /* Both left and right channels. Lets make them play in there respective speakers.*/
-    ost_sample_set_stereo_volume(0, sa_volume, 0);
-    ost_sample_set_stereo_volume(1, 0, sa_volume);
-  }
-
-  else if(!sample_playing(0)  && !sample_playing(1) ) { /* No sample playing, revert to the default sound.*/
-    schedule_default_sound = true;
-  }
-}
-
-static int ost_check_playing_custom(int sa_left, int sa_right)
-{
-  //compensate the offset on channel played
-  sa_left =  sa_left  < 0 ? 0 : sa_left+1;
-  sa_right = sa_right < 0 ? 0: sa_right+1;
-
-  if( sample_playing(0) == sa_left  || sample_playing(1) == sa_right )
-    return 1;
-
-  return 0;
-}
-
-static int ost_check_playing_stereo(int samp)
-{
-  //compensate the offset on channel played
-  int left = samp  < 0 ? 0 : samp +1;
-  int right = samp < 0 ? 0: samp +2;
-  if( sample_playing(0) == left  || sample_playing(1) == right )
-    return 1;
-
-  return 0;
-}
-
-
-void ost_fade_volume(void)
-{
-  static bool allow_fade = true;
-  /*usrintf_showmessage("fadingMusic:%i  volume:%i", fadingMusic, sa_volume);*/
-
-  if(fadingMusic == false) return;
-
-  /* slow volume fading */
-  allow_fade = (allow_fade) ? 0:1;
-  if(allow_fade && sa_volume > 0) sa_volume -= 1;
-
-  /* end fading */
-  if(sa_volume == 0) fadingMusic = false;
-
-  ost_mix_samples();
-}
-
 
 static bool routine_contra(int data)
 {
@@ -834,6 +194,43 @@ static bool routine_contra(int data)
 
   return schedule_default_sound;
 }
+/********************************ddragon********************************/
+const char *const ddragon_sample_set_names[] =
+{
+  "*ddragon",
+  "title-01",
+  "title-02",
+  "stage1-01",
+  "stage1-02",
+  "stage2-01",
+  "stage2-02",
+  "stage3-01",
+  "stage3-02",
+  "stage3-alt-01",
+  "stage3-alt-02",
+  "stage4-01",
+  "stage4-02",
+  "credits-01",
+  "credits-02",
+  "diddy-01",
+  "diddy-02",
+  "complete-01",
+  "complete-02",
+  "boss-01",
+  "boss-02",
+  "boss-alt-01",
+  "boss-alt-02",
+  "finalboss-01",
+  "finalboss-02",
+  0
+};
+
+struct Samplesinterface ost_ddragon =
+{
+  2,  /* 2 channels*/
+  39, /* volume*/
+  ddragon_sample_set_names
+};
 
 static bool routine_ddragon(int data)
 {
@@ -932,6 +329,69 @@ static bool routine_ddragon(int data)
 
   return schedule_default_sound;
 }
+/********************************ffight********************************/
+const char *const ffight_sample_set_names[] =
+{
+  "*ffight",
+  "track02-01",
+  "track02-02",
+  "track03-01",
+  "track03-02",
+  "track04-01",
+  "track04-02",
+  "track05-01",
+  "track05-02",
+  "track06-01",
+  "track06-02",
+  "track07-01",
+  "track07-02",
+  "track08-01",
+  "track08-02",
+  "track09-01",
+  "track09-02",
+  "track10-01",
+  "track10-02",
+  "track11-01",
+  "track11-02",
+  "track12-01",
+  "track12-02",
+  "track13-01",
+  "track13-02",
+  "track14-01",
+  "track14-02",
+  "track15-01",
+  "track15-02",
+  "track16-01",
+  "track16-02",
+  "track17-01",
+  "track17-02",
+  "track18-01",
+  "track18-02",
+  "track19-01",
+  "track19-02",
+  "track20-01",
+  "track20-02",
+  "track21-01",
+  "track21-02",
+  "track22-01",
+  "track22-02",
+  "track23-01",
+  "track23-02",
+  "track24-01",
+  "track24-02",
+  "track25-01",
+  "track25-02",
+  "track26-01",
+  "track26-02",
+  0
+};
+
+struct Samplesinterface ost_ffight =
+{
+  2,  /* 2 channels*/
+  39, /* volume*/
+  ffight_sample_set_names
+};
 
 static bool routine_ffight(int data)
 {
@@ -1069,6 +529,31 @@ static bool routine_ffight(int data)
 
   return schedule_default_sound;
 }
+/********************************ikari********************************/
+const char *const ikari_sample_set_names[] =
+{
+  "*ikari",
+  "title-01",
+  "title-02",
+  "landing-01",
+  "landing-02",
+  "theme-01",
+  "theme-02",
+  "gate-01",
+  "gate-02",
+  "victory-01",
+  "victory-02",
+  "glory-01",
+  "glory-02",
+  0
+};
+
+struct Samplesinterface ost_ikari =
+{
+  2,  /* 2 channels*/
+  39, /* volume*/
+  ikari_sample_set_names
+};
 
 static bool routine_ikari(int data)
 {
@@ -1119,6 +604,75 @@ static bool routine_ikari(int data)
 
   return schedule_default_sound;
 }
+/********************************mk********************************/
+const char *const mk_sample_set_names[] =
+{
+  "*mk",
+  "title-01",
+  "title-02",
+  "c-select-01",
+  "c-select-02",
+  "battle-menu-01",
+  "battle-menu-02",
+  "continue-01",
+  "continue-02",
+  "fatality-01",
+  "fatality-02",
+  "courtyard-01",
+  "courtyard-02",
+  "courtyard-end-01",
+  "courtyard-end-02",
+  "courtyard-finish-him-01",
+  "courtyard-finish-him-02",
+  "test-your-might-01",
+  "test-your-might-02",
+  "test-your-might-end-01",
+  "test-your-might-end-02",
+  "gameover-01",
+  "gameover-02",
+  "warriors-shrine-01",
+  "warriors-shrine-02",
+  "warriors-shrine-end-01",
+  "warriors-shrine-end-02",
+  "warriors-shrine-finish-him-01",
+  "warriors-shrine-finish-him-02",
+  "pit-01",
+  "pit-02",
+  "pit-end-01",
+  "pit-end-02",
+  "pit-finish-him-01",
+  "pit-finish-him-02",
+  "throne-room-01",
+  "throne-room-02",
+  "throne-room-end-01",
+  "throne-room-end-02",
+  "throne-room-finish-him-01",
+  "throne-room-finish-him-02",
+  "goros-lair-01",
+  "goros-lair-02",
+  "goros-lair-end-01",
+  "goros-lair-end-02",
+  "goros-lair-finish-him-01",
+  "goros-lair-finish-him-02",
+  "endurance-switch-01",
+  "endurance-switch-02",
+  "victory-01",
+  "victory-02",
+  "palace-gates-01",
+  "palace-gates-02",
+  "palace-gates-end-01",
+  "palace-gates-end-02",
+  "palace-gates-finish-him-01",
+  "palace-gates-finish-him-02",
+  0
+};
+
+struct Samplesinterface ost_mk =
+{
+  2,  /* 2 channels*/
+  39, /* volume*/
+  mk_sample_set_names
+};
 
 static bool routine_mk(int data)
 {
@@ -1299,6 +853,31 @@ static bool routine_mk(int data)
 
   return schedule_default_sound;
 }
+/********************************moon walker********************************/
+const char *const moonwalker_sample_set_names[] =
+{
+  "*moonwalk",
+  "bad-01",
+  "bad-02",
+  "smoothcriminal-01",
+  "smoothcriminal-02",
+  "beatit-01",
+  "beatit-02",
+  "thriller-01",
+  "thriller-02",
+  "billiejean-01",
+  "billiejean-02",
+  "title-01",
+  "title-02",
+  0
+};
+
+struct Samplesinterface ost_moonwalker =
+{
+  2,  /* 2 channels*/
+  39, /* volume*/
+  moonwalker_sample_set_names
+};
 
 static bool routine_moonwalker(int data)
 {
@@ -1382,6 +961,33 @@ static bool routine_moonwalker(int data)
 
   return schedule_default_sound;
 }
+/********************************nba jam********************************/
+const char *const nba_jam_sample_set_names[] =
+{
+  "*nbajam",
+  "main-theme-01",
+  "main-theme-02",
+  "team-select-01",
+  "team-select-02",
+  "ingame-01", /* First & third quarter*/
+  "ingame-02",
+  "ingame-03", /* Second & fourth quarter*/
+  "ingame-04",
+  "intermission-01",
+  "intermission-02",
+  "halftime-01",
+  "halftime-02",
+  "theme-end-01",
+  "theme-end-02",
+  0
+};
+
+struct Samplesinterface ost_nba_jam =
+{
+  2,  /* 2 channels*/
+  39, /* volume*/
+  nba_jam_sample_set_names
+};
 
 static bool routine_nba_jam(int data)
 {
@@ -1479,6 +1085,32 @@ static bool routine_nba_jam(int data)
 
   return schedule_default_sound;
 }
+/********************************outrun********************************/
+const char *const outrun_sample_set_names[] =
+{
+  "*outrun",
+  "intro-01",
+  "intro-02",
+  "title-cut-01",
+  "title-cut-02",
+  "map-01",
+  "map-02",
+  "track1-01",
+  "track1-02",
+  "track3-01",
+  "track3-02",
+  "track4-01",
+  "track4-02",
+  0
+};
+
+struct Samplesinterface ost_outrun =
+{
+  2,  /* 2 channels*/
+  39, /* volume*/
+  outrun_sample_set_names
+};
+
 
 static bool routine_outrun(int data)
 {
@@ -1547,6 +1179,41 @@ static bool routine_outrun(int data)
 
   return schedule_default_sound;
 }
+/********************************robocop********************************/
+const char *const robocop_sample_set_names[] =
+{
+  "*robocop",
+  "title-01",
+  "title-02",
+  "opening-01",
+  "opening-02",
+  "main-01",
+  "main-02",
+  "crfield-01",
+  "crfield-02",
+  "lstbattle-01",
+  "lstbattle-02",
+  "boss-01",
+  "boss-02",
+  "bigboss-01",
+  "bigboss-02",
+  "bonus-01",
+  "bonus-02",
+  "clear-01",
+  "clear-02",
+  "over-01",
+  "over-02",
+  "entry-01",
+  "entry-02",
+  0
+};
+
+struct Samplesinterface ost_robocop =
+{
+  2,  /* 2 channels*/
+  39, /* volume*/
+  robocop_sample_set_names
+};
 
 static bool routine_robocop(int data)
 {
@@ -1623,6 +1290,52 @@ static bool routine_robocop(int data)
 
   return schedule_default_sound;
 }
+/********************************street fighter 1********************************/
+const char *const sf1_sample_set_names[] =
+{
+  "*sf1",
+  "retsu-01",
+  "retsu-02",
+  "geki-01",
+  "geki-02",
+  "joe-01",
+  "joe-02",
+  "mike-01",
+  "mike-02",
+  "birdie-01",
+  "birdie-02",
+  "eagle-01",
+  "eagle-02",
+  "lee-01",
+  "lee-02",
+  "gen-01",
+  "gen-02",
+  "adon-01",
+  "adon-02",
+  "sagat-01",
+  "sagat-02",
+  "ending-01",
+  "ending-02",
+  "vs-01",
+  "vs-02",
+  "select-01",
+  "select-02",
+  "bonus1-01",
+  "bonus1-02",
+  "bonus2-01",
+  "bonus2-02",
+  "score-01",
+  "score-02",
+  "won-01",
+  "won-02",
+  0
+};
+struct Samplesinterface ost_sf1 =
+{
+  2,  /* 2 channels*/
+  39, /* volume*/
+  sf1_sample_set_names
+};
 
 static bool routine_sf1(int data)
 {
@@ -1729,6 +1442,109 @@ static bool routine_sf1(int data)
 
   return schedule_default_sound;
 }
+/********************************street fighter 2********************************/
+const char *const sf2_sample_set_names[] =
+{
+  "*sf2",
+  "ryuslow-01",
+  "ryuslow-02",
+  "ryufast-01",
+  "ryufast-02",
+  "blankaslow-01",
+  "blankaslow-02",
+  "blankafast-01",
+  "blankafast-02",
+  "chunlislow-01",
+  "chunlislow-02",
+  "chunlifast-01",
+  "chunlifast-02",
+  "ehondaslow-01",
+  "ehondaslow-02",
+  "ehondafast-01",
+  "ehondafast-02",
+  "guileslow-01",
+  "guileslow-02",
+  "guilefast-01",
+  "guilefast-02",
+  "dhalsimslow-01",
+  "dhalsimslow-02",
+  "dhalsimfast-01",
+  "dhalsimfast-02",
+  "balrogslow-01",
+  "balrogslow-02",
+  "balrogfast-01",
+  "balrogfast-02",
+  "sagatslow-01",
+  "sagatslow-02",
+  "sagatfast-01",
+  "sagatfast-02",
+  "mbisonslow-01",
+  "mbisonslow-02",
+  "mbisonfast-01",
+  "mbisonfast-02",
+  "versus-01",
+  "versus-02",
+  "endfight-01",
+  "endfight-02",
+  "continue-01",
+  "continue-02",
+  "highscore-01",
+  "highscore-02",
+  "intro-01",
+  "intro-02",
+  "playerjoin-01",
+  "playerjoin-02",
+  "playerselect-01",
+  "playerselect-02",
+  "gameover-01",
+  "gameover-02",
+  "kenslow-01",
+  "kenslow-02",
+  "kenfast-01",
+  "kenfast-02",
+  "zangiefslow-01",
+  "zangiefslow-02",
+  "zangieffast-01",
+  "zangieffast-02",
+  "vegaslow-01",
+  "vegaslow-02",
+  "vegafast-01",
+  "vegafast-02",
+  "bonusstage-01",
+  "bonusstage-02",
+  "mbisonending-01",
+  "mbisonending-02",
+  "kenendinga-01",
+  "kenendinga-02",
+  "kenendingb-01",
+  "kenendingb-02",
+  "ehondaending-01",
+  "ehondaending-02",
+  "blankaending-01",
+  "blankaending-02",
+  "guileending-01",
+  "guileending-02",
+  "zangiefending-01",
+  "zangiefending-02",
+  "specialending-01",
+  "specialending-02",
+  "ryuending-01",
+  "ryuending-02",
+  "dhalsimending-01",
+  "dhalsimending-02",
+  "chunliendinga-01",
+  "chunliendinga-02",
+  "chunliendingb-01",
+  "chunliendingb-02",
+  0
+};
+
+struct Samplesinterface ost_sf2 =
+{
+  2,  /* 2 channels*/
+  39, /* volume*/
+  sf2_sample_set_names
+};
 
 static bool routine_sf2(int data)
 {
@@ -2073,4 +1889,178 @@ static bool routine_sf2(int data)
   ost_mix_samples();
 
   return schedule_default_sound;
+}
+/********************************osd data end********************************/
+bool ost_support_enabled(int ost)
+{
+  if (!options.use_samples) return false;
+//  if (!options.use_alt_sound) return false;
+//  if (!options.content_flags[CONTENT_ALT_SOUND]) return false;
+
+  if (ost_support == ost) return true;
+
+  return false;
+}
+
+void ost_init(void)
+{
+  /* stop samples if playing */
+  ost_stop_samples();
+
+  /* ost configuration */
+  sa_volume   = 100;
+  fadingMusic = false;
+
+  /* game specific variables */
+  stage       = 0;
+  alternate_song_1 = false;
+  alternate_song_2 = false;
+  start_counter       = 0;
+}
+
+void install_ost_support(struct InternalMachineDriver *machine, int ost)
+{
+  /* set */
+  ost_support = ost;
+  MDRV_SOUND_ATTRIBUTES(SOUND_SUPPORTS_STEREO)
+
+  switch(ost)
+  {
+    case OST_SUPPORT_CONTRA:
+      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_contra)
+      generate_ost_sound = routine_contra;
+      break;
+
+    case OST_SUPPORT_DDRAGON:
+      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_ddragon)
+      generate_ost_sound = routine_ddragon;
+      break;
+
+    case OST_SUPPORT_FFIGHT:
+      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_ffight)
+      generate_ost_sound = routine_ffight;
+      break;
+
+    case OST_SUPPORT_IKARI:
+      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_ikari)
+      generate_ost_sound = routine_ikari;
+      break;
+
+    case OST_SUPPORT_MK:
+      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_mk)
+      generate_ost_sound = routine_mk;
+      break;
+
+    case OST_SUPPORT_MOONWALKER:
+      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_moonwalker)
+      generate_ost_sound = routine_moonwalker;
+      break;
+
+    case OST_SUPPORT_NBA_JAM:
+      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_nba_jam)
+      generate_ost_sound = routine_nba_jam;
+      break;
+
+    case OST_SUPPORT_OUTRUN:
+      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_outrun)
+      generate_ost_sound = routine_outrun;
+      break;
+
+    case OST_SUPPORT_ROBOCOP:
+      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_robocop)
+      generate_ost_sound = routine_robocop;
+      break;
+
+    case OST_SUPPORT_SF1:
+      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_sf1)
+      generate_ost_sound = routine_sf1;
+      break;
+
+    case OST_SUPPORT_SF2:
+      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_sf2)
+      generate_ost_sound = routine_sf2;
+      break;
+  }
+}
+
+static void ost_start_samples_custom(int sa_left, int sa_right, int sa_loop)
+{
+  ost_stop_samples();
+
+  sample_start(0, sa_left, sa_loop);
+  sample_start(1, sa_right, sa_loop);
+}
+
+static void ost_start_samples_stereo(int samp, int sa_loop)
+{
+  ost_stop_samples();
+  sample_start(0, samp, sa_loop);
+  sample_start(1, samp+1, sa_loop);
+}
+
+static void ost_stop_samples(void)
+{
+  sample_stop(0);
+  sample_stop(1);
+}
+
+static void ost_mix_samples(void)
+{
+  /* Determine how we should mix these samples together.*/
+  if(!sample_playing(0) && sample_playing(1)) { /* Right channel only. Lets make it play in both speakers.*/
+    ost_sample_set_stereo_volume(1, sa_volume, sa_volume);
+  }
+
+  else if(sample_playing(0) && !sample_playing(1) ) { /* Left channel only. Lets make it play in both speakers.*/
+    ost_sample_set_stereo_volume(0, sa_volume, sa_volume);
+  }
+
+  else if(sample_playing(0) && sample_playing(1)) { /* Both left and right channels. Lets make them play in there respective speakers.*/
+    ost_sample_set_stereo_volume(0, sa_volume, 0);
+    ost_sample_set_stereo_volume(1, 0, sa_volume);
+  }
+
+  else if(!sample_playing(0)  && !sample_playing(1) ) { /* No sample playing, revert to the default sound.*/
+    schedule_default_sound = true;
+  }
+}
+
+static int ost_check_playing_custom(int sa_left, int sa_right)
+{
+  //compensate the offset on channel played
+  sa_left =  sa_left  < 0 ? 0 : sa_left+1;
+  sa_right = sa_right < 0 ? 0: sa_right+1;
+
+  if( sample_playing(0) == sa_left  || sample_playing(1) == sa_right )
+    return 1;
+
+  return 0;
+}
+
+static int ost_check_playing_stereo(int samp)
+{
+  //compensate the offset on channel played
+  int left = samp  < 0 ? 0 : samp +1;
+  int right = samp < 0 ? 0: samp +2;
+  if( sample_playing(0) == left  || sample_playing(1) == right )
+    return 1;
+
+  return 0;
+}
+
+void ost_fade_volume(void)
+{
+  static bool allow_fade = true;
+  /*usrintf_showmessage("fadingMusic:%i  volume:%i", fadingMusic, sa_volume);*/
+
+  if(fadingMusic == false) return;
+
+  /* slow volume fading */
+  allow_fade = (allow_fade) ? 0:1;
+  if(allow_fade && sa_volume > 0) sa_volume -= 1;
+
+  /* end fading */
+  if(sa_volume == 0) fadingMusic = false;
+
+  ost_mix_samples();
 }
