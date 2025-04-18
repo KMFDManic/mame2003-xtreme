@@ -30,18 +30,112 @@ static int ost_check_playing_custom(int sa_left, int sa_right);
 
 /* ost routines */
 bool (*generate_ost_sound) (int);
-static bool routine_contra     (int data); // no changes needed dont have the ost to test should be fine
-static bool routine_ddragon    (int data); //done game ending doesnt work though and is a bit buggy needs looked into
-static bool routine_ffight     (int data); //no changes needed
-static bool routine_ikari      (int data); //done
-static bool routine_mk         (int data); //no changes needed
-static bool routine_moonwalker (int data); //done
-static bool routine_nba_jam    (int data); ////done
-static bool routine_outrun     (int data); //done
-static bool routine_robocop    (int data); //no changes needed
-static bool routine_sf1        (int data); //done
-static bool routine_sf2        (int data); //no changes needed
+static bool routine_bionicc    (int data);
+static bool routine_contra     (int data);
+static bool routine_ddragon    (int data);
+static bool routine_ffight     (int data);
+static bool routine_ikari      (int data);
+static bool routine_mk         (int data);
+static bool routine_moonwalker (int data);
+static bool routine_nba_jam    (int data);
+static bool routine_outrun     (int data);
+static bool routine_robocop    (int data);
+static bool routine_sf1        (int data);
+static bool routine_sf2        (int data);
 
+
+const char *const bionicc_sample_set_names[] =
+{
+	"*bionicc",
+	"forest-01",
+	"forest-02",
+	"fortress-01",
+	"fortress-02",
+	"tower-01",
+	"tower-02",
+	"tsecret-01",
+	"tsecret-02",
+	"ending-01",
+	"ending-02",
+	"ranking-01",
+	"ranking-02",
+	"clear-01",
+	"clear-02",
+    "sewer-01",
+	"sewer-02",
+	"over-01",
+	"over-02",
+	0
+};
+/********************************bionicc********************************/
+static struct Samplesinterface bionicc_samples_set =
+{
+	2,	// 2 channels
+	39, // volume
+	bionicc_sample_set_names
+};
+
+static bool routine_bionicc(int data)
+{
+  /* initialize ost config */
+  schedule_default_sound = false;
+
+  switch (data)
+  {
+    case 0x01:
+      // Round 1. Front Line
+    ost_start_samples_stereo(0, 1);
+    break;
+
+    case 0x02:
+      // Round 2. Big Fortress
+      ost_start_samples_stereo(2, 1);
+    break;
+
+    case 0x0A:
+      //  Round 4. Tower of Demon
+      ost_start_samples_stereo(4, 1);
+    break;
+
+    case 0x0B:
+      // Round 5. Top Secret
+       ost_start_samples_stereo(6, 1);
+    break;
+
+    case 0x0E:
+      //  Ending
+      ost_start_samples_stereo(8, 1);
+    break;
+
+    case 0x03:
+    // Ranking
+      ost_start_samples_stereo(10, 1);
+    break;
+
+    case 0x09:
+      // Round Clear
+      ost_start_samples_stereo(12, 1);
+    break;
+
+    case 0x04:
+      // Round 3 Infiltration Sewers
+      ost_start_samples_stereo(14, 1);
+    break;
+
+    case 0x07:
+      // Game Over
+      ost_start_samples_stereo(16, 1);
+      //sa_left = 22;// there is no sample 22 leave for reference when i get samples
+      //sa_right = 23;
+    break;
+
+   default:
+    schedule_default_sound = true;
+   break;
+  }
+  ost_mix_samples();
+  return schedule_default_sound;
+}
 /********************************contra********************************/
 const char *const contra_sample_set_names[] =
 {
