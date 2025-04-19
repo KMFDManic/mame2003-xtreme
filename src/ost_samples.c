@@ -620,8 +620,7 @@ static bool routine_ffight(int data)
 
   return schedule_default_sound;
 }
-/* gng */
-
+/********************************ffight********************************/
 const char *const gng_sample_names[] =
 {
 	"*gng",
