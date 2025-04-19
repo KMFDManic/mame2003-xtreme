@@ -34,6 +34,7 @@ static bool routine_bionicc    (int data);
 static bool routine_contra     (int data);
 static bool routine_ddragon    (int data);
 static bool routine_ffight     (int data);
+static bool routine_gng        (int data);
 static bool routine_ikari      (int data);
 static bool routine_mk         (int data);
 static bool routine_moonwalker (int data);
@@ -46,33 +47,33 @@ static bool routine_sf2        (int data);
 
 const char *const bionicc_sample_set_names[] =
 {
-	"*bionicc",
-	"forest-01",
-	"forest-02",
-	"fortress-01",
-	"fortress-02",
-	"tower-01",
-	"tower-02",
-	"tsecret-01",
-	"tsecret-02",
-	"ending-01",
-	"ending-02",
-	"ranking-01",
-	"ranking-02",
-	"clear-01",
-	"clear-02",
+  "*bionicc",
+  "forest-01",
+  "forest-02",
+  "fortress-01",
+  "fortress-02",
+  "tower-01",
+  "tower-02",
+  "tsecret-01",
+  "tsecret-02",
+  "ending-01",
+  "ending-02",
+  "ranking-01",
+  "ranking-02",
+  "clear-01",
+  "clear-02",
     "sewer-01",
-	"sewer-02",
-	"over-01",
-	"over-02",
-	0
+  "sewer-02",
+  "over-01",
+  "over-02",
+  0
 };
 /********************************bionicc********************************/
 static struct Samplesinterface ost_bionicc =
 {
-	2,	// 2 channels
-	39, // volume
-	bionicc_sample_set_names
+  2,  // 2 channels
+  39, // volume
+  bionicc_sample_set_names
 };
 
 static bool routine_bionicc(int data)
@@ -612,17 +613,161 @@ static bool routine_ffight(int data)
     case 0xf2:
     case 0xf7:
       ost_stop_samples();
-      break;
 
-    default:
-      schedule_default_sound = true;
-      break;
   }
 
   ost_mix_samples();
 
   return schedule_default_sound;
 }
+/* gng */
+
+const char *const gng_sample_names[] =
+{
+	"*gng",
+	"intro2-01",
+	"intro2-02",
+	"lap1-01",
+	"lap1-02",
+	"1stnm-01",
+	"1stnm-02",
+	"2ndee-01",
+	"2ndee-02",
+	"2ndnm-01",
+	"2ndnm-02",
+	"stg56-01",
+	"stg56-02",
+	"bossintro-01",
+	"bossintro-02",
+	"stg12-01",
+	"stg12-02",
+	"boss-01",
+	"boss-02",
+	"boss2-01",
+	"boss2-02",
+	"map-01",
+	"map-02",
+	"2ndlap-01",
+	"2ndlap-02",
+	"stg34-01",
+	"stg34-02",
+	"boss1-01",
+	"boss1-02",
+	"intro-01",
+	"intro-02",
+	"bossintro2-01",
+	"bossintro2-02",
+	"intro3-01",
+	"intro3-02",
+	0
+};
+
+static struct Samplesinterface ost_gng =
+{
+	2,	/* 2 channels*/
+	100, /* volume*/
+	gng_sample_names
+};
+
+static bool routine_gng(int data)
+{
+  /* initialize ost config */
+  schedule_default_sound = false;
+
+  switch (data)
+  {
+    case 0x10:
+      /* before stage intro part 2*/
+      ost_start_samples_stereo(0, 1);
+     break;
+
+    case 0x1C:
+      /* 1st lap Clear*/
+      ost_start_samples_stereo(2, 1);
+      break;
+
+    case 0x26:
+      /* 1st Place name Reg*/
+      ost_start_samples_stereo(4, 1);
+    break;
+
+    case 0x27:
+      /* Below 2nd Entry End*/
+      ost_start_samples_stereo(6, 1);
+    break;
+
+    case 0x28:
+        /* Below 2nd Place name Reg */
+      ost_start_samples_stereo(8, 1);
+    break;
+
+    case 0x29:
+      /* stage #5 and #6 TH Demon Castle*/
+      ost_start_samples_stereo(10, 1);
+    break;
+
+    case 0x2A:
+      /* stage #5 and #6 TH Demon Castle*/
+      ost_start_samples_stereo(12, 1);
+    break;
+
+    case 0x2B:
+      /* stage #1 and #2: */
+      ost_start_samples_stereo(14, 1);
+    break;
+
+    case 0x2D:
+      /* stage #1 and #2 boss*/
+      ost_start_samples_stereo(16, 1);
+    break;
+
+    case 0x2E:
+      /* Boss #5 and #6*/
+      ost_start_samples_stereo(18, 1);// these two are using the same sample wasnt a typo on my part
+    break;
+
+    case 0x30:
+      /* the map*/
+      ost_start_samples_stereo(18, 1);
+    break;
+
+    case 0x32:
+      /* 2nd Lap clear */
+      ost_start_samples_stereo(20, 1); // these 5 are using the same sample wasnt a typo on my part
+    break;
+
+    case 0x33:
+      /* stage #3 and #4*/
+       ost_start_samples_stereo(20, 1);
+    break;
+
+    case 0x34:
+      ost_start_samples_stereo(20, 1);
+    break;
+
+    case 0x36:
+      ost_start_samples_stereo(20, 1);
+    break;
+
+    case 0x38:
+      //*last boss intro  */
+     ost_start_samples_stereo(20, 1);
+    break;
+
+    case 0x3A:
+      ost_start_samples_stereo(22, 1);
+    break;
+
+    default:
+      schedule_default_sound = true;
+    break;
+  }
+
+  ost_mix_samples();
+
+  return schedule_default_sound;
+}
+
 /********************************ikari********************************/
 const char *const ikari_sample_set_names[] =
 {
@@ -2038,6 +2183,11 @@ void install_ost_support(struct InternalMachineDriver *machine, int ost)
     case OST_SUPPORT_FFIGHT:
       MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_ffight)
       generate_ost_sound = routine_ffight;
+      break;
+
+    case OST_SUPPORT_GNG:
+      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_gng)
+      generate_ost_sound = routine_gng;
       break;
 
     case OST_SUPPORT_IKARI:
