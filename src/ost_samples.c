@@ -36,6 +36,7 @@ static bool routine_contra     (int data);
 static bool routine_ddragon    (int data);
 static bool routine_ffight     (int data);
 static bool routine_gng        (int data);
+static bool routine_hcastle    (int data);
 static bool routine_ikari      (int data);
 static bool routine_mk         (int data);
 static bool routine_moonwalker (int data);
@@ -745,7 +746,7 @@ static bool routine_ffight(int data)
 }
 
 
-/********************************ffight********************************/
+/********************************gng********************************/
 const char *const gng_sample_names[] =
 {
   "*gng",
@@ -803,12 +804,12 @@ static bool routine_gng(int data)
     case 0x10:
       /* before stage intro part 2*/
       ost_start_samples_stereo(0, 1);
-     break;
+    break;
 
     case 0x1C:
       /* 1st lap Clear*/
       ost_start_samples_stereo(2, 1);
-      break;
+    break;
 
     case 0x26:
       /* 1st Place name Reg*/
@@ -893,6 +894,150 @@ static bool routine_gng(int data)
 }
 
 
+/********************************hcastle********************************/
+const char *const hcastle_sample_names[] =
+{
+  "*hcastle",
+  "ranking-01",
+  "ranking-02",
+  "over-01",
+  "over-02",
+  "stage1-01",
+  "stage1-02",
+  "stage3-01",
+  "stage3-02",
+  "stage2-01",
+  "stage2-02",
+  "boss-01",
+  "boss-02",
+  "intro-01",
+  "intro-02",
+  "stage4-01",
+  "stage4-02",
+  "clear-01",
+  "clear-02",
+  "stage5-01",
+  "stage5-02",
+  "stage6-01",
+  "stage6-02",
+  "dracula-01",
+  "dracula-02",
+  "fboss-01",
+  "fboss-02",
+  "ending-01",
+  "ending-02",
+  "diddy-01",
+  "diddy-02",
+  "title-01",
+  "title-02",
+  0
+};
+
+static struct Samplesinterface ost_hcastle =
+{
+  2,  /* 2 channels*/
+  39, /* volume*/
+  hcastle_sample_names
+};
+
+static bool routine_hcastle(int data)
+{
+  /* initialize ost config */
+  schedule_default_sound = false;
+
+  switch (data) {
+
+    /* Lullaby of devils - Ranking.*/
+    case 0x50:
+    ost_start_samples_stereo(0, 1);
+    break;
+
+    /* Never Ends - Game Over*/
+    case 0x51:
+      ost_start_samples_stereo(2, 1);
+    break;
+
+      /* Cross your Heart - Stage 1*/
+    case 0x52:
+      ost_start_samples_stereo(4, 1);
+    break;
+
+    /* Bloody Tears - Satge 3*/
+    case 0x53:
+
+      ost_start_samples_stereo(6, 1);
+    break;
+
+    /* Lullaby of Devils - Stage 2 */
+    case 0x54:
+      ost_start_samples_stereo(8, 1);
+    break;
+
+    /* The Revived Devil - Boss */
+    case 0x55:
+      ost_start_samples_stereo(10, 1);
+    break;
+
+    /* Wedding March - Introduction */
+    case 0x56:
+      ost_start_samples_stereo(12, 1);
+    break;
+
+    /* Basement Meoldy - Stage 4 */
+    case 0x57:
+      ost_start_samples_stereo(14, 1);
+    break;
+
+    /* Again - Stage Clear */
+    case 0x59:
+      ost_start_samples_stereo(16, 1);
+    break;
+
+    /* Beats of the Clock Tower - Stage 5 */
+    case 0x5A:
+      ost_start_samples_stereo(18, 1);
+    break;
+
+    /* Dont wait till tonight - Stage 6 */
+    case 0x5B:
+      ost_start_samples_stereo(20, 1);
+    break;
+
+    /* Dracula's Room - Final Boos 1*/
+    case 0x5C:
+      ost_start_samples_stereo(22, 1);
+    break;
+
+    /* Final Boss */
+    case 0x5D:
+      ost_start_samples_stereo(24, 1);
+    break;
+
+    /* Haunted Castle destroyed - Ending */
+    case 0x5E:
+      ost_start_samples_stereo(26, 1);    break;
+
+      /* No Retrun - Intermission */
+    case 0x61:
+      ost_start_samples_stereo(28, 1);
+    break;
+
+    //* Dracula Arised - Title  */
+    case 0x63:
+      ost_start_samples_stereo(30, 1);
+    break;
+
+    default:
+      schedule_default_sound = true;
+    break;
+  }
+
+  ost_mix_samples();
+
+  return schedule_default_sound;
+}
+
+
 /********************************ikari********************************/
 const char *const ikari_sample_set_names[] =
 {
@@ -929,35 +1074,35 @@ static bool routine_ikari(int data)
     case 0x70:
       if (!ost_check_playing_stereo(8)) /* ignore if playing Victory */
         ost_start_samples_stereo(0, 0);
-      break;
+    break;
 
     /* Force landing - it's up to you */
     case 0xA5:
       schedule_default_sound = true;
       ost_start_samples_stereo(2, 0);
-      break;
+    break;
 
     /* Theme of Ikari */
     case 0x41:
       ost_start_samples_stereo(4, 1);
-      break;
+    break;
 
     /* Gate */
     case 0x48:
       ost_start_samples_stereo(6, 1);
-      break;
+    break;
 
     /* Victory */
     case 0x68:
       if (!ost_check_playing_stereo(8)) /* prevent restarting Victory - glitch if invincibility is active */
         ost_start_samples_stereo(8, 0);
-      break;
+    break;
 
     /* Game Over and Glory */
     case 0x60:
       if (!ost_check_playing_stereo(8)) /* ignore if playing Victory */
         ost_start_samples_stereo(10, 0);
-      break;
+    break;
 
     default:
       schedule_default_sound = true;
@@ -2510,6 +2655,11 @@ void install_ost_support(struct InternalMachineDriver *machine, int ost)
     case OST_SUPPORT_GNG:
       MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_gng)
       generate_ost_sound = routine_gng;
+      break;
+
+    case OST_SUPPORT_HCASTLE:
+      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_hcastle)
+      generate_ost_sound = routine_hcastle;
       break;
 
     case OST_SUPPORT_IKARI:
