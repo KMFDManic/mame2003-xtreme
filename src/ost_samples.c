@@ -63,7 +63,7 @@ const char *const bionicc_sample_set_names[] =
   "ranking-02",
   "clear-01",
   "clear-02",
-    "sewer-01",
+  "sewer-01",
   "sewer-02",
   "over-01",
   "over-02",
@@ -145,39 +145,39 @@ static bool routine_bionicc(int data)
 /********************************cninja********************************/
 const char *const cninja_sample_set_names[] =
 {
-	"*cninja",
-	"kidnap-01",
-	"kidnap-02",
-	"stg1-3-01",
-	"stg1-3-02",
-	"stg2-5-01",
-	"stg2-5-02",
-	"stg4-01",
-	"stg4-02",
-	"xtra-01",
-	"xtra-02",
-	"rescue-01",
-	"rescue-02",
-	"boss-01",
-	"boss-02",
-	"endinga-01",
-	"endinga-02",
-    "endingb-01",
-	"endingb-02",
-	"clear-01",
-	"clear-02",
-	"endingc-01",
-	"endingc-02",
-	"continue-01",
-	"continue-02",
-	0
+  "*cninja",
+  "kidnap-01",
+  "kidnap-02",
+  "stg1-3-01",
+  "stg1-3-02",
+  "stg2-5-01",
+  "stg2-5-02",
+  "stg4-01",
+  "stg4-02",
+  "xtra-01",
+  "xtra-02",
+  "rescue-01",
+  "rescue-02",
+  "boss-01",
+  "boss-02",
+  "endinga-01",
+  "endinga-02",
+  "endingb-01",
+  "endingb-02",
+  "clear-01",
+  "clear-02",
+  "endingc-01",
+  "endingc-02",
+  "continue-01",
+  "continue-02",
+  0
 };
 
 static struct Samplesinterface ost_cninja =
 {
-	2,	// 2 channels
-	75, // volume
-	cninja_sample_set_names
+  2,  // 2 channels
+  75, // volume
+  cninja_sample_set_names
 };
 
 static bool routine_cninja(int data)
@@ -185,66 +185,66 @@ static bool routine_cninja(int data)
   /* initialize ost config */
   schedule_default_sound = false;
 
-	switch (data) {
-		// Girls kidanpped
-		case 0x04:
-			ost_start_samples_stereo(0, 1);
-		break;
+  switch (data) {
+    // Girls kidanpped
+    case 0x04:
+      ost_start_samples_stereo(0, 1);
+    break;
 
-			// Stage 1 and 3
-		case 0x05:
-			ost_start_samples_stereo(2, 1);
-		break;
+      // Stage 1 and 3
+    case 0x05:
+      ost_start_samples_stereo(2, 1);
+    break;
 
-		//  Stage 2 and 5
-		case 0x06:
-			ost_start_samples_stereo(4, 1);
-		break;
+    //  Stage 2 and 5
+    case 0x06:
+      ost_start_samples_stereo(4, 1);
+    break;
 
-		//  Stage 4
-		case 0x07:
-			ost_start_samples_stereo(6, 1);
-		break;
+    //  Stage 4
+    case 0x07:
+      ost_start_samples_stereo(6, 1);
+    break;
 
-		//  Xtra
-		case 0x09:
-			ost_start_samples_stereo(8, 1);
-		break;
+    //  Xtra
+    case 0x09:
+      ost_start_samples_stereo(8, 1);
+    break;
 
-		// Rescue
-		case 0x0A:
-			ost_start_samples_stereo(10, 1);
-		break;
+    // Rescue
+    case 0x0A:
+      ost_start_samples_stereo(10, 1);
+    break;
 
-		// Dinosaur Boss
-		case 0x0C:
-			ost_start_samples_stereo(12, 1);
-		break;
+    // Dinosaur Boss
+    case 0x0C:
+      ost_start_samples_stereo(12, 1);
+    break;
 
-		// Great Ending
-		case 0x0D:
-			ost_start_samples_stereo(14, 1);
-		break;
+    // Great Ending
+    case 0x0D:
+      ost_start_samples_stereo(14, 1);
+    break;
 
-		// Good Ending
-		case 0x0E:
-			ost_start_samples_stereo(16, 1);
-		break;
+    // Good Ending
+    case 0x0E:
+      ost_start_samples_stereo(16, 1);
+    break;
 
-		// Course Select
-		case 0x0F:
-			ost_start_samples_stereo(18, 1);
-		break;
+    // Course Select
+    case 0x0F:
+      ost_start_samples_stereo(18, 1);
+    break;
 
-		// Bad Ending
-		case 0x10:
-			ost_start_samples_stereo(20, 1);
-		break;
+    // Bad Ending
+    case 0x10:
+      ost_start_samples_stereo(20, 1);
+    break;
 
-		// Continue
-		case 0x19:
-			ost_start_samples_stereo(22, 1);
-		break;
+    // Continue
+    case 0x19:
+      ost_start_samples_stereo(22, 1);
+    break;
     default:
       schedule_default_sound = true;
       break;
@@ -748,41 +748,41 @@ static bool routine_ffight(int data)
 /********************************ffight********************************/
 const char *const gng_sample_names[] =
 {
-    "*gng",
-    "intro2-01",
-    "intro2-02",
-    "lap1-01",
-    "lap1-02",
-    "1stnm-01",
-    "1stnm-02",
-    "2ndee-01",
-    "2ndee-02",
-    "2ndnm-01",
-    "2ndnm-02",
-    "stg56-01",
-    "stg56-02",
-    "bossintro-01",
-    "bossintro-02",
-    "stg12-01",
-    "stg12-02",
-    "boss-01",
-    "boss-02",
-    "boss2-01",
-    "boss2-02",
-    "map-01",
-    "map-02",
-    "2ndlap-01",
-    "2ndlap-02",
-    "stg34-01",
-    "stg34-02",
-    "boss1-01",
-    "boss1-02",
-    "intro-01",
-    "intro-02",
-    "bossintro2-01",
-    "bossintro2-02",
-    "intro3-01",
-    "intro3-02",
+  "*gng",
+  "intro2-01",
+  "intro2-02",
+  "lap1-01",
+  "lap1-02",
+  "1stnm-01",
+  "1stnm-02",
+  "2ndee-01",
+  "2ndee-02",
+  "2ndnm-01",
+  "2ndnm-02",
+  "stg56-01",
+  "stg56-02",
+  "bossintro-01",
+  "bossintro-02",
+  "stg12-01",
+  "stg12-02",
+  "boss-01",
+  "boss-02",
+  "boss2-01",
+  "boss2-02",
+  "map-01",
+  "map-02",
+  "2ndlap-01",
+  "2ndlap-02",
+  "stg34-01",
+  "stg34-02",
+  "boss1-01",
+  "boss1-02",
+  "intro-01",
+  "intro-02",
+  "bossintro2-01",
+  "bossintro2-02",
+  "intro3-01",
+  "intro3-02",
     0
 };
 
@@ -2273,48 +2273,48 @@ static bool routine_sf2(int data)
 /********************************street fighter 2********************************/
 const char *const ultraman_sample_names[] =
 {
-    "*ultraman",
-    "opening-01",
-    "opening-01",
-    "clear-01",
-    "clear-02",
-    "grave-01",
-    "grave-02",
-    "entry-01",
-    "entry-02",
-    "intro-01",
-    "intro-02",
-    "ending-01",
-    "ending-02",
-    "prepare-01",
-    "prepare-02",
-    "victory-01",
-    "victory-02",
-    "bemular-01",
-    "bemular-02",
-    "telesdon-01",
-    "telesdon-02",
-    "jamyra-01",
-    "jamyra-02",
-    "bullon-01",
-    "bullon-02",
-    "redking-01",
-    "redking-02",
-    "baltan-01",
-    "baltan-02",
-    "gomora-01",
-    "gomora-02",
-    "mefilas-01",
-    "mefilas-02",
-    "gelonimon-01",
-    "gelonimon-02",
-    "zton-01",
-    "zton-02",
-    "antlar-01",
-    "antlar-02",
-    "nelonga-01",
-    "nelonga-02",
-    0
+  "*ultraman",
+  "opening-01",
+  "opening-01",
+  "clear-01",
+  "clear-02",
+  "grave-01",
+  "grave-02",
+  "entry-01",
+  "entry-02",
+  "intro-01",
+  "intro-02",
+  "ending-01",
+  "ending-02",
+  "prepare-01",
+  "prepare-02",
+  "victory-01",
+  "victory-02",
+  "bemular-01",
+  "bemular-02",
+  "telesdon-01",
+  "telesdon-02",
+  "jamyra-01",
+  "jamyra-02",
+  "bullon-01",
+  "bullon-02",
+  "redking-01",
+  "redking-02",
+  "baltan-01",
+  "baltan-02",
+  "gomora-01",
+  "gomora-02",
+  "mefilas-01",
+  "mefilas-02",
+  "gelonimon-01",
+  "gelonimon-02",
+  "zton-01",
+  "zton-02",
+  "antlar-01",
+  "antlar-02",
+  "nelonga-01",
+  "nelonga-02",
+  0
 };
 
 static struct Samplesinterface ost_ultraman =
