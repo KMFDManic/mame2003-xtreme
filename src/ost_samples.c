@@ -43,7 +43,7 @@ static bool routine_outrun     (int data);
 static bool routine_robocop    (int data);
 static bool routine_sf1        (int data);
 static bool routine_sf2        (int data);
-
+static bool routine_ultraman   (int data);
 
 const char *const bionicc_sample_set_names[] =
 {
@@ -68,6 +68,8 @@ const char *const bionicc_sample_set_names[] =
   "over-02",
   0
 };
+
+
 /********************************bionicc********************************/
 static struct Samplesinterface ost_bionicc =
 {
@@ -137,6 +139,8 @@ static bool routine_bionicc(int data)
   ost_mix_samples();
   return schedule_default_sound;
 }
+
+
 /********************************contra********************************/
 const char *const contra_sample_set_names[] =
 {
@@ -289,6 +293,8 @@ static bool routine_contra(int data)
 
   return schedule_default_sound;
 }
+
+
 /********************************ddragon********************************/
 const char *const ddragon_sample_set_names[] =
 {
@@ -424,6 +430,8 @@ static bool routine_ddragon(int data)
 
   return schedule_default_sound;
 }
+
+
 /********************************ffight********************************/
 const char *const ffight_sample_set_names[] =
 {
@@ -620,52 +628,54 @@ static bool routine_ffight(int data)
 
   return schedule_default_sound;
 }
+
+
 /********************************ffight********************************/
 const char *const gng_sample_names[] =
 {
-	"*gng",
-	"intro2-01",
-	"intro2-02",
-	"lap1-01",
-	"lap1-02",
-	"1stnm-01",
-	"1stnm-02",
-	"2ndee-01",
-	"2ndee-02",
-	"2ndnm-01",
-	"2ndnm-02",
-	"stg56-01",
-	"stg56-02",
-	"bossintro-01",
-	"bossintro-02",
-	"stg12-01",
-	"stg12-02",
-	"boss-01",
-	"boss-02",
-	"boss2-01",
-	"boss2-02",
-	"map-01",
-	"map-02",
-	"2ndlap-01",
-	"2ndlap-02",
-	"stg34-01",
-	"stg34-02",
-	"boss1-01",
-	"boss1-02",
-	"intro-01",
-	"intro-02",
-	"bossintro2-01",
-	"bossintro2-02",
-	"intro3-01",
-	"intro3-02",
-	0
+    "*gng",
+    "intro2-01",
+    "intro2-02",
+    "lap1-01",
+    "lap1-02",
+    "1stnm-01",
+    "1stnm-02",
+    "2ndee-01",
+    "2ndee-02",
+    "2ndnm-01",
+    "2ndnm-02",
+    "stg56-01",
+    "stg56-02",
+    "bossintro-01",
+    "bossintro-02",
+    "stg12-01",
+    "stg12-02",
+    "boss-01",
+    "boss-02",
+    "boss2-01",
+    "boss2-02",
+    "map-01",
+    "map-02",
+    "2ndlap-01",
+    "2ndlap-02",
+    "stg34-01",
+    "stg34-02",
+    "boss1-01",
+    "boss1-02",
+    "intro-01",
+    "intro-02",
+    "bossintro2-01",
+    "bossintro2-02",
+    "intro3-01",
+    "intro3-02",
+    0
 };
 
 static struct Samplesinterface ost_gng =
 {
-	2,	/* 2 channels*/
-	100, /* volume*/
-	gng_sample_names
+    2,  /* 2 channels*/
+    100, /* volume*/
+    gng_sample_names
 };
 
 static bool routine_gng(int data)
@@ -767,6 +777,7 @@ static bool routine_gng(int data)
   return schedule_default_sound;
 }
 
+
 /********************************ikari********************************/
 const char *const ikari_sample_set_names[] =
 {
@@ -842,6 +853,8 @@ static bool routine_ikari(int data)
 
   return schedule_default_sound;
 }
+
+
 /********************************mk********************************/
 const char *const mk_sample_set_names[] =
 {
@@ -1091,6 +1104,8 @@ static bool routine_mk(int data)
 
   return schedule_default_sound;
 }
+
+
 /********************************moon walker********************************/
 const char *const moonwalker_sample_set_names[] =
 {
@@ -1199,6 +1214,8 @@ static bool routine_moonwalker(int data)
 
   return schedule_default_sound;
 }
+
+
 /********************************nba jam********************************/
 const char *const nba_jam_sample_set_names[] =
 {
@@ -1323,6 +1340,8 @@ static bool routine_nba_jam(int data)
 
   return schedule_default_sound;
 }
+
+
 /********************************outrun********************************/
 const char *const outrun_sample_set_names[] =
 {
@@ -1417,6 +1436,8 @@ static bool routine_outrun(int data)
 
   return schedule_default_sound;
 }
+
+
 /********************************robocop********************************/
 const char *const robocop_sample_set_names[] =
 {
@@ -1528,6 +1549,8 @@ static bool routine_robocop(int data)
 
   return schedule_default_sound;
 }
+
+
 /********************************street fighter 1********************************/
 const char *const sf1_sample_set_names[] =
 {
@@ -1680,6 +1703,8 @@ static bool routine_sf1(int data)
 
   return schedule_default_sound;
 }
+
+
 /********************************street fighter 2********************************/
 const char *const sf2_sample_set_names[] =
 {
@@ -1796,266 +1821,266 @@ static bool routine_sf2(int data)
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(0, 1);
-      break;
+    break;
 
     case 0x2:
       /* e honda music slow */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(12, 1);
-      break;
+    break;
 
     case 0x3:
       /* blanka music slow */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(4, 1);
-      break;
+    break;
 
     case 0x4:
       /* ken music slow */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(52, 1);
-      break;
+    break;
 
     case 0x5:
       /* guile music slow */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(16, 1);
-      break;
+    break;
 
     case 0x6:
       /* chun li music slow */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(8, 1);
-      break;
+    break;
 
     case 0x7:
       /* zangief music slow */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(56, 1);
-      break;
+    break;
 
     case 0x8:
       /* dhalsim music slow */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(20, 1);
-      break;
+    break;
 
     case 0x9:
       /* balrog music slow */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(24, 1);
-      break;
+    break;
 
     case 0xa:
       /* vega music slow */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(60, 1);
-      break;
+    break;
 
     case 0xb:
       /* sagat music slow */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(28, 1);
-      break;
+    break;
 
     case 0xc:
       /* m. bison music slow */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(32, 1);
-      break;
+    break;
 
     case 0xd:
       /* bonus stage music */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(64, 1);
-      break;
+    break;
 
     case 0xe:
       /* character select stage */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(48, 1);
-      break;
+    break;
 
     case 0xf:
       /* versus screen ditty */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(36, 0);
-      break;
+    break;
 
     case 0x10:
       /* end of fight dialog/resolution screen */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(38, 0);
-      break;
+    break;
 
     case 0x11:
       /* continue music, loop for ending credits */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(40, 1);
-      break;
+    break;
 
     case 0x13:
       /* game over */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(50, 0);
-      break;
+    break;
 
     case 0x14:
       /* high score screen */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(42, 0);
-      break;
+    break;
 
     case 0x15:
       /* player joined music */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(46, 0);
-      break;
+    break;
 
     case 0x16:
       /* intro music */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(44, 1);
-      break;
+    break;
 
     case 0x18:
       /* ryu ending music */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(82, 0);
-      break;
+    break;
 
     case 0x19:
       /* e.honda ending music */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(72, 1);
-      break;
+    break;
 
     case 0x1a:
       /* blanka ending music */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(74, 1);
-      break;
+    break;
 
     case 0x1b:
       /* guile ending music */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(76, 1);
-      break;
+    break;
 
     case 0x1c:
       /* ken ending music */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(68, 1);
-      break;
+    break;
 
     case 0x1d:
       /* chun li ending music? */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(86, 1);
-      break;
+    break;
 
     case 0x1e:
       /* zangief ending music */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(78, 1);
-      break;
+    break;
 
     case 0x1f:
       /* dhalsim ending music */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(84, 1);
-      break;
+    break;
 
     case 0x34:
       /* wedding music -- ken ending */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(70, 1);
-      break;
+    break;
 
     case 0x35:
       /* chun li ending #2 */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(88, 1);
-      break;
+    break;
 
     case 0x79:
       /* ryu music fast */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(2, 1);
-      break;
+    break;
 
     case 0x7a:
       /* e. honda music fast */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(14, 1);
-      break;
+    break;
 
     case 0x7b:
       /* blanka music fast */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(6, 1);
-      break;
+    break;
 
     case 0x7c:
       /* guile music fast */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(18, 1);
-      break;
+    break;
 
     case 0x7d:
       /* ken music fast */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(54, 1);
-      break;
+    break;
 
     case 0x7e:
       /* fast chun li music */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(10, 1);
-      break;
+    break;
 
     case 0x7f:
       /* zangief music fast */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(58, 1);
-      break;
+    break;
 
     case 0x80:
       /* dhalsim music fast */
@@ -2069,65 +2094,243 @@ static bool routine_sf2(int data)
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(26, 1);
-      break;
+    break;
 
     case 0x82:
       /* fast vega music */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(62, 1);
-      break;
+    break;
 
     case 0x83:
       /* fast sagat music */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(30, 1);
-      break;
+    break;
 
     case 0x84:
       /* fast m. bison music */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(34, 1);
-      break;
+    break;
 
     case 0x8c:
       /* m. bison ending */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(66, 1);
-      break;
+    break;
 
     case 0x8d:
       /* special ending */
       fadingMusic = false;
       sa_volume = 100;
       ost_start_samples_stereo(80, 1);
-      break;
+    break;
 
     case 0xf9:
       /* fade music */
       fadingMusic = true;
       schedule_default_sound = true;
-      break;
+    break;
 
     /* Time to stop the Street Fighter 2 music samples.*/
     case 0xf0:
     case 0xf2:
     case 0xf7:
       ost_stop_samples();
-      break;
+    break;
 
     default:
       schedule_default_sound = true;
-      break;
+    break;
   }
 
   ost_mix_samples();
 
   return schedule_default_sound;
 }
+
+
+/********************************street fighter 2********************************/
+const char *const ultraman_sample_names[] =
+{
+    "*ultraman",
+    "opening-01",
+    "opening-01",
+    "clear-01",
+    "clear-02",
+    "grave-01",
+    "grave-02",
+    "entry-01",
+    "entry-02",
+    "intro-01",
+    "intro-02",
+    "ending-01",
+    "ending-02",
+    "prepare-01",
+    "prepare-02",
+    "victory-01",
+    "victory-02",
+    "bemular-01",
+    "bemular-02",
+    "telesdon-01",
+    "telesdon-02",
+    "jamyra-01",
+    "jamyra-02",
+    "bullon-01",
+    "bullon-02",
+    "redking-01",
+    "redking-02",
+    "baltan-01",
+    "baltan-02",
+    "gomora-01",
+    "gomora-02",
+    "mefilas-01",
+    "mefilas-02",
+    "gelonimon-01",
+    "gelonimon-02",
+    "zton-01",
+    "zton-02",
+    "antlar-01",
+    "antlar-02",
+    "nelonga-01",
+    "nelonga-02",
+    0
+};
+
+static struct Samplesinterface ost_ultraman =
+{
+    1,  // 1 channel
+    75, // volume
+    ultraman_sample_names
+};
+
+static bool routine_ultraman(int data)
+{
+  /* initialize ost config */
+  schedule_default_sound = false;
+
+  switch (data)
+  {
+
+// Opening
+    case 0x01:
+      ost_start_samples_stereo(0,1);
+    break;
+
+// Stage Clear
+    case 0x02:
+      ost_start_samples_stereo(2,1);
+    break;
+
+// Jamyra grave
+    case 0x03:
+      ost_start_samples_stereo(4,1);
+    break;
+
+// Name Entry
+    case 0x04:
+      ost_start_samples_stereo(6,1);
+    break;
+
+// Intro
+    case 0x09:
+      ost_start_samples_stereo(8,1);
+    break;
+
+// Ending
+    case 0x0A:
+      ost_start_samples_stereo(10,1);
+    break;
+
+// Prepare for Battle
+    case 0x0B:
+      ost_start_samples_stereo(12,1);
+    break;
+
+// Victory
+    case 0x0C:
+      ost_start_samples_stereo(14,1);
+    break;
+
+// Stage 1 Bemular
+    case 0x0D:
+      ost_start_samples_stereo(16,1);
+    break;
+
+// Stage 5 Telesdon
+    case 0x0E:
+      ost_start_samples_stereo(18,1);
+    break;
+
+// Stage 4 Jamyra
+    case 0x0F:
+      ost_start_samples_stereo(20,1); // Pretty sure 30 and 21 was a typo leave in for reference
+      //sa_left = 30;
+      //sa_right = 21;
+    break;
+
+// Sayge 6 Bullon
+    case 0x10:
+      ost_start_samples_stereo(22,1);
+    break;
+
+// Stage 10 Redking
+    case 0x11:
+       ost_start_samples_stereo(24,1);
+    break;
+
+// Stage 3 and 9 Baltan
+    case 0x12:
+      ost_start_samples_stereo(26,1);
+    break;
+
+// Stage 8 Gomora
+    case 0x13:
+      ost_start_samples_stereo(28,1);
+    break;
+
+// Stage 11 Alien Mefilas
+    case 0x14:
+      ost_start_samples_stereo(30,1);
+    break;
+
+// Stage 12 Gelonimon
+    case 0x15:
+      ost_start_samples_stereo(32,1);
+    break;
+
+// Final Stage Z-Ton
+    case 0x16:
+       ost_start_samples_stereo(34,1);
+    break;
+
+// Stage 7 Antlar
+  case 0x17:
+      ost_start_samples_stereo(36,1);
+  break;
+
+// 2nd Boss Nelonga
+    case 0x18:
+      ost_start_samples_stereo(38,1);
+    break;
+
+    default:
+    schedule_default_sound = true;
+    break;
+  }
+
+  ost_mix_samples();
+
+  return schedule_default_sound;
+}
+
+
+
 /********************************osd data end********************************/
 bool ost_support_enabled(int ost)
 {
@@ -2229,6 +2432,10 @@ void install_ost_support(struct InternalMachineDriver *machine, int ost)
       generate_ost_sound = routine_sf2;
       break;
 
+    case OST_SUPPORT_ULTRAMAN:
+      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_ultraman)
+      generate_ost_sound = routine_ultraman;
+    break;
   }
 }
 
