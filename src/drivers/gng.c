@@ -23,62 +23,8 @@ Notes:
 #include "driver.h"
 #include "vidhrdw/generic.h"
 #include "cpu/m6809/m6809.h"
+#include "ost_samples.h"
 
-bool	gng_playing = false;
-bool	gng_start = false;
-bool	gng_diddy = false;
-bool	gng_title_diddy = false;
-bool	gng_title = false;
-bool	gng_lastwave = false;
-int		gng_start_counter = 0;
-
-
-const char *const gng_sample_names[] =
-{
-	"*gng",
-	"intro2-01",
-	"intro2-02",
-	"lap1-01",
-	"lap1-02",
-	"1stnm-01",
-	"1stnm-02",
-	"2ndee-01",
-	"2ndee02",
-	"2ndnm-01",
-	"2ndnm-02",
-	"stg56-01",
-	"stg56-02",
-	"bossintro-01",
-	"bossintro-02",
-	"stg12-01",
-	"stg12-02",
-	"boss-01",
-	"boss-02",
-	"boss2-01",
-	"boss2-02",
-	"map-01",
-	"map-02",
-	"2ndlap-01",
-	"2ndlap-02",
-	"stg34-01",
-	"stg34-02",
-	"boss1-01",
-	"boss1-02",
-	"intro-01",
-	"intro-02",
-	"bossintro2-01",
-	"bossintro2-02",
-	"intro3-01",
-	"intro3-02",
-	0
-};
-
-static struct Samplesinterface gng_samples =
-{
-	2,	/* 2 channels*/
-	100, /* volume*/
-	gng_sample_names
-};
 
 extern unsigned char *gng_fgvideoram;
 extern unsigned char *gng_bgvideoram;
@@ -115,235 +61,13 @@ static WRITE_HANDLER( gng_coin_counter_w )
 
 static WRITE_HANDLER( sound_command_w )
 {
-    if(gng_playing == true) {
-	   int a = 0;
-	   int o_max_samples = 41;
-	   int sa_left = 0;
-	   int sa_right = 1;
-	   bool sa_loop = 1; // --> 1 == loop, 0 == do not loop.
-	   bool sa_play_sample = false;
-	   bool sa_play_original = false;
-	   bool gng_do_nothing = false;
-	   bool gng_stop_samples = false;
-	   bool gng_play_default = false;
+	if( ost_support_enabled(OST_SUPPORT_GNG) ) {
 
-		if(gng_start == true) {
-			sa_play_sample = true;
-			sa_left = 0;
-			sa_right = 1;
-			gng_start = false;
-			gng_diddy = true;
-			gng_lastwave = false;
-		}
-
-		switch (data) {
-			/* before stage intro part 2*/
-			case 0x10:
-			    gng_diddy = false;
-				gng_title_diddy = false;
-				gng_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 0;
-				sa_right = 1;
-				break;
-			/* 1st lap Clear*/
-			case 0x1C:
-				gng_diddy = false;
-				gng_title_diddy = false;
-				gng_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 2;
-				sa_right = 3;
-				break;
-			/* 1st Place name Reg*/
-			case 0x26:
-                gng_diddy = false;
-				gng_title_diddy = false;
-				gng_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 4;
-				sa_right = 5;
-                break;
-			/* Below 2nd Entry End*/
-			case 0x27:
-		        gng_diddy = false;
-				gng_title_diddy = false;
-				gng_lastwave = false;
-				sa_left = 6;
-				sa_right = 7;
-				break;
-			/* Below 2nd Place name Reg */
-			case 0x28:
-                gng_diddy = false;
-				gng_title_diddy = false;
-				gng_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 8;
-				sa_right = 9;
-				break;
-			/* stage #5 and #6 TH Demon Castle*/
-			case 0x29:
-                gng_diddy = false;
-				gng_title_diddy = false;
-				gng_lastwave = false;
-				sa_left = 10;
-				sa_right = 11;
-				break;
-			/* Boss #7*/
-			case 0x2A:
-                gng_diddy = false;
-				gng_title_diddy = false;
-				gng_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 12;
-				sa_right = 13;
-				break;
-			/* stage #1 and #2: */
-			case 0x2B:
-		        gng_diddy = false;
-				gng_title_diddy = false;
-				gng_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 14;
-				sa_right = 15;
-				break;
-			/* stage #1 and #2 boss*/
-			case 0x2D:
-			    gng_diddy = false;
-				gng_title_diddy = false;
-				gng_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 16;
-				sa_right = 17;
-				break;
-			/* Boss #5 and #6*/
-			case 0x2E:
-                gng_diddy = false;
-				gng_title_diddy = false;
-				gng_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 18;
-				sa_right = 19;
-				break;
-			/* the map*/
-			case 0x30:
-                gng_diddy = false;
-				gng_title_diddy = false;
-				gng_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 18;
-				sa_right = 19;
-				break;
-			/* 2nd Lap clear */
-			case 0x32:
-				gng_diddy = false;
-				gng_title_diddy = false;
-				gng_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 20;
-				sa_right = 21;
-				break;
-			/* stage #3 and #4*/
-			case 0x33:
-				gng_diddy = false;
-				gng_title_diddy = false;
-				gng_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 20;
-				sa_right = 21;
-				break;
-			/* stage #3 and #4 boss*/
-			case 0x34:
-				gng_diddy = false;
-				gng_title_diddy = false;
-				gng_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 20;
-				sa_right = 21;
-				break;
-			/* stage introduction*/
-			case 0x36:
-				gng_diddy = false;
-				gng_title_diddy = false;
-				gng_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 20;
-				sa_right = 21;
-				break;
-			//*last boss intro  */
-			case 0x38:
-				gng_diddy = false;
-				gng_title_diddy = false;
-				gng_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 20;
-				sa_right = 21;
-				break;
-			/* before stage intro*/
-			case 0x3A:
-               if(gng_lastwave == false) {
-					gng_diddy = false;
-					gng_title_diddy = false;
-					gng_lastwave = true;
-					sa_play_sample = true;
-					sa_left = 22;
-					sa_right = 23;
-			   }
-				else
-					gng_do_nothing = true;
-				break;
-                default:
-				soundlatch_w(offset,data & 0xff);
-			break;
-		}
-
-		if(sa_play_sample == true) {
-			a = 0;
-
-			for(a = 0; a <= o_max_samples; a++) {
-				sample_stop(a);
-			}
-
-			sample_start(0, sa_left, sa_loop);
-			sample_start(1, sa_right, sa_loop);
-
-			// Determine how we should mix these samples together.
-			if(!sample_playing(0)  && sample_playing(1)) { // Right channel only. Lets make it play in both speakers.
-				sample_set_stereo_volume(1, 100, 100);
-			}
-			else if(sample_playing(0) && !sample_playing(1)) { // Left channel only. Lets make it play in both speakers.
-				sample_set_stereo_volume(0, 100, 100);
-			}
-			else if(sample_playing(0)  && sample_playing(1)) { // Both left and right channels. Lets make them play in there respective speakers.
-				sample_set_stereo_volume(0, 100, 0);
-				sample_set_stereo_volume(1, 0, 100);
-			}
-			else if(!sample_playing(0) && !sample_playing(1) && gng_do_nothing == false) { // No sample playing, revert to the default sound.
-				sa_play_original = false;
-				soundlatch_w(offset,data & 0xff);
-			}
-
-			if(sa_play_original == true)
-				soundlatch_w(offset,data & 0xff);
-		}
-		else if(gng_do_nothing == true) {
-			// --> Do nothing.
-		}
-		else if(gng_stop_samples == true) {
-			a = 0;
-
-			for(a = 0; a <= o_max_samples; a++) {
-				sample_stop(a);
-			}
-
-            // Now play the default sound.
-			soundlatch_w(offset,data & 0xff);
-			cpu_set_irq_line(1,IRQ_LINE_NMI,PULSE_LINE);
-		}
-		else if(gng_play_default == true) {
-			soundlatch_w(offset,data & 0xff);
-		}
+	if(generate_ost_sound( data ))
+		soundlatch_w( 0,data&0xff );
 	}
+	else
+		soundlatch_w( 0,data&0xff );
 }
 
 
@@ -387,7 +111,6 @@ MEMORY_END
 
 static MEMORY_WRITE_START( sound_writemem )
 	{ 0xc000, 0xc7ff, MWA_RAM },
-    { 0xc800, 0xc800, soundlatch_w },
 	{ 0xe000, 0xe000, YM2203_control_port_0_w },
 	{ 0xe001, 0xe001, YM2203_write_port_0_w },
 	{ 0xe002, 0xe002, YM2203_control_port_1_w },
@@ -409,20 +132,20 @@ INPUT_PORTS_START( gng )
 	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_COIN2 )
 
 	PORT_START	/* IN1 */
-	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_8WAY )
-	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_8WAY )
-	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_8WAY )
-	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_8WAY )
+	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_4WAY )
+	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_4WAY )
+	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_4WAY )
+	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_4WAY )
 	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_BUTTON1 )
 	PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_BUTTON2 )
 	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_UNKNOWN )
 	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_UNKNOWN )
 
 	PORT_START	/* IN2 */
-	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_COCKTAIL )
-	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_COCKTAIL )
-	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_COCKTAIL )
-	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_8WAY | IPF_COCKTAIL )
+	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_4WAY | IPF_COCKTAIL )
+	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_4WAY | IPF_COCKTAIL )
+	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_4WAY | IPF_COCKTAIL )
+	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_4WAY | IPF_COCKTAIL )
 	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_COCKTAIL )
 	PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_COCKTAIL )
 	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_UNKNOWN )
@@ -494,20 +217,20 @@ INPUT_PORTS_START( makaimur )
 	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_COIN2 )
 
 	PORT_START	/* IN1 */
-	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_8WAY )
-	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_8WAY )
-	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_8WAY )
-	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_8WAY )
+	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_4WAY )
+	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_4WAY )
+	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_4WAY )
+	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_4WAY )
 	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_BUTTON1 )
 	PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_BUTTON2 )
 	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_UNKNOWN )
 	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_UNKNOWN )
 
 	PORT_START	/* IN2 */
-	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_8WAY | IPF_COCKTAIL )
-	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_8WAY | IPF_COCKTAIL )
-	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_8WAY | IPF_COCKTAIL )
-	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_8WAY | IPF_COCKTAIL )
+	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT | IPF_4WAY | IPF_COCKTAIL )
+	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT | IPF_4WAY | IPF_COCKTAIL )
+	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN | IPF_4WAY | IPF_COCKTAIL )
+	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_JOYSTICK_UP | IPF_4WAY | IPF_COCKTAIL )
 	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_BUTTON1 | IPF_COCKTAIL )
 	PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_BUTTON2 | IPF_COCKTAIL )
 	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_UNKNOWN )
@@ -699,12 +422,11 @@ static struct YM2203interface ym2203_interface =
 {
 	2,			/* 2 chips */
 	1500000,	/* 1.5 MHz (?) */
-
 	{ YM2203_VOL(20,40), YM2203_VOL(20,40) },
 	{ 0 },
 	{ 0 },
 	{ 0 },
-	{ 0 },
+	{ 0 }
 };
 
 
@@ -724,7 +446,6 @@ static MACHINE_DRIVER_START( gng )
 	MDRV_FRAMES_PER_SECOND(60)
 	MDRV_VBLANK_DURATION(DEFAULT_60HZ_VBLANK_DURATION)
 
-
 	/* video hardware */
 	MDRV_VIDEO_ATTRIBUTES(VIDEO_TYPE_RASTER | VIDEO_BUFFERS_SPRITERAM)
 	MDRV_SCREEN_SIZE(32*8, 32*8)
@@ -738,9 +459,7 @@ static MACHINE_DRIVER_START( gng )
 
 	/* sound hardware */
 	MDRV_SOUND_ADD(YM2203, ym2203_interface)
-    MDRV_SOUND_ADD(SAMPLES, gng_samples)
-	gng_playing = true;
-	gng_start = 0;
+	MDRV_INSTALL_OST_SUPPORT(OST_SUPPORT_GNG)
 MACHINE_DRIVER_END
 
 

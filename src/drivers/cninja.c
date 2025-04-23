@@ -40,51 +40,7 @@ Caveman Ninja Issues:
 #include "deco16ic.h"
 #include "decocrpt.h"
 #include "decoprot.h"
-
-bool	cninja_playing = false;
-bool	cninja_start = false;
-bool	cninja_diddy = false;
-bool	cninja_title_diddy = false;
-bool	cninja_title = false;
-bool	cninja_lastwave = false;
-int		cninja_start_counter = 0;
-
-const char *const cninja_sample_set_names[] =
-{
-	"*cninja",
-	"kidnap-01",
-	"kidnap-02",
-	"stg1-3-01",
-	"stg1-3-02",
-	"stg2-5-01",
-	"stg2-5-02",
-	"stg4-01",
-	"stg4-02",
-	"xtra-01",
-	"xtra-02",
-	"rescue-01",
-	"rescue-02",
-	"boss-01",
-	"boss-02",
-	"endinga-01",
-	"endinga-02",
-    "endingb-01",
-	"endingb-02",
-	"clear-01",
-	"clear-02",
-	"endingc-01",
-	"endingc-02",
-	"continue-01",
-	"continue-02",
-	0
-};
-
-static struct Samplesinterface cninja_samples_set =
-{
-	2,	// 2 channels
-	100, // volume
-	cninja_sample_set_names
-};
+#include "ost_samples.h"
 
 static int cninja_scanline, cninja_irq_mask;
 static void *raster_irq_timer;
@@ -95,196 +51,19 @@ static data16_t *cninja_ram;
 static WRITE16_HANDLER( cninja_sound_w )
 {
 
-	if(cninja_playing == true) {
-		int a = 0;
-		int o_max_samples = 41;
-		int sa_left = 0;
-		int sa_right = 1;
-		bool sa_loop = 1; // --> 1 == loop, 0 == do not loop.
-		bool sa_play_sample = false;
-		bool sa_play_original = false;
-		bool cninja_do_nothing = false;
-		bool cninja_stop_samples = false;
-		bool cninja_play_default = false;
+	if( ost_support_enabled(OST_SUPPORT_CNINJA) )
+	{
 
-		if(cninja_start == true) {
-			sa_play_sample = true;
-			sa_left = 0;
-			sa_right = 1;
-			cninja_start = false;
-			cninja_diddy = true;
-			cninja_lastwave = false;
-		}
-
-		switch (data) {
-			// Girls kidanpped
-			case 0x04:
-			    cninja_diddy = false;
-				cninja_title_diddy = false;
-				cninja_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 0;
-				sa_right = 1;
-				break;
-			// Stage 1 and 3
-			case 0x05:
-			   cninja_diddy = false;
-				cninja_title_diddy = false;
-				cninja_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 2;
-				sa_right = 3;
-				break;
-			//  Stage 2 and 5
-			case 0x06:
-                cninja_diddy = false;
-				cninja_title_diddy = false;
-				cninja_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 4;
-				sa_right = 5;
-                break;
-			//  Stage 4
-			case 0x07:
-		        cninja_diddy = false;
-				cninja_title_diddy = false;
-				cninja_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 6;
-				sa_right = 7;
-				break;
-			//  Xtra
-			case 0x09:
-		        cninja_diddy = false;
-				cninja_title_diddy = false;
-				cninja_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 8;
-				sa_right = 9;
-				break;
-			// Rescue
-			case 0x0A:
-                cninja_diddy = false;
-				cninja_title_diddy = false;
-				cninja_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 10;
-				sa_right = 11;
-				break;
-			// Dinosaur Boss
-			case 0x0C:
-                cninja_diddy = false;
-				cninja_title_diddy = false;
-				cninja_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 12;
-				sa_right = 13;
-				break;
-			// Great Ending
-			case 0x0D:
-		        cninja_diddy = false;
-				cninja_title_diddy = false;
-				cninja_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 14;
-				sa_right = 15;
-				break;
-			// Good Ending
-            case 0x0E:
-			    cninja_diddy = false;
-				cninja_title_diddy = false;
-				cninja_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 16;
-				sa_right = 17;
-				break;
-            // Course Select
-            case 0x0F:
-			    cninja_diddy = false;
-				cninja_title_diddy = false;
-				cninja_lastwave = false;;
-				sa_play_sample = true;
-				sa_left = 18;
-				sa_right = 19;
-				break;
-			// Bad Ending
-			case 0x10:
-                cninja_diddy = false;
-				cninja_title_diddy = false;
-				cninja_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 20;
-				sa_right = 21;
-				break;
-		    // Continue
-            case 0x19:
-               if(cninja_lastwave == false) {
-					cninja_diddy = false;
-				    cninja_title_diddy = false;
-				    cninja_lastwave = false;
-					sa_play_sample = true;
-					sa_left = 22;
-					sa_right = 23;
-			   }
-				else
-					cninja_do_nothing = true;
-				break;
-                default:
-				soundlatch_w(0,data&0xff);
-	            cpu_set_irq_line(1,0,HOLD_LINE);
-			break;
-		}
-
-		if(sa_play_sample == true) {
-			a = 0;
-
-			for(a = 0; a <= o_max_samples; a++) {
-				sample_stop(a);
-			}
-
-			sample_start(0, sa_left, sa_loop);
-			sample_start(1, sa_right, sa_loop);
-
-			// Determine how we should mix these samples together.
-			if(!sample_playing(0)  && sample_playing(1)) { // Right channel only. Lets make it play in both speakers.
-				sample_set_stereo_volume(1, 100, 100);
-			}
-			else if(sample_playing(0)  && !sample_playing(1)) { // Left channel only. Lets make it play in both speakers.
-				sample_set_stereo_volume(0, 100, 100);
-			}
-			else if(sample_playing(0) && sample_playing(1) ) { // Both left and right channels. Lets make them play in there respective speakers.
-				sample_set_stereo_volume(0, 100, 0);
-				sample_set_stereo_volume(1, 0, 100);
-			}
-			else if(!sample_playing(0) == 0 && !sample_playing(1) == 0 && cninja_do_nothing == false) { // No sample playing, revert to the default sound.
-				sa_play_original = false;
-				soundlatch_w(0,data&0xff);
-	            cpu_set_irq_line(1,0,HOLD_LINE);
-			}
-
-			if(sa_play_original == true)
-				soundlatch_w(0,data&0xff);
-	            cpu_set_irq_line(1,0,HOLD_LINE);
-		}
-		else if(cninja_do_nothing == true) {
-			// --> Do nothing.
-		}
-		else if(cninja_stop_samples == true) {
-			a = 0;
-
-			for(a = 0; a <= o_max_samples; a++) {
-				sample_stop(a);
-			}
-
-            // Now play the default sound.
+		if(generate_ost_sound( data ))
+		{
 			soundlatch_w(0,data&0xff);
-	        cpu_set_irq_line(1,0,HOLD_LINE);
-
+			cpu_set_irq_line(1,0,HOLD_LINE);
 		}
-		else if(cninja_play_default == true) {
-			soundlatch_w(0,data&0xff);
-	        cpu_set_irq_line(1,0,HOLD_LINE);
-		}
+	}
+	else
+	{
+		soundlatch_w(0,data&0xff);
+		cpu_set_irq_line(1,0,HOLD_LINE);
 	}
 }
 
@@ -748,7 +527,7 @@ INPUT_PORTS_START( cninja )
 	PORT_DIPNAME( 0x2000, 0x2000, DEF_STR( Unknown ) )
 	PORT_DIPSETTING(      0x2000, DEF_STR( Off ) )
 	PORT_DIPSETTING(      0x0000, DEF_STR( On ) )
-	PORT_DIPNAME( 0x4000, 0x4000, DEF_STR( Unknown ) )
+	PORT_DIPNAME( 0x4000, 0x4000, "Restore Life Meter" )	/* Life Meter Restored when Big Boss is Defeated */
 	PORT_DIPSETTING(      0x4000, DEF_STR( Off ) )
 	PORT_DIPSETTING(      0x0000, DEF_STR( On ) )
 	PORT_DIPNAME( 0x8000, 0x0000, DEF_STR( Demo_Sounds ) )
@@ -1151,9 +930,7 @@ static MACHINE_DRIVER_START( cninja )
 	MDRV_SOUND_ADD(YM2203, ym2203_interface)
 	MDRV_SOUND_ADD(YM2151, ym2151_interface)
 	MDRV_SOUND_ADD(OKIM6295, okim6295_interface)
-	MDRV_SOUND_ADD(SAMPLES, cninja_samples_set)
-	cninja_playing = true;
-	cninja_start = 0;
+	MDRV_INSTALL_OST_SUPPORT(OST_SUPPORT_CNINJA)
 MACHINE_DRIVER_END
 
 static MACHINE_DRIVER_START( stoneage )

@@ -39,50 +39,10 @@ ToDo:
 
 #include "driver.h"
 #include "vidhrdw/generic.h"
+#include "ost_samples.h"
 
 void bionicc_readinputs(void);
 void bionicc_sound_cmd(int data);
-
-bool	bionicc_playing = false;
-bool	bionicc_start = false;
-bool	bionicc_diddy = false;
-bool	bionicc_title_diddy = false;
-bool	bionicc_title = false;
-bool	bionicc_lastwave = false;
-int		bionicc_start_counter = 0;
-
-const char *const bionicc_sample_set_names[] =
-{
-	"*bionicc",
-	"forest-01",
-	"forest-02",
-	"fortress-01",
-	"fortress-02",
-	"tower-01",
-	"tower-02",
-	"tsecret-01",
-	"tsecret-02",
-	"ending-01",
-	"ending-02",
-	"ranking-01",
-	"ranking-02",
-	"clear-01",
-	"clear-02",
-    "sewer-01",
-	"sewer-02",
-	"over-01",
-	"over-02",
-	0
-};
-
-static struct Samplesinterface bionicc_samples_set =
-{
-	2,	// 2 channels
-	100, // volume
-	bionicc_sample_set_names
-};
-
-
 
 WRITE16_HANDLER( bionicc_fgvideoram_w );
 WRITE16_HANDLER( bionicc_bgvideoram_w );
@@ -134,169 +94,14 @@ static data16_t soundcommand;
 
 WRITE16_HANDLER( hacked_soundcommand_w )
 {
-	if(bionicc_playing == true) {
-		int a = 0;
-		int o_max_samples = 41;
-		int sa_left = 0;
-		int sa_right = 1;
-		bool sa_loop = 1; // --> 1 == loop, 0 == do not loop.
-		bool sa_play_sample = false;
-		bool sa_play_original = false;
-		bool bionicc_do_nothing = false;
-		bool bionicc_stop_samples = false;
-		bool bionicc_play_default = false;
-
-		if(bionicc_start == true) {
-			sa_play_sample = true;
-			sa_left = 0;
-			sa_right = 1;
-			bionicc_start = false;
-			bionicc_diddy = true;
-			bionicc_lastwave = false;
-		}
-
-		switch (data) {
-			// Round 1. Front Line
-			case 0x01:
-			    bionicc_diddy = false;
-				bionicc_title_diddy = false;
-				bionicc_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 0;
-				sa_right = 1;
-				break;
-			// Round 2. Big Fortress
-			case 0x02:
-			    bionicc_diddy = false;
-				bionicc_title_diddy = false;
-				bionicc_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 2;
-				sa_right = 3;
-				break;
-			//  Round 4. Tower of Demon
-			case 0x0A:
-                bionicc_diddy = false;
-				bionicc_title_diddy = false;
-				bionicc_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 4;
-				sa_right = 5;
-                break;
-			// Round 5. Top Secret
-			case 0x0B:
-		        bionicc_diddy = false;
-				bionicc_title_diddy = false;
-				bionicc_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 6;
-				sa_right = 7;
-				break;
-			//  Ending
-			case 0x0E:
-                bionicc_diddy = false;
-				bionicc_title_diddy = false;
-				bionicc_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 8;
-				sa_right = 9;
-				break;
-			// Ranking
-			case 0x03:
-                bionicc_diddy = false;
-				bionicc_title_diddy = false;
-				bionicc_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 10;
-				sa_right = 11;
-				break;
-			// Round Clear
-			case 0x09:
-                bionicc_diddy = false;
-				bionicc_title_diddy = false;
-				bionicc_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 12;
-				sa_right = 13;
-				break;
-			// Round 3 Infiltration Sewers
-			case 0x04:
-		        bionicc_diddy = false;
-				bionicc_title_diddy = false;
-				bionicc_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 14;
-				sa_right = 15;
-				break;
-			case 0x07:
-			// Game Over
-               if(bionicc_lastwave == false) {
-					bionicc_diddy = false;
-				    bionicc_title_diddy = false;
-				    bionicc_lastwave = false;
-					sa_play_sample = true;
-					sa_left = 22;
-					sa_right = 23;
-			   }
-				else
-					bionicc_do_nothing = true;
-				break;
-                default:
-				COMBINE_DATA(&soundcommand);
-				soundlatch_w(0,soundcommand & 0xff);
-			break;
-		}
-
-		if(sa_play_sample == true) {
-			a = 0;
-
-			for(a = 0; a <= o_max_samples; a++) {
-				sample_stop(a);
-			}
-
-			sample_start(0, sa_left, sa_loop);
-			sample_start(1, sa_right, sa_loop);
-
-			// Determine how we should mix these samples together.
-			if(!sample_playing(0)  && sample_playing(1)) { // Right channel only. Lets make it play in both speakers.
-				sample_set_stereo_volume(1, 100, 100);
-			}
-			else if(sample_playing(0)  && !sample_playing(1))  { // Left channel only. Lets make it play in both speakers.
-				sample_set_stereo_volume(0, 100, 100);
-			}
-			else if(sample_playing(0) && sample_playing(1)) { // Both left and right channels. Lets make them play in there respective speakers.
-				sample_set_stereo_volume(0, 100, 0);
-				sample_set_stereo_volume(1, 0, 100);
-			}
-			else if(!sample_playing(0)  && !sample_playing(1)  && bionicc_do_nothing == false) { // No sample playing, revert to the default sound.
-				sa_play_original = false;
-				COMBINE_DATA(&soundcommand);
-				soundlatch_w(0,soundcommand & 0xff);
-			}
-
-			if(sa_play_original == true)
-				COMBINE_DATA(&soundcommand);
-				soundlatch_w(0,soundcommand & 0xff);
-		}
-		else if(bionicc_do_nothing == true) {
-			// --> Do nothing.
-		}
-		else if(bionicc_stop_samples == true) {
-			a = 0;
-
-			for(a = 0; a <= o_max_samples; a++) {
-				sample_stop(a);
-			}
-
-            // Now play the default sound.
-			COMBINE_DATA(&soundcommand);
+	COMBINE_DATA(&soundcommand);
+	if( ost_support_enabled(OST_SUPPORT_BIONICC) )
+	{
+		if(generate_ost_sound( data ))
 			soundlatch_w(0,soundcommand & 0xff);
-		}
-		else if(bionicc_play_default == true) {
-			COMBINE_DATA(&soundcommand);
-			soundlatch_w(0,soundcommand & 0xff);
-		}
 	}
+	else
+		soundlatch_w(0,soundcommand & 0xff);
 }
 
 static READ16_HANDLER( hacked_soundcommand_r )
@@ -563,11 +368,9 @@ static MACHINE_DRIVER_START( bionicc )
 	MDRV_VIDEO_EOF(bionicc)
 	MDRV_VIDEO_UPDATE(bionicc)
 
-	MDRV_SOUND_ADD(SAMPLES, bionicc_samples_set)
-	bionicc_playing = true;
-	bionicc_start = 0;
+	MDRV_SOUND_ADD(YM2151, ym2151_interface)
+	MDRV_INSTALL_OST_SUPPORT(OST_SUPPORT_BIONICC)
 MACHINE_DRIVER_END
-
 
 
 ROM_START( bionicc )

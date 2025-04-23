@@ -10,61 +10,7 @@
 #include "vidhrdw/generic.h"
 #include "cpu/konami/konami.h"
 #include "cpu/z80/z80.h"
-
-bool	hcastle_playing = false;
-bool	hcastle_start = false;
-bool	hcastle_diddy = false;
-bool	hcastle_title_diddy = false;
-bool	hcastle_title = false;
-bool	hcastle_lastwave = false;
-int		hcastle_start_counter = 0;
-
-
-const char *const hcastle_sample_names[] =
-{
-	"*hcastle",
-	"ranking-01",
-	"ranking-02",
-	"over-01",
-	"over-02",
-	"stage1-01",
-	"stage1-02",
-	"stage3-01",
-	"stage3-02",
-	"stage2-01",
-	"stage2-02",
-	"boss-01",
-	"boss-02",
-	"intro-01",
-	"intro-02",
-	"stage4-01",
-	"stage4-02",
-	"clear-01",
-	"clear-02",
-	"stage5-01",
-	"stage5-02",
-	"stage6-01",
-	"stage6-02",
-	"dracula-01",
-	"dracula-02",
-	"fboss-01",
-	"fboss-02",
-	"ending-01",
-	"ending-02",
-	"diddy-01",
-	"diddy-02",
-	"title-01",
-	"title-02",
-	0
-};
-
-static struct Samplesinterface hcastle_samples =
-{
-	2,	/* 2 channels*/
-	100, /* volume*/
-	hcastle_sample_names
-};
-
+#include "ost_samples.h"
 
 PALETTE_INIT( hcastle );
 VIDEO_UPDATE( hcastle );
@@ -88,231 +34,26 @@ static WRITE_HANDLER( hcastle_bankswitch_w )
 	cpu_setbank(1,&RAM[bankaddress]);
 }
 
+
+static WRITE_HANDLER( hcastle_soundlatch_w)
+{
+
+	if( ost_support_enabled(OST_SUPPORT_HCASTLE) )
+	{
+
+		if(generate_ost_sound( data ))
+			soundlatch_w(0,data&0xff);
+
+	}
+	else
+	{
+		soundlatch_w(0,data&0xff);
+	}
+}
+
 static WRITE_HANDLER( hcastle_soundirq_w )
 {
-	if(hcastle_playing == true) {
-	   int a = 0;
-	   int o_max_samples = 37;
-	   int sa_left = 0;
-	   int sa_right = 1;
-	   bool sa_loop = 1; // --> 1 == loop, 0 == do not loop.
-	   bool sa_play_sample = false;
-	   bool sa_play_original = false;
-	   bool hcastle_do_nothing = false;
-	   bool hcastle_stop_samples = false;
-	   bool hcastle_play_default = false;
-
-		if(hcastle_start == true) {
-			sa_play_sample = true;
-			sa_left = 0;
-			sa_right = 1;
-			hcastle_start = false;
-			hcastle_diddy = true;
-			hcastle_lastwave = false;
-		}
-
-		switch (data) {
-			/* Lullaby of devils - Ranking.*/
-			case 0x50:
-			    hcastle_diddy = false;
-				hcastle_title_diddy = false;
-				hcastle_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 0;
-				sa_right = 1;
-				break;
-			/* Never Ends - Game Over*/
-			case 0x51:
-				hcastle_diddy = false;
-				hcastle_title_diddy = false;
-				hcastle_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 2;
-				sa_right = 3;
-				break;
-			/* Cross your Heart - Stage 1*/
-			case 0x52:
-                hcastle_diddy = false;
-				hcastle_title_diddy = false;
-				hcastle_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 4;
-				sa_right = 5;
-                break;
-			/* Bloody Tears - Satge 3*/
-			case 0x53:
-		        hcastle_diddy = false;
-				hcastle_title_diddy = false;
-				hcastle_lastwave = false;
-				sa_left = 6;
-				sa_right = 7;
-				break;
-			/* Lullaby of Devils - Stage 2 */
-			case 0x54:
-                hcastle_diddy = false;
-				hcastle_title_diddy = false;
-				hcastle_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 8;
-				sa_right = 9;
-				break;
-			/* The Revived Devil - Boss */
-			case 0x55:
-                hcastle_diddy = false;
-				hcastle_title_diddy = false;
-				hcastle_lastwave = false;
-				sa_left = 10;
-				sa_right = 11;
-				break;
-			/* Wedding March - Introduction */
-			case 0x56:
-                hcastle_diddy = false;
-				hcastle_title_diddy = false;
-				hcastle_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 12;
-				sa_right = 13;
-				break;
-			/* Basement Meoldy - Stage 4 */
-			case 0x57:
-		        hcastle_diddy = false;
-				hcastle_title_diddy = false;
-				hcastle_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 14;
-				sa_right = 15;
-				break;
-			/* Again - Stage Clear */
-			case 0x59:
-			    hcastle_diddy = false;
-				hcastle_title_diddy = false;
-				hcastle_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 16;
-				sa_right = 17;
-				break;
-			/* Beats of the Clock Tower - Stage 5 */
-			case 0x5A:
-                hcastle_diddy = false;
-				hcastle_title_diddy = false;
-				hcastle_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 18;
-				sa_right = 19;
-				break;
-			/* Dont wait till tonight - Stage 6 */
-			case 0x5B:
-                hcastle_diddy = false;
-				hcastle_title_diddy = false;
-				hcastle_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 20;
-				sa_right = 21;
-				break;
-			/* Dracula's Room - Final Boos 1*/
-			case 0x5C:
-			    hcastle_diddy = false;
-				hcastle_title_diddy = false;
-				hcastle_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 22;
-				sa_right = 23;
-				break;
-			/* Final Boss */
-			case 0x5D:
-				hcastle_diddy = false;
-				hcastle_title_diddy = false;
-				hcastle_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 24;
-				sa_right = 25;
-				break;
-			/* Haunted Castle destroyed - Ending */
-			case 0x5E:
-				hcastle_diddy = false;
-				hcastle_title_diddy = false;
-				hcastle_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 26;
-				sa_right = 27;
-				break;
-			/* No Retrun - Intermission */
-			case 0x61:
-	            hcastle_diddy = false;
-				hcastle_title_diddy = false;
-				hcastle_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 28;
-				sa_right = 29;
-				break;
-			//* Dracula Arised - Title  */
-			case 0x63:
-               if(hcastle_lastwave == false) {
-					hcastle_diddy = false;
-				    hcastle_title_diddy = false;
-				    hcastle_lastwave = false;
-					sa_play_sample = true;
-					sa_left = 30;
-					sa_right = 31;
-			   }
-				else
-				    hcastle_do_nothing = true;
-				break;
-                default:
-				soundlatch_w(0,data & 0xff);
-				cpu_set_irq_line( 1, 0, HOLD_LINE );
-			break;
-		}
-
-		if(sa_play_sample == true) {
-			a = 0;
-
-			for(a = 0; a <= o_max_samples; a++) {
-				sample_stop(a);
-			}
-
-			sample_start(0, sa_left, sa_loop);
-			sample_start(1, sa_right, sa_loop);
-
-			// Determine how we should mix these samples together.
-			if(!sample_playing(0)  && sample_playing(1)) { // Right channel only. Lets make it play in both speakers.
-				sample_set_stereo_volume(1, 100, 100);
-			}
-			else if(sample_playing(0) && !sample_playing(1)) { // Left channel only. Lets make it play in both speakers.
-				sample_set_stereo_volume(0, 100, 100);
-			}
-			else if(sample_playing(0) && sample_playing(1)) { // Both left and right channels. Lets make them play in there respective speakers.
-				sample_set_stereo_volume(0, 100, 0);
-				sample_set_stereo_volume(1, 0, 100);
-			}
-			else if(!sample_playing(0)  && !sample_playing(1)  && hcastle_do_nothing == false) { // No sample playing, revert to the default sound.
-				sa_play_original = false;
-				soundlatch_w(0,data & 0xff);
-				cpu_set_irq_line( 1, 0, HOLD_LINE );
-			}
-
-			if(sa_play_original == true)
-				soundlatch_w(offset,data & 0xff);
-		}
-		else if(hcastle_do_nothing == true) {
-			// --> Do nothing.
-		}
-		else if(hcastle_stop_samples == true) {
-			a = 0;
-
-			for(a = 0; a <= o_max_samples; a++) {
-				sample_stop(a);
-			}
-
-            // Now play the default sound.
-			soundlatch_w(0,data & 0xff);
 			cpu_set_irq_line( 1, 0, HOLD_LINE );
-		}
-		else if(hcastle_play_default == true) {
-			soundlatch_w(0,data & 0xff);
-			cpu_set_irq_line( 1, 0, HOLD_LINE );
-		}
-	}
 }
 
 static WRITE_HANDLER( hcastle_coin_w )
@@ -363,7 +104,7 @@ static MEMORY_WRITE_START( writemem )
 	{ 0x0200, 0x0207, hcastle_pf2_control_w },
 	{ 0x0220, 0x023f, MWA_RAM },	/* rowscroll? */
 	{ 0x0400, 0x0400, hcastle_bankswitch_w },
-	{ 0x0404, 0x0404, soundlatch_w },
+	{ 0x0404, 0x0404, hcastle_soundlatch_w },
 	{ 0x0408, 0x0408, hcastle_soundirq_w },
 	{ 0x040c, 0x040c, watchdog_reset_w },
 	{ 0x0410, 0x0410, hcastle_coin_w },
@@ -600,9 +341,7 @@ static MACHINE_DRIVER_START( hcastle )
 	MDRV_SOUND_ADD(K007232, k007232_interface)
 	MDRV_SOUND_ADD(YM3812, ym3812_interface)
 	MDRV_SOUND_ADD(K051649, k051649_interface)
-	MDRV_SOUND_ADD(SAMPLES, hcastle_samples)
-	hcastle_playing = true;
-	hcastle_start = 0;
+	MDRV_INSTALL_OST_SUPPORT(OST_SUPPORT_HCASTLE)
 MACHINE_DRIVER_END
 
 /***************************************************************************/
