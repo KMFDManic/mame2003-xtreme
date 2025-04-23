@@ -12,14 +12,6 @@
 #include "cpu/z80/z80.h"
 #include "ost_samples.h"
 
-bool	hcastle_playing = false;
-bool	hcastle_start = false;
-bool	hcastle_diddy = false;
-bool	hcastle_title_diddy = false;
-bool	hcastle_title = false;
-bool	hcastle_lastwave = false;
-int		hcastle_start_counter = 0;
-
 PALETTE_INIT( hcastle );
 VIDEO_UPDATE( hcastle );
 VIDEO_START( hcastle );
@@ -43,26 +35,26 @@ static WRITE_HANDLER( hcastle_bankswitch_w )
 }
 
 
-static WRITE_HANDLER( hcastle_soundirq_w )
+static WRITE_HANDLER( hcastle_soundlatch_w)
 {
 
 	if( ost_support_enabled(OST_SUPPORT_HCASTLE) )
 	{
 
 		if(generate_ost_sound( data ))
-		{
-			soundlatch_w(0,data & 0xff);
-			cpu_set_irq_line( 1, 0, HOLD_LINE );
-		}
-	}
+			soundlatch_w(0,data&0xff);
 
+	}
 	else
 	{
-		soundlatch_w(0,data & 0xff);
-		cpu_set_irq_line( 1, 0, HOLD_LINE );
+		soundlatch_w(0,data&0xff);
 	}
 }
 
+static WRITE_HANDLER( hcastle_soundirq_w )
+{
+			cpu_set_irq_line( 1, 0, HOLD_LINE );
+}
 
 static WRITE_HANDLER( hcastle_coin_w )
 {
@@ -112,7 +104,7 @@ static MEMORY_WRITE_START( writemem )
 	{ 0x0200, 0x0207, hcastle_pf2_control_w },
 	{ 0x0220, 0x023f, MWA_RAM },	/* rowscroll? */
 	{ 0x0400, 0x0400, hcastle_bankswitch_w },
-	{ 0x0404, 0x0404, soundlatch_w },
+	{ 0x0404, 0x0404, hcastle_soundlatch_w },
 	{ 0x0408, 0x0408, hcastle_soundirq_w },
 	{ 0x040c, 0x040c, watchdog_reset_w },
 	{ 0x0410, 0x0410, hcastle_coin_w },
