@@ -119,48 +119,7 @@
 #include "cpu/z80/z80.h"
 #include "cpu/i8039/i8039.h"
 #include "system16.h"
-
-bool	shinobi_playing = false;
-bool	shinobi_start = false;
-bool	shinobi_diddy = false;
-bool	shinobi_title_diddy = false;
-bool	shinobi_title = false;
-bool	shinobi_lastwave = false;
-int	shinobi_start_counter = 0;
-
-const char *const shinobi_sample_set_names[] =
-{
-    "*shinobi",
-	"m2-01",
-	"m2-02",
-	"m3-01",
-	"m3-02",
-	"m4-01",
-	"m4-02",
-	"clear-01",
-	"clear-02",
-	"bossc-02",
-	"bossc-01",
-	"bonus-02",
-	"bonus-01",
-	"m5-01",
-	"m5-02",
-	"continue-02",
-	"continue-01",
-	"boss-01",
-	"boss-02",
-	"m1-01",
-	"m1-02",
-	0
-};
-
-static struct Samplesinterface shinobi_samples_set =
-{
-	2,	// 2 channels
-	100, // volume
-	shinobi_sample_set_names
-};
-
+#include "ost_samples.h"
 /***************************************************************************/
 
 // 7751 emulation
@@ -300,184 +259,21 @@ PORT_END
 
 
 static WRITE16_HANDLER( sound_command_w ){
-
-	if(shinobi_playing == true) {
-		int a = 0;
-		int o_max_samples = 12;
-		int sa_left = 0;
-		int sa_right = 1;
-		bool sa_loop = 1; // --> 1 == loop, 0 == do not loop.
-		bool sa_play_sample = false;
-		bool sa_play_original = false;
-		bool shinobi_do_nothing = false;
-		bool shinobi_stop_samples = false;
-		bool shinobi_play_default = false;
-
-		if(shinobi_start == true) {
-			sa_play_sample = true;
-			sa_left = 0;
-			sa_right = 1;
-			shinobi_start = false;
-			shinobi_diddy = true;
-			shinobi_lastwave = false;
-		}
-
-		switch (data) {
-			// Mission 2
-			case 0x90:
-			    shinobi_diddy = false;
-				shinobi_title_diddy = false;
-				shinobi_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 0;
-				sa_right = 1;
-				break;
-			// Mission 3
-			case 0x91:
-				shinobi_diddy = false;
-				shinobi_title_diddy = false;
-				shinobi_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 2;
-				sa_right = 3;
-				break;
-			// Mission 4
-			case 0x92:
-                shinobi_diddy = false;
-				shinobi_title_diddy = false;
-				shinobi_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 4;
-				sa_right = 5;
-                break;
-			// Stage Clear
-			case 0x093:
-		        shinobi_diddy = false;
-				shinobi_title_diddy = false;
-				shinobi_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 6;
-				sa_right = 7;
-				break;
-			// Boss Clear
-			case 0x94:
-                shinobi_diddy = false;
-				shinobi_title_diddy = false;
-				shinobi_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 8;
-				sa_right = 9;
-				break;
-			// Bonus Stage
-			case 0x95:
-                shinobi_diddy = false;
-				shinobi_title_diddy = false;
-				shinobi_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 10;
-				sa_right = 11;
-				break;
-			// Mission 5
-			case 0x97:
-                shinobi_diddy = false;
-				shinobi_title_diddy = false;
-				shinobi_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 12;
-				sa_right = 13;
-				break;
-			// Continue
-			case 0x98:
-		        shinobi_diddy = false;
-				shinobi_title_diddy = false;
-				shinobi_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 14;
-				sa_right = 15;
-				break;
-			// Boss
-			case 0x99:
-			    shinobi_diddy = false;
-				shinobi_title_diddy = false;
-				shinobi_lastwave = false;
-				sa_play_sample = true;
-				sa_left = 16;
-				sa_right = 17;
-				break;
-			// Mission 1
-			case 0x9A:
-               if(shinobi_lastwave == false) {
-					shinobi_diddy = false;
-					shinobi_title_diddy = false;
-					shinobi_lastwave = true;
-					sa_play_sample = true;
-					sa_left = 18;
-					sa_right = 19;
-			   }
-				else
-					shinobi_do_nothing = true;
-				break;
-                default:
+	if( ACCESSING_LSB ){
+		if( ost_support_enabled(OST_SUPPORT_SHINOBI) ) {
+			if(generate_ost_sound( data )) {
 				soundlatch_w( 0,data&0xff );
 				cpu_set_irq_line( 1, 0, HOLD_LINE );
-			break;
 		}
-
-		if(sa_play_sample == true) {
-			a = 0;
-
-			for(a = 0; a <= o_max_samples; a++) {
-				sample_stop(a);
 			}
-
-			sample_start(0, sa_left, sa_loop);
-			sample_start(1, sa_right, sa_loop);
-
-			// Determine how we should mix these samples together.
-			if(!sample_playing(0) && sample_playing(1)) { // Right channel only. Lets make it play in both speakers.
-				sample_set_stereo_volume(1, 100, 100);
-			}
-			else if(sample_playing(0)  && !sample_playing(1) ) { // Left channel only. Lets make it play in both speakers.
-				sample_set_stereo_volume(0, 100, 100);
-			}
-			else if(sample_playing(0) && sample_playing(1) ) { // Both left and right channels. Lets make them play in there respective speakers.
-				sample_set_stereo_volume(0, 100, 0);
-				sample_set_stereo_volume(1, 0, 100);
-			}
-			else if(!sample_playing(0) && !sample_playing(1)  && shinobi_do_nothing == false) { // No sample playing, revert to the default sound.
-				sa_play_original = false;
-				soundlatch_w( offset, data );
-			}
-
-			if(sa_play_original == true)
-				soundlatch_w( offset, data );
-		}
-		else if(shinobi_do_nothing == true) {
-			// --> Do nothing.
-		}
-		else if(shinobi_stop_samples == true) {
-			a = 0;
-
-			for(a = 0; a <= o_max_samples; a++) {
-				sample_stop(a);
-			}
-
-            // Now play the default sound.
-			soundlatch_w( offset, data );
-
-		}
-		else if(shinobi_play_default == true) {
-
+		else {
 	soundlatch_w( 0,data&0xff );
 	cpu_set_irq_line( 1, 0, HOLD_LINE );
 		            }
     }
 }
 
-
-
 static WRITE16_HANDLER( sound_command_nmi_w ){
-
 	if( ACCESSING_LSB ){
 		soundlatch_w( 0,data&0xff );
 		cpu_set_nmi_line(1, PULSE_LINE);
@@ -533,10 +329,7 @@ static MACHINE_DRIVER_START( system16 )
 	/* sound hardware */
 	MDRV_SOUND_ATTRIBUTES(SOUND_SUPPORTS_STEREO)
 	MDRV_SOUND_ADD_TAG("2151", YM2151, sys16_ym2151_interface)
-	MDRV_SOUND_ADD(SAMPLES, shinobi_samples_set)
-	shinobi_playing = true;
-	shinobi_start = 0;
-MACHINE_DRIVER_END
+	MACHINE_DRIVER_END
 
 
 static MACHINE_DRIVER_START( system16_7759 )
@@ -5232,6 +5025,8 @@ static MACHINE_DRIVER_START( shinobi )
 	MDRV_CPU_MEMORY(shinobi_readmem,shinobi_writemem)
 
 	MDRV_MACHINE_INIT(shinobi)
+
+	MDRV_INSTALL_OST_SUPPORT(OST_SUPPORT_SHINOBI)
 MACHINE_DRIVER_END
 
 /***************************************************************************/

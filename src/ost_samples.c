@@ -43,6 +43,7 @@ static bool routine_moonwalker (int data);
 static bool routine_nba_jam    (int data);
 static bool routine_outrun     (int data);
 static bool routine_robocop    (int data);
+static bool routine_shinobi    (int data);
 static bool routine_sf1        (int data);
 static bool routine_sf2        (int data);
 static bool routine_ultraman   (int data);
@@ -1811,6 +1812,113 @@ static bool routine_robocop(int data)
 }
 
 
+/********************************shinobi********************************/
+const char *const shinobi_sample_set_names[] =
+{
+	"*shinobi",
+	"m2-01",
+	"m2-02",
+	"m3-01",
+	"m3-02",
+	"m4-01",
+	"m4-02",
+	"clear-01",
+	"clear-02",
+	"bossc-01",
+	"bossc-02",
+	"bonus-01",
+	"bonus-02",
+	"m5-01",
+	"m5-02",
+	"continue-01",
+	"continue-02",
+	"boss-01",
+	"boss-02",
+	"m1-01",
+	"m1-02",
+	0
+};
+
+struct Samplesinterface ost_shinobi =
+{
+	2,	/* 2 channels*/
+	40, /* volume*/
+	shinobi_sample_set_names
+};
+
+static bool routine_shinobi(int data)
+{
+	/* initialize ost config */
+	schedule_default_sound = false;
+
+	switch (data) {
+		/* Time to stop the music */
+		case 0x0:
+      //left this change out uncomment below if you want mahoneys change just porting things as they are
+			//if( !ost_check_playing_stereo(6) && !ost_check_playing_stereo(8) )
+				ost_stop_samples();
+			break;
+
+		/* Mission 2 */
+		case 0x90:
+			ost_start_samples_stereo(0, 1);
+			break;
+
+		/* Mission 3 */
+		case 0x91:
+			ost_start_samples_stereo(2, 1);
+			break;
+
+		/* Mission 4 */
+		case 0x92:
+			ost_start_samples_stereo(4, 1);
+			break;
+
+		/* Stage Clear */
+		case 0x93:
+			ost_start_samples_stereo(6, 0);
+			break;
+
+		/* Boss Clear */
+		case 0x94:
+			ost_start_samples_stereo(8, 0);
+			break;
+
+		/* Bonus Stage */
+		case 0x95:
+			ost_start_samples_stereo(10, 1);
+			break;
+
+		/* Mission 5 */
+		case 0x97:
+			ost_start_samples_stereo(12, 1);
+			break;
+
+		/* Continue */
+		case 0x98:
+			ost_start_samples_stereo(14, 0);
+			break;
+
+		/* Boss */
+		case 0x99:
+			ost_start_samples_stereo(16, 1);
+			break;
+
+		/* Mission 1 */
+		case 0x9A:
+			ost_start_samples_stereo(18, 1);
+			break;
+
+		default:
+			schedule_default_sound = true;
+			break;
+	}
+
+	ost_mix_samples();
+
+	return schedule_default_sound;
+}
+
 /********************************street fighter 1********************************/
 const char *const sf1_sample_set_names[] =
 {
@@ -2690,6 +2798,11 @@ void install_ost_support(struct InternalMachineDriver *machine, int ost)
     case OST_SUPPORT_ROBOCOP:
       MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_robocop)
       generate_ost_sound = routine_robocop;
+      break;
+
+    case OST_SUPPORT_SHINOBI:
+      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_shinobi)
+      generate_ost_sound = routine_shinobi;
       break;
 
     case OST_SUPPORT_SF1:
