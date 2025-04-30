@@ -112,6 +112,9 @@ static int bankaddress;
 static int m92_irq_vectorbase;
 static unsigned char *m92_ram,*m92_snd_ram;
 
+static int irq_level = -1;  // Current active IRQ level
+static int pending_irq = -1;  // Store pending IRQ if any
+
 #define M92_IRQ_0 ((m92_irq_vectorbase+0)/4)  /* VBL interrupt*/
 #define M92_IRQ_1 ((m92_irq_vectorbase+4)/4)  /* Sprite buffer complete interrupt */
 #define M92_IRQ_2 ((m92_irq_vectorbase+8)/4)  /* Raster interrupt */
@@ -1135,50 +1138,66 @@ static struct IremGA20_interface iremGA20_interface =
 
 /***************************************************************************/
 
+static void m92_update_irq(void)
+{
+    if (irq_level >= 0) {
+        cpu_set_irq_line_and_vector(0, 0, HOLD_LINE, irq_level);
+        irq_level = -1;  // Clear active IRQ after it has been triggered
+    }
+}
+
 static INTERRUPT_GEN( m92_interrupt )
 {
-	if (osd_skip_this_frame()==0)
-		m92_vh_raster_partial_refresh(Machine->scrbitmap,0,249);
+    if (osd_skip_this_frame() == 0) {
+        m92_vh_raster_partial_refresh(Machine->scrbitmap, 0, 249);  // VBL update
+    }
 
-	cpu_set_irq_line_and_vector(0, 0, HOLD_LINE, M92_IRQ_0); /* VBL */
+    // Set VBL interrupt (IRQ 0)
+    irq_level = M92_IRQ_0;  // VBL IRQ level
+    m92_update_irq();  // Fire the interrupt
 }
 
 static INTERRUPT_GEN( m92_raster_interrupt )
 {
-	static int last_line=0;
-	int line = M92_SCANLINES - cpu_getiloops();
+    static int last_line = 0;
+    int line = M92_SCANLINES - cpu_getiloops();
 
-	/* Raster interrupt */
-	if (m92_raster_enable && line==m92_raster_irq_position) {
-		if (osd_skip_this_frame()==0)
-			m92_vh_raster_partial_refresh(Machine->scrbitmap,last_line,line+1);
-		last_line=line+1;
-		cpu_set_irq_line_and_vector(0, 0, HOLD_LINE, M92_IRQ_2);
-	}
+    /* Raster interrupt */
+    if (m92_raster_enable && line == m92_raster_irq_position) {
+        if (osd_skip_this_frame() == 0) {
+            m92_vh_raster_partial_refresh(Machine->scrbitmap, last_line, line + 1);
+        }
+        last_line = line + 1;
+        irq_level = M92_IRQ_2;  // Raster IRQ level
+        m92_update_irq();  // Fire the interrupt
+    }
 
-	/* Redraw screen, then set vblank and trigger the VBL interrupt */
-	else if (line==249) { /* 248 is last visible line */
-		if (osd_skip_this_frame()==0)
-			m92_vh_raster_partial_refresh(Machine->scrbitmap,last_line,249);
-		last_line=249;
-		cpu_set_irq_line_and_vector(0, 0, HOLD_LINE, M92_IRQ_0);
-	}
+    /* Redraw screen, then set vblank and trigger the VBL interrupt */
+    else if (line == 249) {  // 248 is last visible line
+        if (osd_skip_this_frame() == 0) {
+            m92_vh_raster_partial_refresh(Machine->scrbitmap, last_line, 249);
+        }
+        last_line = 249;
+        irq_level = M92_IRQ_0;  // VBL IRQ level
+        m92_update_irq();  // Fire the interrupt
+    }
 
-	/* End of vblank */
-	else if (line==M92_SCANLINES-1) {
-		last_line=0;
-	}
+    /* End of vblank */
+    else if (line == M92_SCANLINES - 1) {
+        last_line = 0;
+    }
 }
 
 void m92_sprite_interrupt(void)
 {
-	cpu_set_irq_line_and_vector(0,0,HOLD_LINE,M92_IRQ_1);
+    irq_level = M92_IRQ_1;  // Sprite IRQ level
+    m92_update_irq();  // Fire the interrupt
 }
 
 static MACHINE_DRIVER_START( raster )
 
 	/* basic machine hardware */
-	MDRV_CPU_ADD(V33,18000000/2)	/* NEC V33, 18 MHz clock */
+	MDRV_CPU_ADD(V33, 9960000)	 /* Overclock to ~9.96 MHz (instead of 9 MHz) */
 	MDRV_CPU_MEMORY(readmem,writemem)
 	MDRV_CPU_PORTS(readport,writeport)
 	MDRV_CPU_VBLANK_INT(m92_raster_interrupt,M92_SCANLINES) /* First visible line 8? */
@@ -1208,7 +1227,7 @@ MACHINE_DRIVER_END
 static MACHINE_DRIVER_START( nonraster )
 
 	/* basic machine hardware */
-	MDRV_CPU_ADD(V33, 18000000/2)	 /* NEC V33, 18 MHz clock */
+        MDRV_CPU_ADD(V33, 9960000)	 /* Overclock to ~9.96 MHz (instead of 9 MHz) */
 	MDRV_CPU_MEMORY(readmem,writemem)
 	MDRV_CPU_PORTS(readport,writeport)
 	MDRV_CPU_VBLANK_INT(m92_interrupt,1)
