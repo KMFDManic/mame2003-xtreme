@@ -408,37 +408,33 @@ void dcs_init(void)
 {
 	/* find the DCS CPU */
 	dcs_cpunum = mame_find_cpu_index("dcs");
-	
+
 	/* reset RAM-based variables */
 	dcs_sram_bank0 = dcs_sram_bank1 = NULL;
 
-   dcs_speedhack_enable = 0;
+	// Force speedhack to be enabled globally
+	dcs_speedhack_enable = 1;
 
-	/* install the speedup handler */
-   if (activate_dcs_speedhack)
-   {
-      dcs_speedhack_enable = 1;
-      dcs_speedup1 = install_mem_write16_handler(dcs_cpunum, ADSP_DATA_ADDR_RANGE(0x04f8, 0x04f8), dcs_speedup1_w);
-      dcs_speedup2 = install_mem_write16_handler(dcs_cpunum, ADSP_DATA_ADDR_RANGE(0x063d, 0x063d), dcs_speedup2_w);
-      dcs_speedup3 = install_mem_write16_handler(dcs_cpunum, ADSP_DATA_ADDR_RANGE(0x063a, 0x063a), dcs_speedup3_w);
-      dcs_speedup4 = install_mem_write16_handler(dcs_cpunum, ADSP_DATA_ADDR_RANGE(0x0641, 0x0641), dcs_speedup4_w);
-   }
+	/* install the speedup handler globally */
+	dcs_speedup1 = install_mem_write16_handler(dcs_cpunum, ADSP_DATA_ADDR_RANGE(0x04f8, 0x04f8), dcs_speedup1_w);
+	dcs_speedup2 = install_mem_write16_handler(dcs_cpunum, ADSP_DATA_ADDR_RANGE(0x063d, 0x063d), dcs_speedup2_w);
+	dcs_speedup3 = install_mem_write16_handler(dcs_cpunum, ADSP_DATA_ADDR_RANGE(0x063a, 0x063a), dcs_speedup3_w);
+	dcs_speedup4 = install_mem_write16_handler(dcs_cpunum, ADSP_DATA_ADDR_RANGE(0x0641, 0x0641), dcs_speedup4_w);
 
 	/* create the timer */
 	dcs.reg_timer = timer_alloc(dcs_irq);
 	dcs.sport_timer = NULL;
-	
+
 	/* disable notification by default */
 	dcs.output_full_cb = NULL;
 	dcs.input_empty_cb = NULL;
-	
+
 	/* non-RAM based automatically acks */
 	dcs.auto_ack = 1;
 
 	/* reset the system */
 	dcs_reset();
 }
-
 
 void dcs2_init(offs_t polling_offset)
 {
