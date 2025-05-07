@@ -74,6 +74,7 @@ static void retro_audio_buff_status_cb(bool active, unsigned occupancy, bool und
 
 void retro_set_audio_buff_status_cb(void)
 {
+	  buf_status_cb.callback = &retro_audio_buff_status_cb;
   if (frameskip >0 && frameskip >= 12)
   {
       if (!environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK,
@@ -123,7 +124,7 @@ void retro_set_environment(retro_environment_t cb)
       #if defined(HAS_CYCLONE) && defined(HAS_DRZ80)
       { "mame2003-xtreme-amped-cyclone_mode", "Cyclone mode(Restart); default|disabled|Cyclone|DrZ80|Cyclone+DrZ80|DrZ80(snd)|Cyclone+DrZ80(snd)" },
       #elif defined(HAS_CYCLONE) && !defined(HAS_DRZ80)
-      { "mame2003-xtreme-amped-cyclone_mode", "Cyclone mode(Restart); default|disabled|Cyclone },
+      { "mame2003-xtreme-amped-cyclone_mode", "Cyclone mode(Restart); default|disabled|Cyclone" },
       #elif !defined(HAS_CYCLONE) && defined(HAS_DRZ80)
       { "mame2003-xtreme-amped-cyclone_mode", "Cyclone mode(Restart); default|disabled|DrZ80|DrZ80(snd)" },
       #endif
@@ -331,7 +332,7 @@ static void update_variables(void)
    var.key = "mame2003-xtreme-amped-oc";
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) || var.value)
    {
-      options.oc = ((double) atoi(var.value)  / 100);
+      options.oc = ((int) atoi(var.value)  / 100);
 
    }
 
@@ -897,38 +898,40 @@ void retro_set_controller_port_device(unsigned in_port, unsigned device){}
 void mapper(void)
 {
 // this will map z x n m keys to  retropad lr mame uses this key for rotary joysticks and sometimes with buttons.
-static char buffer[100];
-struct InputPort *entry;
-struct InputPort *in;
+ static char buffer[100];
+  //struct InputPort *entry;
+  struct InputPort *in;
 
-if (Machine->input_ports)
-   in = Machine->input_ports;
+  if (Machine->input_ports)
+  {
+    in = Machine->input_ports;
 
-   while (in->type != IPT_END)
-   {
-      if (input_port_name(in) != 0 && seq_get_1(&in->seq) != CODE_NONE && (in->type & ~IPF_MASK) != IPT_UNKNOWN && (in->type & ~IPF_MASK) != IPT_OSD_RESERVED)
-      {
+    while (in->type != IPT_END)
+    {
+       if (input_port_name(in) != 0 && seq_get_1(&in->seq) != CODE_NONE && (in->type & ~IPF_MASK) != IPT_UNKNOWN && (in->type & ~IPF_MASK) != IPT_OSD_RESERVED)
+       {
          if (seq_get_1(&in->seq) != CODE_DEFAULT)
          {
-            seq_name(input_port_seq(in),       buffer,sizeof(buffer) );
-            //map non default z n n m mappings in drivers to retropad l/r
-            if (buffer[0] == 'z') seq_set_1(&in->seq, JOYCODE_1_BUTTON5);
-            if (buffer[0] == 'x') seq_set_1(&in->seq, JOYCODE_1_BUTTON6);
-            if (buffer[0] == 'n') seq_set_1(&in->seq, JOYCODE_2_BUTTON5);
-            if (buffer[0] == 'm') seq_set_1(&in->seq, JOYCODE_2_BUTTON6);
-             //map non default pedal mappings in drivers to retropad l/r
-            if(strcmp(input_port_name(in), "P1 Pedal 1") == 0)  seq_set_1(&in->seq, JOYCODE_1_BUTTON6);
-            if(strcmp(input_port_name(in), "P1 Pedal 2") == 0)  seq_set_1(&in->seq, JOYCODE_1_BUTTON5);
-            if(strcmp(input_port_name(in), "P2 Pedal 1") == 0)  seq_set_1(&in->seq, JOYCODE_2_BUTTON6);
-            if(strcmp(input_port_name(in), "P2 Pedal 2") == 0)  seq_set_1(&in->seq, JOYCODE_2_BUTTON5);
-            if(strcmp(input_port_name(in), "P3 Pedal 1") == 0)  seq_set_1(&in->seq, JOYCODE_3_BUTTON6);
-            if(strcmp(input_port_name(in), "P3 Pedal 2") == 0)  seq_set_1(&in->seq, JOYCODE_3_BUTTON5);
-            //map polpos pos gear change to button1
-            if(strcmp(input_port_name(in), "Gear Change") == 0)  seq_set_1(&in->seq, JOYCODE_1_BUTTON1);
+           seq_name(input_port_seq(in),       buffer,sizeof(buffer) );
+           //map non default z n n m mappings in drivers to retropad l/r
+           if (buffer[0] == 'z') seq_set_1(&in->seq, JOYCODE_1_BUTTON5);
+           if (buffer[0] == 'x') seq_set_1(&in->seq, JOYCODE_1_BUTTON6);
+           if (buffer[0] == 'n') seq_set_1(&in->seq, JOYCODE_2_BUTTON5);
+           if (buffer[0] == 'm') seq_set_1(&in->seq, JOYCODE_2_BUTTON6);
+           //map non default pedal mappings in drivers to retropad l/r
+           if(strcmp(input_port_name(in), "P1 Pedal 1") == 0)  seq_set_1(&in->seq, JOYCODE_1_BUTTON6);
+           if(strcmp(input_port_name(in), "P1 Pedal 2") == 0)  seq_set_1(&in->seq, JOYCODE_1_BUTTON5);
+           if(strcmp(input_port_name(in), "P2 Pedal 1") == 0)  seq_set_1(&in->seq, JOYCODE_2_BUTTON6);
+           if(strcmp(input_port_name(in), "P2 Pedal 2") == 0)  seq_set_1(&in->seq, JOYCODE_2_BUTTON5);
+           if(strcmp(input_port_name(in), "P3 Pedal 1") == 0)  seq_set_1(&in->seq, JOYCODE_3_BUTTON6);
+           if(strcmp(input_port_name(in), "P3 Pedal 2") == 0)  seq_set_1(&in->seq, JOYCODE_3_BUTTON5);
+           //map polpos pos gear change to button1
+           if(strcmp(input_port_name(in), "Gear Change") == 0)  seq_set_1(&in->seq, JOYCODE_1_BUTTON1);
          }
       }
       in++;
     }
+  }
 }
 
 #if (HAS_CYCLONE || HAS_DRZ80)
@@ -959,7 +962,7 @@ int check_list(char *name)
 }
 #endif
 
-static void configure_cyclone_mode (int driverIndex)
+static void configure_cyclone_mode (int driverIndx)
 {
   /* Determine how to use cyclone if available to the platform */
 
@@ -970,7 +973,7 @@ static void configure_cyclone_mode (int driverIndex)
   int use_drz80_snd = 0;
 
    if (options.cyclone_mode == 6)
-     i=check_list(drivers[driverIndex]->name);
+     i=check_list(drivers[driverIndx]->name);
    else
      i=options.cyclone_mode;
   /* ASM cores: 0=None,1=Cyclone,2=DrZ80,3=Cyclone+DrZ80,4=DrZ80(snd),5=Cyclone+DrZ80(snd) */
