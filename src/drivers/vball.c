@@ -91,6 +91,7 @@ VBlank = 58Hz
 #include "vidhrdw/generic.h"
 #include "cpu/m6502/m6502.h"
 #include "cpu/z80/z80.h"
+#include "ost_samples.h"
 
 /* from vidhrdw */
 extern unsigned char *vb_attribram;
@@ -141,8 +142,12 @@ static WRITE_HANDLER( vb_bankswitch_w )
 
 
 WRITE_HANDLER( cpu_sound_command_w ) {
+	if( ost_support_enabled(OST_SUPPORT_VBALL) ) {
+					if(generate_ost_sound( data )) {
 	soundlatch_w( offset, data );
 	cpu_set_irq_line( 1, IRQ_LINE_NMI, PULSE_LINE );
+					}
+	}
 }
 
 
@@ -250,7 +255,7 @@ MEMORY_END
 	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_COIN1 ) \
 	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_COIN2 ) \
 	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_SERVICE1 ) \
-	PORT_BIT( 0x08, IP_ACTIVE_HIGH,IPT_VBLANK ) \
+	PORT_BIT( 0x08, IP_ACTIVE_HIGH, IPT_VBLANK ) \
 	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_UNUSED ) \
 	PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_UNUSED ) \
 	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_UNUSED ) \
@@ -436,6 +441,7 @@ static MACHINE_DRIVER_START( vball )
 	MDRV_SOUND_ATTRIBUTES(SOUND_SUPPORTS_STEREO)
 	MDRV_SOUND_ADD(YM2151, ym2151_interface)
 	MDRV_SOUND_ADD(OKIM6295, okim6295_interface)
+	MDRV_INSTALL_OST_SUPPORT(OST_SUPPORT_VBALL)
 MACHINE_DRIVER_END
 
 static MACHINE_DRIVER_START( vball2pj )

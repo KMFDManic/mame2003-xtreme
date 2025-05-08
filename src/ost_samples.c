@@ -47,6 +47,7 @@ static bool routine_shinobi    (int data);
 static bool routine_sf1        (int data);
 static bool routine_sf2        (int data);
 static bool routine_ultraman   (int data);
+static bool routine_vball      (int data);
 
 const char *const bionicc_sample_set_names[] =
 {
@@ -2697,6 +2698,127 @@ static bool routine_ultraman(int data)
   return schedule_default_sound;
 }
 
+/********************************vball********************************/
+
+const char *const vball_sample_set_names[] =
+{
+    "*vball",
+	"chars-01",
+	"chars-02",
+	"hurry-01",
+	"hurry-02",
+	"title-01",
+	"title-02",
+	"newyork-01",
+	"newyork-02",
+	"angeles-01",
+	"angeles-02",		
+	"hawaii-01",
+	"hawaii-02",
+	"daytona-01",
+	"daytona-02",
+	"shop-01",
+	"shop-02", 	
+	"aircraft-01",
+	"aircraft-02",
+	"lost-01",
+	"lost-02",
+	"over-01",
+	"over-02",
+	"ending-01",
+	"ending-02",
+	"winning-01",
+	"winning-02",
+	0
+};
+
+struct Samplesinterface ost_vball =
+{
+	2,	// 2 channels
+	100, // volume
+	vball_sample_set_names
+};
+
+static bool routine_vball(int data)
+{
+	/* initialize ost config */
+	schedule_default_sound = false;
+
+	switch (data) {
+		// Select 
+			case 0x02:
+			ost_start_samples_stereo(0,1);
+			break;
+
+		// Hurry
+			case 0x03:
+			ost_start_samples_stereo(2,1);
+			break;
+
+		// Title
+			case 0x05:		
+			ost_start_samples_stereo(4,1);
+			break;
+
+		// New York. Twilight Game
+			case 0x06:
+			ost_start_samples_stereo(6,1);
+			break;
+
+		// Los Angeles. Seaside Walker
+			case 0x07:
+			ost_start_samples_stereo(8,1);
+			break;
+
+		// Hawaii. Beyond the sky
+			case 0x08:
+			ost_start_samples_stereo(10,1);
+			break;
+
+		// Daytona. First Wave
+			case 0x09:
+			ost_start_samples_stereo(12,1);
+			break;
+			
+		// Shop
+			case 0x0B:
+			ost_start_samples_stereo(14,1);
+			break;
+
+		// Aircraft Carrier. Iron wing
+			case 0x0D:
+			ost_start_samples_stereo(16,1);
+			break;
+
+		// Match Lost.
+			case 0x0E:
+			ost_start_samples_stereo(18,1);
+			break;
+
+		// Game Over.
+			case 0x10:
+			ost_start_samples_stereo(20,0);
+			break;
+
+		//  Ending.
+		    case 0x12:
+			ost_start_samples_stereo(22,1);
+			break;
+
+		// Match win.
+		    case 0x14:	
+			ost_start_samples_stereo(24,1);
+			break;
+			
+		default:
+			schedule_default_sound = true;
+			break;
+	}
+
+	ost_mix_samples();
+
+	return schedule_default_sound;
+}
 
 
 /********************************osd data end********************************/
@@ -2818,6 +2940,10 @@ void install_ost_support(struct InternalMachineDriver *machine, int ost)
     case OST_SUPPORT_ULTRAMAN:
       MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_ultraman)
       generate_ost_sound = routine_ultraman;
+
+    case OST_SUPPORT_VBALL:
+      MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_vball)
+      generate_ost_sound = routine_vball;
     break;
   }
 }

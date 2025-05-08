@@ -10,6 +10,7 @@ I, KMFDManic have worked in the Xtreme Magic to maintain integrity with overall 
 - Bad Dudes
 - Bionic Commando
 - Cave Ninja AKA Joe & Mac
+- Contra
 - Double Dragon
 - Final Fight
 - Ghosts 'n Goblins
@@ -24,6 +25,7 @@ I, KMFDManic have worked in the Xtreme Magic to maintain integrity with overall 
 - Street Fighter I
 - Street Fighter II
 - Ultraman
+- U.S. Championship V'Ball
 
 **It is a bit technical, the creation of such Custom OSTs**
 
