@@ -143,10 +143,14 @@ static WRITE_HANDLER( vb_bankswitch_w )
 
 WRITE_HANDLER( cpu_sound_command_w ) {
 	if( ost_support_enabled(OST_SUPPORT_VBALL) ) {
-					if(generate_ost_sound( data )) {
-	soundlatch_w( offset, data );
-	cpu_set_irq_line( 1, IRQ_LINE_NMI, PULSE_LINE );
-					}
+		if(generate_ost_sound( data )) {
+			soundlatch_w( offset, data );
+			cpu_set_irq_line( 1, IRQ_LINE_NMI, PULSE_LINE );
+		}
+	}
+	else {
+		soundlatch_w( offset, data );
+		cpu_set_irq_line( 1, IRQ_LINE_NMI, PULSE_LINE );
 	}
 }
 
