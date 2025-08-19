@@ -122,11 +122,11 @@ void retro_set_environment(retro_environment_t cb)
       { "mame2003-xtreme-amped-option_tate_mode", "TATE Mode; disabled|enabled" },
       { "mame2003-xtreme-amped-use_artwork", "Artwork(Restart); enabled|disabled" },
       #if defined(HAS_CYCLONE) && defined(HAS_DRZ80)
-      { "mame2003-xtreme-amped-cyclone_mode", "Cyclone mode(Restart); default|disabled|Cyclone|DrZ80|Cyclone+DrZ80|DrZ80(snd)|Cyclone+DrZ80(snd)" },
+      { "mame2003-xtreme-amped-cyclone_mode", "Cyclone mode(Restart); disabled|default|Cyclone|DrZ80|Cyclone+DrZ80|DrZ80(snd)|Cyclone+DrZ80(snd)" },
       #elif defined(HAS_CYCLONE) && !defined(HAS_DRZ80)
-      { "mame2003-xtreme-amped-cyclone_mode", "Cyclone mode(Restart); default|disabled|Cyclone" },
+      { "mame2003-xtreme-amped-cyclone_mode", "Cyclone mode(Restart); disabled|default|Cyclone" },
       #elif !defined(HAS_CYCLONE) && defined(HAS_DRZ80)
-      { "mame2003-xtreme-amped-cyclone_mode", "Cyclone mode(Restart); default|disabled|DrZ80|DrZ80(snd)" },
+      { "mame2003-xtreme-amped-cyclone_mode", "Cyclone mode(Restart); disabled|default|DrZ80|DrZ80(snd)" },
       #endif
       { NULL, NULL },
    };
