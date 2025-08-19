@@ -739,6 +739,12 @@ static bool routine_ffight(int data)
     case 0xf2:
     case 0xf7:
       ost_stop_samples();
+      schedule_default_sound = true;
+      break;
+
+    default:
+      schedule_default_sound = true;
+      break;
 
   }
 
