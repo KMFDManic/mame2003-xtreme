@@ -2866,7 +2866,7 @@ void install_ost_support(struct InternalMachineDriver *machine, int ost)
     case OST_SUPPORT_BIONICC:
       MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_bionicc)
       generate_ost_sound = routine_bionicc;
-    break;
+      break;
 
     case OST_SUPPORT_CNINJA:
       MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_cninja)
@@ -2946,11 +2946,12 @@ void install_ost_support(struct InternalMachineDriver *machine, int ost)
     case OST_SUPPORT_ULTRAMAN:
       MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_ultraman)
       generate_ost_sound = routine_ultraman;
+      break;
 
     case OST_SUPPORT_VBALL:
       MDRV_SOUND_ADD_TAG("OST Samples", SAMPLES, ost_vball)
       generate_ost_sound = routine_vball;
-    break;
+      break;
   }
 }
 
