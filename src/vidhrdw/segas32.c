@@ -2226,6 +2226,10 @@ static void mix_all_layers(int which, int xoffs, struct mame_bitmap *bitmap, con
 	int sprdx, sprdy;
 	int sprshadow;
 	int x, y, i;
+	
+	/* FAST-path lookup tables for channel packing */
+	UINT8 lutR[3][32], lutG[3][32], lutB[3][32];
+	int gi, vi;	
 
 	/* if we are the second monitor on multi32, swap in the proper sprite bank */
 	if (which == 1)
@@ -2244,6 +2248,20 @@ static void mix_all_layers(int which, int xoffs, struct mame_bitmap *bitmap, con
 	rgboffs[2][0] = 0;
 	rgboffs[2][1] = 0;
 	rgboffs[2][2] = 0;
+	
+	/* FAST: build 3× LUTs (group 0..2) mapping 5-bit channel -> (offset+clamp)<<3 */
+	if (fast) {
+		for (gi = 0; gi < 3; gi++) {
+			for (vi = 0; vi < 32; vi++) {
+				int r = vi + rgboffs[gi][0]; if (r < 0) r = 0; else if (r > 31) r = 31;
+				int g = vi + rgboffs[gi][1]; if (g < 0) g = 0; else if (g > 31) g = 31;
+				int b = vi + rgboffs[gi][2]; if (b < 0) b = 0; else if (b > 31) b = 31;
+				lutR[gi][vi] = (UINT8)(r << 3);
+				lutG[gi][vi] = (UINT8)(g << 3);
+				lutB[gi][vi] = (UINT8)(b << 3);
+			}
+		}
+	}	
 
 	/* determine the sprite grouping parameters first */
 	switch (mixer_control[which][0x4c/2] & 0x0f)
@@ -2458,20 +2476,17 @@ if (r < 0) r = 0; else if (r > 31) r = 31;
 if (g < 0) g = 0; else if (g > 31) g = 31;
 if (b < 0) b = 0; else if (b > 31) b = 31;
 
-/* Xtreme: pack EXACTLY like the accurate path (24-bit with +3 shift) */
+/* Xtreme (FAST): LUT pack (no per-pixel adds/clamps/branches) */
 if (fast)
 {
-    UINT32 outpix = 0;
-    if (r > 31) outpix  = 31 << (16+3);
-    else if (r > 0) outpix  = r  << (16+3);
+    int gidx = first->coloroffs;                 /* 0..2 */
+    int r5   = (firstpix >>  0) & 0x1f;
+    int g5   = (firstpix >>  5) & 0x1f;
+    int b5   = (firstpix >> 10) & 0x1f;
 
-    if (g > 31) outpix |= 31 << ( 8+3);
-    else if (g > 0) outpix |= g  << ( 8+3);
-
-    if (b > 31) outpix |= 31 << ( 0+3);
-    else if (b > 0) outpix |= b  << ( 0+3);
-
-    dest[x] = outpix;
+    dest[x]  = (lutR[gidx][r5] << 16)
+             | (lutG[gidx][g5] << 8)
+             | (lutB[gidx][b5] << 0);
     continue;
 }
 
@@ -2921,3 +2936,4 @@ svf:      $0201 -- on attract
 titlef:   $8200
 
 */
+
