@@ -2540,11 +2540,7 @@ static struct GfxDecodeInfo gfxdecodeinfo[] =
 static MACHINE_DRIVER_START( system32 )
 
 	/* basic machine hardware */
-#if defined(GEKKO)
-	MDRV_CPU_ADD(V60, MASTER_CLOCK/3) /* hack speed */
-#else
-	MDRV_CPU_ADD(V60, MASTER_CLOCK/3)
-#endif
+	MDRV_CPU_ADD(V60, MASTER_CLOCK/3) /* hack speed; managed via divisor core option */
 	MDRV_CPU_MEMORY(system32_readmem,system32_writemem)
 	MDRV_CPU_VBLANK_INT(start_of_vblank_int,1)
 

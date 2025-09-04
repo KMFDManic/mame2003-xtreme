@@ -56,6 +56,14 @@ unsigned retro_audio_buff_occupancy = 0;
 bool retro_audio_buff_underrun      = false;
 int frameskip;
 
+static int g_system32_fast = 0; /* 0 = Accurate, 1 = Xtreme */
+
+static double g_system32_global_div = 0.0;
+double mame_get_system32_global_div(void) { return g_system32_global_div; }
+
+void mame_set_system32_fast(int on) { g_system32_fast = on ? 1 : 0; }
+int  mame_get_system32_fast(void)   { return g_system32_fast; }
+
 static struct retro_message frontend_message;
 
 void frontend_message_cb(const char *message_string, unsigned frames_to_display)
@@ -99,7 +107,7 @@ void retro_set_environment(retro_environment_t cb)
 {
    static const struct retro_variable vars[] = {
       { "mame2003-xtreme-amped-turboboost", "TurboBoost; X6|disabled|X1|X2|X3|X4|X5|X6|X7|X8|X9|XX|auto|auto_aggressive|auto_max" },
-      { "mame2003-xtreme-amped-oc", "Reverse OverClock; 100|99|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|123|124|125|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40|41|42|43|44|45|46|47|48|49|50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65|66|67|68|69|70|71|72|73|74|75|76|77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98" },
+      { "mame2003-xtreme-amped-oc", "Reverse OverClock; 100|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|123|124|125|126|127|128|129|130|131|132|133|133|134|135|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40|41|42|43|44|45|46|47|48|49|50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65|66|67|68|69|70|71|72|73|74|75|76|77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99" },
       { "mame2003-xtreme-amped-dcs-speedhack",
 #if defined(__CELLOS_LV2__) || defined(GEKKO) || defined(_XBOX)
          "Xtreme DCS Speedhack; enabled|disabled"
@@ -121,6 +129,8 @@ void retro_set_environment(retro_environment_t cb)
       { "mame2003-xtreme-amped-rstick_to_btns", "Right Stick to Buttons; enabled|disabled" },
       { "mame2003-xtreme-amped-option_tate_mode", "TATE Mode; disabled|enabled" },
       { "mame2003-xtreme-amped-use_artwork", "Artwork(Restart); enabled|disabled" },
+      { "mame2003-xtreme-amped-system32-mode", "System 32 Mode; Accurate|Xtreme" },
+      { "mame2003-xtreme-amped-system32-globaldiv", "System 32 Global CPU Divisor (All Modes); 3|4|5|6|7|8|disabled|2" },
       #if defined(HAS_CYCLONE) && defined(HAS_DRZ80)
       { "mame2003-xtreme-amped-cyclone_mode", "Cyclone mode(Restart); disabled|default|Cyclone|DrZ80|Cyclone+DrZ80|DrZ80(snd)|Cyclone+DrZ80(snd)" },
       #elif defined(HAS_CYCLONE) && !defined(HAS_DRZ80)
@@ -235,7 +245,7 @@ void retro_get_system_info(struct retro_system_info *info)
 #ifndef GIT_VERSION
 #define GIT_VERSION ""
 #endif
-   info->library_version = "2K23 Amped" GIT_VERSION;
+   info->library_version = "2K25 Amped" GIT_VERSION;
    info->valid_extensions = "zip";
    info->need_fullpath = true;
    info->block_extract = true;
@@ -330,10 +340,11 @@ static void update_variables(void)
 
    var.value = NULL;
    var.key = "mame2003-xtreme-amped-oc";
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) || var.value)
-   {
-      options.oc = ((int) atoi(var.value)  / 100);
-
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
+      /* e.g., "125" -> 1.25 */
+      options.oc = strtod(var.value, NULL) / 100.0;
+   } else {
+      options.oc = 0.0;
    }
 
    var.value = NULL;
@@ -456,6 +467,36 @@ static void update_variables(void)
          options.use_artwork = ~0;
       else
          options.use_artwork = 0;
+   }
+
+   var.value = NULL;
+   var.key = "mame2003-xtreme-amped-system32-mode";
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
+      if (strcmp(var.value, "Xtreme") == 0)
+         mame_set_system32_fast(1);
+      else
+         mame_set_system32_fast(0);
+   } else {
+      mame_set_system32_fast(0);
+   }
+
+   if (log_cb)
+      log_cb(RETRO_LOG_INFO, "[MAME 2003] System 32 mode: %s\n",
+             mame_get_system32_fast() ? "Xtreme (faster)" : "Accurate");
+
+   var.value = NULL;
+   var.key = "mame2003-xtreme-amped-system32-globaldiv";
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
+      if (strcmp(var.value, "disabled") == 0) {
+         g_system32_global_div = 0.0; /* off */
+      } else {
+         /* allow decimals like 8.675309 */
+         g_system32_global_div = strtod(var.value, NULL);
+         if (g_system32_global_div < 3.0)
+            g_system32_global_div = 3.0; /* safety floor */
+      }
+   } else {
+      g_system32_global_div = 0.0; /* default: disabled */
    }
 
    ledintf.set_led_state = NULL;
@@ -620,13 +661,19 @@ void retro_run (void)
          retroJsState[17 + offset] = 0;
       }
    }
- if (options.oc)
- {
-	if (cpunum_get_clockscale(0) != options.oc)
-	{	printf("changing cpu - clockscale from %lf to%lf\n",cpunum_get_clockscale(0),options.oc);
-		cpunum_set_clockscale(0, options.oc);
-	}
- }
+ /* If a global System32 divisor is active (>=3), don't override it with Reverse OC */
+{
+    double g = mame_get_system32_global_div(); /* 0.0 means Disabled */
+    if (g < 3.0) {
+        if (options.oc > 0.0) {
+            double cur = cpunum_get_clockscale(0);
+            if (cur != options.oc) {
+                printf("changing cpu - clockscale from %lf to %lf\n", cur, options.oc);
+                cpunum_set_clockscale(0, options.oc);
+            }
+        }
+    }
+}
 
    mame_frame();
 }

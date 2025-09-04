@@ -178,6 +178,22 @@
 #include "driver.h"
 #include "includes/segas32.h"
 
+extern int mame_get_system32_fast(void);
+
+extern double mame_get_system32_global_div(void);
+
+/* Base CPU is MASTER_CLOCK/3. If global >= 3.0, scale = 3.0 / global; else 1.0 */
+static void system32_apply_global_clockscale(void)
+{
+    static double last_scale = -2.0;
+    double gdiv  = mame_get_system32_global_div();      /* 0.0 => disabled */
+    double scale = (gdiv >= 3.0) ? (3.0 / gdiv) : 1.0;
+
+    if (scale != last_scale) {
+        cpunum_set_clockscale(0, scale);                /* V60 is CPU #0 */
+        last_scale = scale;
+    }
+}
 
 
 /*************************************
@@ -1068,6 +1084,13 @@ static void update_tilemap_zoom(struct layer_info *layer, const struct rectangle
 	clipenable = patch_enable((system32_videoram[0x1ff02/2] >> (11 + bgnum)) & 1, bgnum);
 	clipout = (system32_videoram[0x1ff02/2] >> (6 + bgnum)) & 1;
 	clips = (system32_videoram[0x1ff06/2] >> (4 * bgnum)) & 0x0f;
+
+        if (mame_get_system32_fast()) {
+        clipenable = 0;
+        clipout = 0;
+        clips = 0;
+    }   
+         
 	clipdraw_start = compute_clipping_extents(clipenable, clipout, clips, cliprect, &clip_extents);
 
 	/* extract the X/Y step values (these are in destination space!) */
@@ -1239,6 +1262,14 @@ static void update_tilemap_rowscroll(struct layer_info *layer, const struct rect
 	rowselect = (system32_videoram[0x1ff04/2] >> bgnum) & 1;
 	if ((system32_videoram[0x1ff04/2] >> (bgnum + 2)) & 1)
 		rowscroll = rowselect = 0;
+        if (mame_get_system32_fast())
+{
+    rowscroll = 0;
+    rowselect = 0;
+    clipenable = 0;
+    clipout = 0;
+    clips = 0;
+}
 
 	/* get a pointer to the table */
 	table = &system32_videoram[(system32_videoram[0x1ff04/2] >> 10) * 0x400];
@@ -1659,6 +1690,12 @@ static UINT8 update_tilemaps(const struct rectangle *cliprect)
 	int enable3 = !(system32_videoram[0x1ff02/2] & 0x0008) && !(system32_videoram[0x1ff8e/2] & 0x0010) && !(system32_videoram[0x1ff00/2] & 0x2000);
 	int enablet = !(system32_videoram[0x1ff02/2] & 0x0010) && !(system32_videoram[0x1ff8e/2] & 0x0001);
 	int enableb = !(system32_videoram[0x1ff02/2] & 0x0020) && !(system32_videoram[0x1ff8e/2] & 0x0020);
+	
+    /* fast mode: skip NBG2/NBG3 rowscroll work entirely */
+    if (mame_get_system32_fast()) {
+        enable2 = 0;
+        enable3 = 0;
+    }	
 
 	if (titlef_kludge) /* patch ending credits */
 	{
@@ -1843,6 +1880,7 @@ static int draw_one_sprite(UINT16 *data, int xoffs, int yoffs, const struct rect
 	int indirect = data[0] & 0x2000;
 	int indlocal = data[0] & 0x1000;
 	int shadow   = (data[0] & 0x0800) && (sprite_control_latched[0x0a/2] & 1);
+	if (mame_get_system32_fast() && shadow) goto bail;
 	int fromram  = data[0] & 0x0400;
 	int bpp8     = data[0] & 0x0200;
 	int transp   = (data[0] & 0x0100) ? 0 : (bpp8 ? 0xff : 0x0f);
@@ -2057,31 +2095,35 @@ static void sprite_render_list(void)
 				spritenum += 1 + draw_one_sprite(sprite, xoffs, yoffs, &clipin, &clipout);
 				break;
 
-			/* command 1 = set clipping */
-			case 1:
+/* command 1 = set clipping */
+case 1:
+    if (!mame_get_system32_fast()) {
+        /* set the inclusive cliprect */
+        if (sprite[0] & 0x1000)
+        {
+            clipin.min_y = SEXT(sprite[0], 12);
+            clipin.max_y = SEXT(sprite[1], 12);
+            clipin.min_x = SEXT(sprite[2], 12);
+            clipin.max_x = SEXT(sprite[3], 12);
+            sect_rect(&clipin, &outerclip);
+        }
 
-				/* set the inclusive cliprect */
-				if (sprite[0] & 0x1000)
-				{
-					clipin.min_y = SEXT(sprite[0], 12);
-					clipin.max_y = SEXT(sprite[1], 12);
-					clipin.min_x = SEXT(sprite[2], 12);
-					clipin.max_x = SEXT(sprite[3], 12);
-					sect_rect(&clipin, &outerclip);
-				}
+        /* set the exclusive cliprect */
+        if (sprite[0] & 0x2000)
+        {
+            clipout.min_y = SEXT(sprite[4], 12);
+            clipout.max_y = SEXT(sprite[5], 12);
+            clipout.min_x = SEXT(sprite[6], 12);
+            clipout.max_x = SEXT(sprite[7], 12);
+        }
 
-				/* set the exclusive cliprect */
-				if (sprite[0] & 0x2000)
-				{
-					clipout.min_y = SEXT(sprite[4], 12);
-					clipout.max_y = SEXT(sprite[5], 12);
-					clipout.min_x = SEXT(sprite[6], 12);
-					clipout.max_x = SEXT(sprite[7], 12);
-				}
-
-				/* advance to the next entry */
-				spritenum++;
-				break;
+        spritenum++;
+        break;
+    } else {
+        /* FAST mode: ignore this clip command, just consume the entry */
+        spritenum++;
+        break;
+    }
 
 			/* command 2 = jump to position, and set X offset */
 			case 2:
@@ -2161,8 +2203,10 @@ INLINE UINT16 *get_layer_scanline(int layer, int scanline)
 
 static void mix_all_layers(int which, int xoffs, struct mame_bitmap *bitmap, const struct rectangle *cliprect, UINT8 enablemask)
 {
+	const int fast = mame_get_system32_fast();
 	int blendenable = mixer_control[which][0x4e/2] & 0x0800;
 	int blendfactor = (mixer_control[which][0x4e/2] >> 8) & 7;
+	if (fast) { blendenable = 0; blendfactor = 0; }
 	struct mixer_layer_info
 	{
 		UINT16		palbase;			/* palette base from control reg */
@@ -2229,23 +2273,35 @@ static void mix_all_layers(int which, int xoffs, struct mame_bitmap *bitmap, con
 	sprpixmask = ((1 << sprgroup_shift) - 1) & 0x3fff;
 	sprshadow = 0x7ffe & sprpixmask;
 
-	/* extract info about TEXT, NBG0-3, and BITMAP layers, which all follow the same pattern */
-	numlayers = 0;
-	for (laynum = MIXER_LAYER_TEXT; laynum <= MIXER_LAYER_BITMAP; laynum++)
-	{
-		int priority = mixer_control[which][0x20/2 + laynum] & 0x0f;
-		if ((enablemask & (1 << laynum)) && priority != 0)
-		{
-			layersort[numlayers].index = laynum;
-			layersort[numlayers].effpri = (priority << 3) | (6 - laynum);
-			layersort[numlayers].palbase = (mixer_control[which][0x20/2 + laynum] & 0x00f0) << 6;
-			layersort[numlayers].mixshift = (mixer_control[which][0x20/2 + laynum] >> 8) & 3;
-			layersort[numlayers].blendmask = blendenable ? ((mixer_control[which][0x30/2 + laynum] >> 6) & 0xff) : 0;
-			layersort[numlayers].sprblendmask = compute_sprite_blend(mixer_control[which][0x30/2 + laynum] & 0x3f);
-			layersort[numlayers].coloroffs = compute_color_offsets(which, (mixer_control[which][0x3e/2] >> laynum) & 1, (mixer_control[which][0x30/2 + laynum] >> 14) & 1);
-			numlayers++;
-		}
-	}
+/* extract info about TEXT, NBG0-3, and BITMAP layers, which all follow the same pattern */
+numlayers = 0;
+for (laynum = MIXER_LAYER_TEXT; laynum <= MIXER_LAYER_BITMAP; laynum++)
+{
+    int priority = mixer_control[which][0x20/2 + laynum] & 0x0f;
+    if ((enablemask & (1 << laynum)) && priority != 0)
+    {
+        layersort[numlayers].index    = laynum;
+        layersort[numlayers].effpri   = (priority << 3) | (6 - laynum);
+        layersort[numlayers].palbase  = (mixer_control[which][0x20/2 + laynum] & 0x00f0) << 6;
+        layersort[numlayers].mixshift = (mixer_control[which][0x20/2 + laynum] >> 8) & 3;
+
+if (!fast)
+    layersort[numlayers].blendmask = blendenable ? ((mixer_control[which][0x30/2 + laynum] >> 6) & 0xff) : 0;
+else
+    layersort[numlayers].blendmask = 0;
+
+if (!fast)
+    layersort[numlayers].sprblendmask = compute_sprite_blend(mixer_control[which][0x30/2 + laynum] & 0x3f);
+else
+    layersort[numlayers].sprblendmask = 0;
+
+        layersort[numlayers].coloroffs = compute_color_offsets(which,
+            (mixer_control[which][0x3e/2] >> laynum) & 1,
+            (mixer_control[which][0x30/2 + laynum] >> 14) & 1);
+
+        numlayers++;
+    }
+}
 
 	/* extract info about the BACKGROUND layer */
 	layersort[numlayers].index = MIXER_LAYER_BACKGROUND;
@@ -2390,8 +2446,34 @@ static void mix_all_layers(int which, int xoffs, struct mame_bitmap *bitmap, con
 				}
 			}
 
-			/* adjust the first pixel */
-			firstpix = system32_paletteram[which][(first->palbase + ((firstpix >> first->mixshift) & 0xfff0) + (firstpix & 0x0f)) & 0x3fff];
+/* adjust the first pixel */
+firstpix = system32_paletteram[which][(first->palbase + ((firstpix >> first->mixshift) & 0xfff0) + (firstpix & 0x0f)) & 0x3fff];
+
+/* compute R,G,B once (+color offsets), then clamp */
+rgbdelta = &rgboffs[first->coloroffs][0];
+r = ((firstpix >>  0) & 0x1f) + rgbdelta[0];
+g = ((firstpix >>  5) & 0x1f) + rgbdelta[1];
+b = ((firstpix >> 10) & 0x1f) + rgbdelta[2];
+if (r < 0) r = 0; else if (r > 31) r = 31;
+if (g < 0) g = 0; else if (g > 31) g = 31;
+if (b < 0) b = 0; else if (b > 31) b = 31;
+
+/* Xtreme: pack EXACTLY like the accurate path (24-bit with +3 shift) */
+if (fast)
+{
+    UINT32 outpix = 0;
+    if (r > 31) outpix  = 31 << (16+3);
+    else if (r > 0) outpix  = r  << (16+3);
+
+    if (g > 31) outpix |= 31 << ( 8+3);
+    else if (g > 0) outpix |= g  << ( 8+3);
+
+    if (b > 31) outpix |= 31 << ( 0+3);
+    else if (b > 0) outpix |= b  << ( 0+3);
+
+    dest[x] = outpix;
+    continue;
+}
 
 			/* compute R, G, B */
 			rgbdelta = &rgboffs[first->coloroffs][0];
@@ -2399,8 +2481,8 @@ static void mix_all_layers(int which, int xoffs, struct mame_bitmap *bitmap, con
 			g = ((firstpix >>  5) & 0x1f) + rgbdelta[1];
 			b = ((firstpix >> 10) & 0x1f) + rgbdelta[2];
 
-			/* if there are potential blends, keep looking */
-			if (first->blendmask != 0)
+                       /* if there are potential blends, keep looking (skip when Xtreme) */
+                       if (!fast && first->blendmask != 0)
 			{
 				struct mixer_layer_info *second;
 				int secondpix;
@@ -2459,7 +2541,7 @@ static void mix_all_layers(int which, int xoffs, struct mame_bitmap *bitmap, con
 			}
 
 			/* apply shadow/hilight */
-			if (shadow)
+			if (!fast && shadow)
 			{
 				r >>= 1;
 				g >>= 1;
@@ -2575,6 +2657,7 @@ static void print_mixer_data(int which)
 
 VIDEO_UPDATE( system32 )
 {
+	system32_apply_global_clockscale();
 	UINT8 enablemask;
 
 	/* update the visible area */
@@ -2602,6 +2685,7 @@ VIDEO_UPDATE( multi32 )
 {
 	extern struct osd_create_params video_config;
 	struct rectangle clipleft, clipright;
+	system32_apply_global_clockscale();
 	UINT8 enablemask;
 	int res;
 
@@ -2830,7 +2914,7 @@ radr:     $8200 -- gameplay
 scross:   $0200
 slipstrm: $0000
 sonic:    $0000 -- on sega logo/title screen
-          $0200 -- everything else
+          firstpix = system32_paletteram[which][(first->palbase +     $0200 -- everything else
 spidman:  $0200
 svf:      $0201 -- on attract
           $0200 -- on gameplay
