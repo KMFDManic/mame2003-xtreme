@@ -195,6 +195,16 @@ static void system32_apply_global_clockscale(void)
     }
 }
 
+/* FAST-only cheap shadows: 5-bit channel darken LUT (75% brightness) */
+static UINT8 s32_shade5[32];
+static int s32_shade5_inited = 0;
+static inline void s32_init_shade5(void)
+{
+    if (!s32_shade5_inited) {
+        for (int i = 0; i < 32; i++) s32_shade5[i] = (UINT8)((i * 3) >> 2); /* ~0.75x */
+        s32_shade5_inited = 1;
+    }
+}
 
 /*************************************
  *
@@ -1880,7 +1890,7 @@ static int draw_one_sprite(UINT16 *data, int xoffs, int yoffs, const struct rect
 	int indirect = data[0] & 0x2000;
 	int indlocal = data[0] & 0x1000;
 	int shadow   = (data[0] & 0x0800) && (sprite_control_latched[0x0a/2] & 1);
-	if (mame_get_system32_fast() && shadow) goto bail;
+	/* keep shadow sprites; the mixer will decide accurate/cheap/off */
 	int fromram  = data[0] & 0x0400;
 	int bpp8     = data[0] & 0x0200;
 	int transp   = (data[0] & 0x0100) ? 0 : (bpp8 ? 0xff : 0x0f);
@@ -2204,6 +2214,9 @@ INLINE UINT16 *get_layer_scanline(int layer, int scanline)
 static void mix_all_layers(int which, int xoffs, struct mame_bitmap *bitmap, const struct rectangle *cliprect, UINT8 enablemask)
 {
 	const int fast = mame_get_system32_fast();
+	extern int mame_get_system32_fastshadows(void);
+	const int shmode = fast ? mame_get_system32_fastshadows() : 0; /* 0=accurate,1=cheap,2=off */	
+    
 	int blendenable = mixer_control[which][0x4e/2] & 0x0800;
 	int blendfactor = (mixer_control[which][0x4e/2] >> 8) & 7;
 	if (fast) { blendenable = 0; blendfactor = 0; }
@@ -2476,13 +2489,24 @@ if (r < 0) r = 0; else if (r > 31) r = 31;
 if (g < 0) g = 0; else if (g > 31) g = 31;
 if (b < 0) b = 0; else if (b > 31) b = 31;
 
-/* Xtreme (FAST): LUT pack (no per-pixel adds/clamps/branches) */
+/* Xtreme (FAST): LUT pack (+ optional cheap shadow) */
 if (fast)
 {
     int gidx = first->coloroffs;                 /* 0..2 */
     int r5   = (firstpix >>  0) & 0x1f;
     int g5   = (firstpix >>  5) & 0x1f;
     int b5   = (firstpix >> 10) & 0x1f;
+
+    /* If a shadow overlay is present on this pixel, apply FAST shadow mode */
+    /* Use the same 'shadow' boolean you already use in the accurate path */
+    if (shadow) {
+        if (shmode == 1) {            /* cheap: darken source, no dest read */
+            /* 50%: use (v*3)>>2 for ~75% if you prefer */
+            r5 >>= 1;  g5 >>= 1;  b5 >>= 1;
+        }
+        /* shmode == 2 ('off'): ignore overlay → no darken in FAST */
+        /* shmode == 0 (accurate) won't happen here because we're in FAST */
+    }
 
     dest[x]  = (lutR[gidx][r5] << 16)
              | (lutG[gidx][g5] << 8)
@@ -2673,6 +2697,7 @@ static void print_mixer_data(int which)
 VIDEO_UPDATE( system32 )
 {
 	system32_apply_global_clockscale();
+	s32_init_shade5();
 	UINT8 enablemask;
 
 	/* update the visible area */
@@ -2701,7 +2726,8 @@ VIDEO_UPDATE( multi32 )
 	extern struct osd_create_params video_config;
 	struct rectangle clipleft, clipright;
 	system32_apply_global_clockscale();
-	UINT8 enablemask_left, enablemask_right;
+	s32_init_shade5();
+	UINT8 enablemask;
 	int res;
 
 	/* configure monitors */
@@ -2726,21 +2752,20 @@ VIDEO_UPDATE( multi32 )
 		return;
 	}
 
-       /* update the tilemaps (left and right halves independently) */
-       enablemask_left  = update_tilemaps(&clipleft);
-       enablemask_right = update_tilemaps(&clipright);
+	/* update the tilemaps */
+	enablemask = update_tilemaps(&clipleft);
 
-       /* do the mixing */
-       if (system32_displayenable[0] && monitor_setting != 2) /* speed up - disable offscreen monitor */
-           mix_all_layers(0, 0, bitmap, &clipleft,  enablemask_left);
-       else
-           fillbitmap(bitmap, get_black_pen(), &clipleft);
+	/* do the mixing */
+	if (system32_displayenable[0] && monitor_setting != 2) /* speed up - disable offscreen monitor */
+		mix_all_layers(0, 0, bitmap, &clipleft, enablemask);
+	else
+		fillbitmap(bitmap, get_black_pen(), &clipleft);
 
-       if (system32_displayenable[1] && monitor_setting != 1) /* speed up - disable offscreen monitor */
-           mix_all_layers(1, clipright.min_x, bitmap, &clipright, enablemask_right);
-       else
-           fillbitmap(bitmap, get_black_pen(), &clipright);
-}           
+	if (system32_displayenable[1] && monitor_setting != 1) /* speed up - disable offscreen monitor */
+		mix_all_layers(1, clipright.min_x, bitmap, &clipleft, enablemask);
+	else
+		fillbitmap(bitmap, get_black_pen(), &clipright);
+}
 
 
 /*

@@ -64,6 +64,10 @@ double mame_get_system32_global_div(void) { return g_system32_global_div; }
 void mame_set_system32_fast(int on) { g_system32_fast = on ? 1 : 0; }
 int  mame_get_system32_fast(void)   { return g_system32_fast; }
 
+/* ADD: FAST Shadows mode state (0=accurate, 1=cheap, 2=off) */
+static int g_system32_fastshadows = 0;
+int mame_get_system32_fastshadows(void) { return g_system32_fastshadows; }
+
 static struct retro_message frontend_message;
 
 void frontend_message_cb(const char *message_string, unsigned frames_to_display)
@@ -131,6 +135,7 @@ void retro_set_environment(retro_environment_t cb)
       { "mame2003-xtreme-amped-use_artwork", "Artwork(Restart); enabled|disabled" },
       { "mame2003-xtreme-amped-system32-mode", "System 32 Mode; Accurate|Xtreme" },
       { "mame2003-xtreme-amped-system32-globaldiv", "System 32 Global CPU Divisor (All Modes); 3|4|5|6|7|8|disabled|2" },
+      { "mame2003-xtreme-amped-system32-fastshadows", "System 32 FAST Shadows; accurate|cheap|off" },
       #if defined(HAS_CYCLONE) && defined(HAS_DRZ80)
       { "mame2003-xtreme-amped-cyclone_mode", "Cyclone mode(Restart); disabled|default|Cyclone|DrZ80|Cyclone+DrZ80|DrZ80(snd)|Cyclone+DrZ80(snd)" },
       #elif defined(HAS_CYCLONE) && !defined(HAS_DRZ80)
@@ -497,6 +502,16 @@ static void update_variables(void)
       }
    } else {
       g_system32_global_div = 0.0; /* default: disabled */
+   }
+
+   var.value = NULL;
+   var.key = "mame2003-xtreme-amped-system32-fastshadows";
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
+      if (strcmp(var.value, "cheap") == 0)      g_system32_fastshadows = 1;
+      else if (strcmp(var.value, "off") == 0)   g_system32_fastshadows = 2;
+      else                                      g_system32_fastshadows = 0; /* accurate */
+   } else {
+      g_system32_fastshadows = 0; /* default accurate */
    }
 
    ledintf.set_led_state = NULL;
