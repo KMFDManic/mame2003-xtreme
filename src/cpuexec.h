@@ -170,6 +170,13 @@ double cpunum_get_clockscale(int cpunum);
 /* Sets the current scaling factor for a CPU's clock speed */
 void cpunum_set_clockscale(int cpunum, double clockscale);
 
+
+/* Returns the current global scaling factor for all CPU clocks */
+double cpunum_get_global_clockscale(void);
+
+/* Sets the current global scaling factor for all CPU clocks */
+void cpunum_set_global_clockscale(double clockscale);
+
 /* Temporarily boosts the interleave factor */
 void cpu_boost_interleave(double timeslice_time, double boost_duration);
 

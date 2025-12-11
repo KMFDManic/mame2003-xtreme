@@ -112,6 +112,7 @@ void retro_set_environment(retro_environment_t cb)
    static const struct retro_variable vars[] = {
       { "mame2003-xtreme-amped-turboboost", "TurboBoost; X6|disabled|X1|X2|X3|X4|X5|X6|X7|X8|X9|XX|auto|auto_aggressive|auto_max" },
       { "mame2003-xtreme-amped-oc", "Reverse OverClock; 100|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|123|124|125|126|127|128|129|130|131|132|133|133|134|135|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40|41|42|43|44|45|46|47|48|49|50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65|66|67|68|69|70|71|72|73|74|75|76|77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99" },
+      { "mame2003-xtreme-amped-system-clockscale", "Xtreme System TurboBoost (Global); Disabled|100|105|110|115|120|125|130|135|140|145|150|155|160|165|170|175|180|185|190|195|200|95|90|85|80|75|70|65|60|55|50|45|40|35|30|25|20|15|10|" },
       { "mame2003-xtreme-amped-dcs-speedhack",
 #if defined(__CELLOS_LV2__) || defined(GEKKO) || defined(_XBOX)
          "Xtreme DCS Speedhack; enabled|disabled"
@@ -351,6 +352,21 @@ static void update_variables(void)
    } else {
       options.oc = 0.0;
    }
+
+
+   var.value = NULL;
+   var.key = "mame2003-xtreme-amped-system-clockscale";
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
+      if (!strcmp(var.value, "Disabled"))
+         options.global_clockscale = 1.0;
+      else
+         options.global_clockscale = strtod(var.value, NULL) / 100.0;
+   } else {
+      options.global_clockscale = 1.0;
+   }
+
+   /* Apply immediately: safe pre-init (stored) and on-the-fly when running */
+   cpunum_set_global_clockscale(options.global_clockscale);
 
    var.value = NULL;
    var.key = "mame2003-xtreme-amped-dcs-speedhack";

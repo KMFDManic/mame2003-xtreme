@@ -228,6 +228,7 @@ struct GameOptions
 	int		debug_height;	/* requested height of debugger bitmap */
 	int		debug_depth;	/* requested depth of debugger bitmap */
 	double oc;
+	double global_clockscale; /* global system clockscale (cpuexec), 1.0 = disabled */
 	#ifdef MESS
 	UINT32 ram;
 	struct ImageFile image_files[MAX_IMAGES];

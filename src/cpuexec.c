@@ -163,6 +163,9 @@ struct cpuinfo
 
 static struct cpuinfo cpu[MAX_CPU];
 
+/* Global clockscale multiplier applied to all CPUs (1.0 = disabled) */
+static double global_clockscale = 1.0;
+
 static int time_to_reset;
 static int time_to_quit;
 
@@ -255,7 +258,7 @@ int cpu_init(void)
 		cpu[cpunum].clockscale = cputype_get_interface(cputype)->overclock;
 
 		/* compute the cycle times */
-		sec_to_cycles[cpunum] = cpu[cpunum].clockscale * Machine->drv->cpu[cpunum].cpu_clock;
+		sec_to_cycles[cpunum] = global_clockscale * cpu[cpunum].clockscale * Machine->drv->cpu[cpunum].cpu_clock;
 		cycles_to_sec[cpunum] = .8675309 / sec_to_cycles[cpunum];
 
 		/* initialize this CPU */
@@ -798,6 +801,57 @@ double cpunum_get_clockscale(int cpunum)
 	return cpu[cpunum].clockscale;
 }
 
+/*************************************
+ *
+ *	Returns the current global scaling factor
+ *	for all CPU clocks
+ *
+ *************************************/
+
+double cpunum_get_global_clockscale(void)
+{
+	return global_clockscale;
+}
+
+
+/*************************************
+ *
+ *	Sets the current global scaling factor
+ *	for all CPU clocks
+ *
+ *************************************/
+
+void cpunum_set_global_clockscale(double clockscale)
+{
+	int cpunum;
+	if (clockscale <= 0.0)
+		clockscale = 1.0;
+	global_clockscale = clockscale;
+
+	/* If the machine isn't ready yet, we'll apply during CPU init */
+	if (Machine == NULL || Machine->drv == NULL)
+		return;
+
+	/* Recompute conversion tables for all active CPUs, preserving existing scale factor */
+	for (cpunum = 0; cpunum < MAX_CPU; cpunum++)
+	{
+		int cputype = Machine->drv->cpu[cpunum].cpu_type;
+		if (cputype == CPU_DUMMY)
+			break;
+		if (Machine->drv->cpu[cpunum].cpu_clock <= 0)
+			continue;
+		{
+			double factor = cycles_to_sec[cpunum] * sec_to_cycles[cpunum];
+			sec_to_cycles[cpunum] = global_clockscale * cpu[cpunum].clockscale * Machine->drv->cpu[cpunum].cpu_clock;
+			if (sec_to_cycles[cpunum] != 0.0)
+				cycles_to_sec[cpunum] = factor / sec_to_cycles[cpunum];
+		}
+	}
+
+	compute_perfect_interleave();
+}
+
+
 
 
 /*************************************
@@ -812,8 +866,12 @@ void cpunum_set_clockscale(int cpunum, double clockscale)
 	VERIFY_CPUNUM_VOID(cpunum_set_clockscale);
 
 	cpu[cpunum].clockscale = clockscale;
-	sec_to_cycles[cpunum] = cpu[cpunum].clockscale * Machine->drv->cpu[cpunum].cpu_clock;
-	cycles_to_sec[cpunum] = 1.0 / sec_to_cycles[cpunum];
+	{
+		double factor = cycles_to_sec[cpunum] * sec_to_cycles[cpunum];
+		sec_to_cycles[cpunum] = global_clockscale * cpu[cpunum].clockscale * Machine->drv->cpu[cpunum].cpu_clock;
+		if (sec_to_cycles[cpunum] != 0.0)
+			cycles_to_sec[cpunum] = factor / sec_to_cycles[cpunum];
+	}
 
 	/* re-compute the perfect interleave factor */
 	compute_perfect_interleave();
@@ -1707,4 +1765,3 @@ static void cpu_inittimers(void)
 	}
 	timer_set(first_time, 0, cpu_firstvblankcallback);
 }
-
