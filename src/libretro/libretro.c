@@ -6,6 +6,7 @@
 #include "driver.h"
 #include "state.h"
 #include "log.h"
+#include "usrintrf.h"
 
 #if (HAS_DRZ80 || HAS_CYCLONE)
 #include "frontend_list.h"
@@ -57,6 +58,16 @@ bool retro_audio_buff_underrun      = false;
 int frameskip;
 
 static int g_system32_fast = 0; /* 0 = Accurate, 1 = Xtreme */
+
+/* Xtreme OSD Equalizer
+ * - Core option can request the existing MAME OSD on/off.
+ * - Optional Player 1 L2 hotkey toggles the same OSD at runtime.
+ * - When the L2 hotkey is active, L2 is consumed so the game does not also see Button 7.
+ */
+static unsigned xtreme_osd_equalizer = 0;
+static unsigned xtreme_osd_l2_hotkey = 1;
+static int xtreme_osd_pending = 0; /* -1 = close, +1 = open */
+static int xtreme_osd_l2_prev = 0;
 
 static double g_system32_global_div = 0.0;
 double mame_get_system32_global_div(void) { return g_system32_global_div; }
@@ -114,6 +125,8 @@ void retro_set_environment(retro_environment_t cb)
 {
    static const struct retro_variable vars[] = {
       { "mame2003-xtreme-amped-turboboost", "FrameSkip TurboBoost; X6|disabled|X1|X2|X3|X4|X5|X6|X7|X8|X9|XX|auto|auto_aggressive|auto_max" },
+      { "mame2003-xtreme-amped-osd-equalizer", "Xtreme OSD Equalizer; disabled|enabled" },
+      { "mame2003-xtreme-amped-osd-l2-hotkey", "Xtreme OSD Equalizer L2 Hotkey; enabled|disabled" },
       { "mame2003-xtreme-amped-oc", "Reverse CPU OverClock; 100|101|102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117|118|119|120|121|122|123|124|125|126|127|128|129|130|131|132|133|133|134|135|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40|41|42|43|44|45|46|47|48|49|50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65|66|67|68|69|70|71|72|73|74|75|76|77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99" },
       { "mame2003-xtreme-amped-system-clockscale", "Xtreme Video TurboBoost; Disabled|100|105|110|115|120|125|130|135|140|145|150|155|160|165|170|175|180|185|190|195|200|250|300|350|400|450|500|95|90|85|80|75|70|65|60|55|50|45|40|35|30|25|20|15|10|" },
       { "mame2003-xtreme-amped-audio_pitchscale", "Xtreme Audio TurboBoost; Disabled|100|105|110|115|120|125|130|135|140|145|150|155|160|165|170|175|180|185|190|195|200|250|300|350|400|450|500|95|90|85|80|75|70|65|60|55|50|45|40|35|30|25|20|15|10|" },
@@ -275,6 +288,26 @@ static void update_variables(void)
    struct retro_led_interface ledintf;
    struct retro_variable var;
    int prev_frameskip_type;
+
+   /* Xtreme OSD Equalizer master state. Changing this option is a one-shot
+    * request to show/hide MAME's existing OSD. The L2 hotkey can then toggle
+    * it freely without forcing it open every frame. */
+   var.value = NULL;
+   var.key = "mame2003-xtreme-amped-osd-equalizer";
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      unsigned new_state = (strcmp(var.value, "enabled") == 0);
+      if (new_state != xtreme_osd_equalizer)
+      {
+         xtreme_osd_equalizer = new_state;
+         xtreme_osd_pending = new_state ? 1 : -1;
+      }
+   }
+
+   var.value = NULL;
+   var.key = "mame2003-xtreme-amped-osd-l2-hotkey";
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+      xtreme_osd_l2_hotkey = (strcmp(var.value, "enabled") == 0);
 
    /* ASM cores: 0=None,1=Cyclone,2=DrZ80,3=Cyclone+DrZ80,4=DrZ80(snd),5=Cyclone+DrZ80(snd) */
    var.value = NULL;
@@ -710,6 +743,30 @@ void retro_run (void)
          retroJsState[16 + offset] = 0;
          retroJsState[17 + offset] = 0;
       }
+   }
+
+   /* Apply deferred core-option OSD request only after the game/UI is running. */
+   if (xtreme_osd_pending != 0)
+   {
+      xtreme_osd_set_active(xtreme_osd_pending > 0);
+      xtreme_osd_pending = 0;
+   }
+
+   /* Player 1 L2 toggles the Equalizer OSD on the press edge only.
+    * Consume L2 while this hotkey is active; disabling the hotkey restores
+    * the original Button 7 behavior with no changes to the normal mapping. */
+   {
+      int l2_now = retroJsState[RETRO_DEVICE_ID_JOYPAD_L2] ? 1 : 0;
+
+      if (xtreme_osd_equalizer && xtreme_osd_l2_hotkey)
+      {
+         if (l2_now && !xtreme_osd_l2_prev)
+            xtreme_osd_toggle();
+
+         retroJsState[RETRO_DEVICE_ID_JOYPAD_L2] = 0;
+      }
+
+      xtreme_osd_l2_prev = l2_now;
    }
  /* If a global System32 divisor is active (>=3), don't override it with Reverse OC */
 {

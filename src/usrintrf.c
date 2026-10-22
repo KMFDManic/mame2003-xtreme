@@ -3963,6 +3963,34 @@ int onscrd_active(void)
 	return osd_selected;
 }
 
+/* Xtreme OSD Equalizer helpers. These use the existing MAME OSD state
+ * directly, preserving the original keyboard OSD behavior and slider code. */
+void xtreme_osd_set_active(int active)
+{
+	if (active)
+	{
+		if (osd_selected == 0)
+		{
+			osd_selected = -1;
+			if (setup_selected != 0)
+			{
+				setup_selected = 0;
+				schedule_full_refresh();
+			}
+		}
+	}
+	else if (osd_selected != 0)
+	{
+		osd_selected = 0;
+		schedule_full_refresh();
+	}
+}
+
+void xtreme_osd_toggle(void)
+{
+	xtreme_osd_set_active(osd_selected == 0);
+}
+
 int setup_active(void)
 {
 	return setup_selected;

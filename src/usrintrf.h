@@ -53,6 +53,8 @@ void ui_show_profiler_set(int show);
 int ui_show_profiler_get(void);
 
 int onscrd_active(void);
+void xtreme_osd_set_active(int active);
+void xtreme_osd_toggle(void);
 int setup_active(void);
 
 #if defined(__sgi) && ! defined(MESS)
